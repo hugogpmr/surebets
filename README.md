@@ -70,9 +70,9 @@ u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/
 
 | Casa | Estado | Detalle |
 |---|---|---|
-| **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2 en vivo verificado. Over/under pendiente (línea y cuota concatenadas en el mismo texto del DOM). |
-| **Betfair** | ✅ Funciona (`providers/betfair.py`) | Playwright headless normal. 1X2 en vivo verificado sobre el listado completo de LaLiga. |
-| **Winamax** | ✅ Funciona (`providers/winamax.py`) | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. 1X2 en vivo verificado. |
+| **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2 y over/under (Goles Totales) en vivo verificados. |
+| **Betfair** | ✅ Funciona (`providers/betfair.py`) | Playwright headless normal. 1X2 y over/under 2,5 goles en vivo verificados sobre el listado completo de LaLiga. |
+| **Winamax** | ✅ Funciona (`providers/winamax.py`) | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. Solo 1X2: el over/under no está en la página de listado, solo en la ficha de cada partido (requeriría una petición extra por partido). |
 | **Kirolbet** | ⚠️ Implementado pero bloqueado (`providers/kirolbet.py`) | Akamai Bot Manager. Ver detalle abajo. |
 | **Bwin** | ❌ Bloqueado | reCAPTCHA Enterprise invisible. Ver detalle abajo. |
 | **Betsson** | ❌ Bloqueado | API antifraude propia. Ver detalle abajo. |
@@ -90,6 +90,17 @@ u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/
 - La similitud de texto genérica para nombres de equipo cortos daba falsos positivos (p.ej. "Barcelona" y "Celta" resultaron tener suficiente parecido de letras como para confundirse cuando ambos jugaban contra el mismo rival).
 
 La solución fue una tabla de alias curada a mano para los 20 equipos de LaLiga (`engine/team_aliases.py`), en vez de depender solo de similitud de texto genérica. Sin estas dos correcciones, el sistema habría mostrado "surebets" del 30-40% que en realidad eran errores de comparación, no oportunidades reales — habría sido activamente engañoso.
+
+### Mercados soportados
+
+Además de 1X2, Sportium y Betfair scrapean también over/under de goles (verificado en vivo). Convención de
+nombres: `market_type` es `"OU_<línea>"` (p.ej. `"OU_2.5"`) y los outcomes son `"Over"`/`"Under"`. Betfair
+tiene la línea 2,5 como opción de menú fija, así que siempre es `OU_2.5`. Sportium sugiere una línea por
+partido (normalmente 2,5, pero no siempre — puede ser 3,5 o 4,5 en partidos muy desnivelados), así que su
+`market_type` varía por partido; al incluir la línea en el propio `market_type`, `group_by_event` nunca
+compara por error una línea con otra. Winamax se queda solo en 1X2: su over/under no está en la página de
+listado (donde vive todo lo demás), solo dentro de la ficha de cada partido, lo que exigiría una navegación
+extra por partido — no implementado por ahora.
 
 Detalle completo de cada bloqueo (qué se probó, por qué falló, posibilidades para arreglarlo) y el
 trabajo pendiente sobre scraping: ver [checklist.md](checklist.md).
