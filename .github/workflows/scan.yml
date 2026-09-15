@@ -1,0 +1,64 @@
+name: Escaneo de surebets
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: surebets-scan
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      BANKROLL: ${{ vars.BANKROLL || '250' }}
+      MIN_MARGIN: ${{ vars.MIN_MARGIN || '0.01' }}
+      DB_PATH: data/surebets.db
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Cache de navegadores de Playwright
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Instalar Chromium (Playwright)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: playwright install --with-deps chromium
+
+      - name: Instalar solo dependencias del sistema (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: playwright install-deps chromium
+
+      - name: Ejecutar ciclo de escaneo
+        run: python scripts/scan_once_action.py
+
+      - name: Guardar estado y base de datos actualizados
+        run: |
+          git config user.name "surebets-bot"
+          git config user.email "surebets-bot@users.noreply.github.com"
+          git add data/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: actualizar estado del escaneo [skip ci]"
+            git push
+          else
+            echo "Sin cambios que commitear."
+          fi
