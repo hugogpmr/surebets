@@ -43,6 +43,7 @@ STATE_PATH = pathlib.Path("data/active_opportunities.json")
 
 
 async def main() -> None:
+    pathlib.Path(config.DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     init_db(config.DB_PATH)
 
     active_state: dict[str, float] = {}
