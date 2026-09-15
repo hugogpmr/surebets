@@ -63,3 +63,10 @@ jobs:
           else
             echo "Sin cambios que commitear."
           fi
+
+      - name: Avisar por Telegram si el escaneo ha fallado
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="⚠️ Falló el escaneo de surebets en GitHub Actions. Log: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
