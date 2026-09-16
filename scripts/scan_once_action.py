@@ -43,7 +43,7 @@ PROVIDERS: list[OddsProvider] = [
     WinamaxProvider(),
     CuotasAhoraProvider(),
 ]
-SPORTS = ["futbol"]
+SPORTS = ["futbol", "futbol_champions"]
 
 STATE_PATH = pathlib.Path("data/active_opportunities.json")
 SNAPSHOT_PATH = pathlib.Path("docs/data.json")

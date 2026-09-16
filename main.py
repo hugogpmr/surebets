@@ -25,7 +25,7 @@ PROVIDERS: list[OddsProvider] = [
     WinamaxProvider(),
     CuotasAhoraProvider(),
 ]
-SPORTS = ["futbol"]
+SPORTS = ["futbol", "futbol_champions"]
 
 # Oportunidades activas del ciclo anterior (clave -> margen), en memoria: este
 # proceso corre de forma continua (VM + systemd), así que no hace falta
