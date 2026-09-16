@@ -175,3 +175,48 @@ solo de similitud de texto. Sin esto, el sistema mostraba "surebets" falsas del 
       no evaluado.
 - [x] Documentar qué casas quedan cubiertas por scraping propio y cuáles no — hecho en README.md
       ("Estado real de los scrapers") y en este checklist (sección 0).
+
+## 5. Fiabilidad del `schedule` de GitHub Actions (hallazgo y decisión, 2026-09-16)
+
+**Problema detectado**: el panel web (GitHub Pages) llevaba ~3h sin actualizarse pese a que
+`.github/workflows/scan.yml` tiene `schedule: cron: "*/5 * * * *"`. Confirmado con la API real de GitHub
+Actions del repo (no es un bug del código): hubo huecos de **~5 horas entre ejecuciones programadas** en vez
+de 5 minutos (última ejecución programada exitosa a las 06:42 UTC, la anterior a las 01:34 UTC — un gap de 5h
+entre ambas). El workflow está `state: active` y no se tocó nada en `scan.yml` entre medias. Causa: GitHub
+**no garantiza** el intervalo del trigger `schedule` — en picos de carga de su infraestructura retrasa o
+descarta directamente ejecuciones programadas, y esto es especialmente notorio con intervalos cortos como
+cada 5 min (limitación documentada de GitHub, no algo específico de este repo).
+
+**Solución implementada — disparo externo vía `workflow_dispatch`**: en vez de depender solo del `schedule`
+interno (que sí se deja puesto como red de respaldo, no estorba gracias al `concurrency` del workflow), un
+cron externo gratuito (cron-job.org) llama cada 5 min a la API de GitHub
+(`POST /repos/hugogpmr/surebets/actions/workflows/scan.yml/dispatches`) para disparar el workflow al
+instante, sin pasar por la cola de "scheduled events" de GitHub que es la que falla. Requiere un
+fine-grained personal access token (scope: solo Actions read/write de este repo) que el usuario crea y pega
+él mismo en cron-job.org — paso a paso completo en
+[deploy/README_DEPLOY.md](deploy/README_DEPLOY.md#el-schedule-de-github-actions-no-es-fiable-a-5-minutos-comprobado-2026-09-16).
+
+**Redundancia adicional (VM 24/7, Opción B) — evaluada y descartada por ahora**:
+
+- Se consideró montar una segunda vía completamente independiente de GitHub Actions (una VM con `main.py`
+  corriendo 24/7 vía systemd, ver Opción B de `deploy/README_DEPLOY.md`) como "doble seguridad" por si
+  GitHub como infraestructura fallara entero (no solo el trigger `schedule`).
+- **Oracle Cloud Always Free** (gratis para siempre, specs generosas — hasta 24GB RAM en shape ARM, de sobra
+  para Chromium/Playwright) era la opción natural: la cuenta ya existía, pero quedó **inaccesible** — login
+  dice que el usuario no existe y la recuperación de usuario por email no llega nada. Probable causa:
+  cuenta reclamada/suspendida por Oracle por inactividad (patrón conocido en su tier gratuito). Pendiente:
+  si se quiere insistir, habría que entrar con el "Cloud Account Name" (nombre de tenancy) en vez de
+  recuperar usuario, o abrir un ticket de soporte con Oracle (puede tardar días) — no intentado a fondo.
+- **Alternativas de pago comparadas**: Hetzner CX22 (2 vCPU/4GB, ~3.79€/mes) es la más barata con specs
+  suficientes. AWS descartado: tras los 12 meses gratis, un `t3.micro` (specs peores, 1GB RAM) sale a
+  ~9-10 USD/mes, más caro y más justo de RAM que Hetzner. Google Cloud `e2-micro` es gratis para siempre
+  pero con solo 1GB RAM compartida — va muy justo para Chromium, descartado por poco fiable. Contabo/
+  DigitalOcean/Vultr/Linode: precio similar a Hetzner, sin ventaja clara.
+- **Decisión**: no se paga una VM solo por esta redundancia extra. El fallo real era el trigger `schedule`
+  (ya arreglado, gratis, con cron-job.org); que GitHub como infraestructura entera esté caída es un riesgo
+  bastante más raro, y pagar 3.79€/mes recurrentes solo para cubrir ese residual no compensa ahora mismo.
+  **Revisar esta decisión si**: (a) en algún momento se quiere recuperar los comandos interactivos de
+  Telegram (`/hoy`, `/ahora`, `/stats`, que no funcionan solo con GitHub Actions porque no hay proceso
+  escuchando 24/7) — ahí sí justificaría pagar Hetzner, pero sería por esa función, no por redundancia; o
+  (b) se recupera el acceso a la cuenta de Oracle más adelante, lo que haría la VM gratis y quitaría el
+  dilema de precio.
