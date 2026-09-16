@@ -2,7 +2,7 @@ import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
-from engine.models import SurebetOpportunity
+from engine.models import MarketComparison, SurebetOpportunity
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS opportunities (
@@ -20,10 +20,34 @@ CREATE TABLE IF NOT EXISTS opportunities (
 )
 """
 
+# Estado actual de *toda* comparación de cuotas hecha en el último ciclo de
+# escaneo, sea o no una surebet (a diferencia de `opportunities`, que solo
+# guarda las que sí lo son). Es una foto del momento, no un histórico: cada
+# fila se actualiza (UPSERT) en vez de acumularse, y las que dejan de
+# aparecer en un ciclo se borran (ver storage.db.save_comparisons). Así el
+# panel web puede mostrar "cómo está todo ahora mismo" sin que la tabla (y
+# el .db commiteado al repo) crezca sin límite.
+COMPARISONS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS comparisons (
+    key TEXT PRIMARY KEY,
+    event TEXT NOT NULL,
+    sport TEXT NOT NULL,
+    market_type TEXT NOT NULL,
+    bookmakers TEXT NOT NULL,
+    margin REAL NOT NULL,
+    is_surebet INTEGER NOT NULL,
+    odds_json TEXT NOT NULL,
+    guaranteed_profit REAL,
+    first_seen_at TEXT NOT NULL,
+    last_seen_at TEXT NOT NULL
+)
+"""
+
 
 def init_db(path: str) -> None:
     with sqlite3.connect(path) as conn:
         conn.execute(SCHEMA)
+        conn.execute(COMPARISONS_SCHEMA)
 
 
 def save_opportunity(path: str, opp: SurebetOpportunity) -> int:
@@ -67,4 +91,111 @@ def get_stats(path: str, days: int = 7) -> dict:
         "count": len(rows),
         "total_potential_profit": round(total_profit, 2),
         "avg_margin": round(sum(r["margin"] for r in rows) / len(rows), 4) if rows else 0.0,
+    }
+
+
+def comparison_key(comparison: MarketComparison) -> str:
+    market = comparison.market
+    return "||".join((market.event, market.sport, market.market_type))
+
+
+def save_comparisons(path: str, comparisons: list[MarketComparison]) -> None:
+    """Reemplaza la foto actual de `comparisons` por el resultado de este
+    ciclo: hace UPSERT de cada mercado comparado y borra los que ya no
+    aparecieron (partido terminado, proveedor caído, etc.).
+    """
+    now = datetime.now(timezone.utc).isoformat()
+    keys = [comparison_key(c) for c in comparisons]
+    with sqlite3.connect(path) as conn:
+        for comparison, key in zip(comparisons, keys):
+            market = comparison.market
+            bookmakers = ",".join(sorted({o.bookmaker for o in market.outcomes}))
+            odds = [
+                {"name": o.name, "bookmaker": o.bookmaker, "odds": o.odds} for o in market.outcomes
+            ]
+            existing = conn.execute(
+                "SELECT first_seen_at FROM comparisons WHERE key = ?", (key,)
+            ).fetchone()
+            first_seen_at = existing[0] if existing else now
+            conn.execute(
+                """INSERT INTO comparisons
+                       (key, event, sport, market_type, bookmakers, margin, is_surebet,
+                        odds_json, guaranteed_profit, first_seen_at, last_seen_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(key) DO UPDATE SET
+                       bookmakers = excluded.bookmakers,
+                       margin = excluded.margin,
+                       is_surebet = excluded.is_surebet,
+                       odds_json = excluded.odds_json,
+                       guaranteed_profit = excluded.guaranteed_profit,
+                       last_seen_at = excluded.last_seen_at""",
+                (
+                    key,
+                    market.event,
+                    market.sport,
+                    market.market_type,
+                    bookmakers,
+                    comparison.margin,
+                    int(comparison.is_surebet),
+                    json.dumps(odds, ensure_ascii=False),
+                    comparison.guaranteed_profit,
+                    first_seen_at,
+                    now,
+                ),
+            )
+        if keys:
+            placeholders = ",".join("?" for _ in keys)
+            conn.execute(f"DELETE FROM comparisons WHERE key NOT IN ({placeholders})", keys)
+        else:
+            conn.execute("DELETE FROM comparisons")
+
+
+def get_all_comparisons(path: str) -> list[sqlite3.Row]:
+    with sqlite3.connect(path) as conn:
+        conn.row_factory = sqlite3.Row
+        return conn.execute("SELECT * FROM comparisons ORDER BY margin DESC").fetchall()
+
+
+def export_snapshot(path: str, recent_opportunities_limit: int = 100) -> dict:
+    """Vuelca el estado actual (todas las comparaciones + histórico reciente
+    de surebets detectadas + estadísticas) a un dict serializable en JSON,
+    pensado para publicarse como docs/data.json y alimentar el panel web
+    estático (GitHub Pages).
+    """
+    comparisons = [
+        {
+            "event": r["event"],
+            "sport": r["sport"],
+            "market_type": r["market_type"],
+            "bookmakers": r["bookmakers"],
+            "margin": r["margin"],
+            "is_surebet": bool(r["is_surebet"]),
+            "odds": json.loads(r["odds_json"]),
+            "guaranteed_profit": r["guaranteed_profit"],
+            "first_seen_at": r["first_seen_at"],
+            "last_seen_at": r["last_seen_at"],
+        }
+        for r in get_all_comparisons(path)
+    ]
+
+    since = datetime.now(timezone.utc) - timedelta(days=7)
+    opportunities = [
+        {
+            "detected_at": r["detected_at"],
+            "event": r["event"],
+            "sport": r["sport"],
+            "market_type": r["market_type"],
+            "bookmakers": r["bookmakers"],
+            "margin": r["margin"],
+            "total_stake": r["total_stake"],
+            "guaranteed_profit": r["guaranteed_profit"],
+        }
+        for r in get_opportunities_since(path, since)[:recent_opportunities_limit]
+    ]
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "stats": get_stats(path, days=7),
+        "comparisons": comparisons,
+        "recent_opportunities": opportunities,
     }

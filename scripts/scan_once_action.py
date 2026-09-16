@@ -12,6 +12,10 @@ Efecto colateral de este modo "solo avisos": los comandos /hoy, /ahora y
 /stats del bot (bot/telegram_bot.py) no responden aquí, porque necesitan un
 proceso escuchando permanentemente los mensajes de Telegram. Documentado en
 deploy/README_DEPLOY.md.
+
+Al final de cada ciclo también vuelca el estado a docs/data.json (ver
+storage.db.export_snapshot), que el workflow commitea junto al resto y que
+alimenta el panel web estático servido por GitHub Pages desde docs/.
 """
 
 import asyncio
@@ -27,7 +31,7 @@ from providers.base import OddsProvider
 from providers.betfair import BetfairProvider
 from providers.sportium import SportiumProvider
 from providers.winamax import WinamaxProvider
-from storage.db import init_db
+from storage.db import export_snapshot, init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("surebets.action")
@@ -40,6 +44,7 @@ PROVIDERS: list[OddsProvider] = [
 SPORTS = ["futbol"]
 
 STATE_PATH = pathlib.Path("data/active_opportunities.json")
+SNAPSHOT_PATH = pathlib.Path("docs/data.json")
 
 
 async def main() -> None:
@@ -69,6 +74,10 @@ async def main() -> None:
 
     STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
     STATE_PATH.write_text(json.dumps(active_state, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    snapshot = export_snapshot(config.DB_PATH)
+    SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    SNAPSHOT_PATH.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

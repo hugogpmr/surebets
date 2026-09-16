@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surebets — Panel de comparaciones</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>🎯 Surebets <span class="muted">— panel de comparaciones</span></h1>
+    <div class="refresh-info">
+      <span id="last-updated">Cargando…</span>
+      <button id="refresh-btn" title="Refrescar ahora">↻</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="stats-grid" id="stats-grid"></section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>🚀 Surebets activas ahora mismo</h2>
+      <span class="badge" id="active-count">0</span>
+    </div>
+    <div class="table-wrap">
+      <table id="active-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Deporte</th>
+            <th>Mercado</th>
+            <th>Casas</th>
+            <th>Cuotas</th>
+            <th data-sort="margin">Margen ▾</th>
+            <th data-sort="guaranteed_profit">Beneficio*</th>
+            <th data-sort="last_seen_at">Visto</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="active-empty" hidden>No hay ninguna surebet activa ahora mismo. Vuelve a mirar en unos minutos — el escaneo corre cada 5 min.</p>
+    </div>
+    <p class="hint">*Beneficio estimado repartiendo la banca configurada (<code>BANKROLL</code>) entre las casas del arbitraje.</p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>📊 Todas las comparaciones</h2>
+      <span class="badge" id="all-count">0</span>
+    </div>
+    <div class="filters">
+      <input type="search" id="filter-search" placeholder="Buscar evento…">
+      <select id="filter-sport"><option value="">Todos los deportes</option></select>
+      <select id="filter-market"><option value="">Todos los mercados</option></select>
+      <label class="checkbox">
+        <input type="checkbox" id="filter-surebet-only">
+        Solo surebets
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table id="all-table">
+        <thead>
+          <tr>
+            <th data-sort="event">Evento</th>
+            <th data-sort="sport">Deporte</th>
+            <th data-sort="market_type">Mercado</th>
+            <th>Casas</th>
+            <th>Cuotas</th>
+            <th data-sort="margin">Margen ▾</th>
+            <th>Estado</th>
+            <th data-sort="last_seen_at">Visto</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="all-empty" hidden>Sin comparaciones que coincidan con el filtro.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>🕓 Histórico reciente de surebets detectadas</h2>
+      <span class="badge" id="history-count">0</span>
+    </div>
+    <div class="table-wrap">
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th>Detectada</th>
+            <th>Evento</th>
+            <th>Deporte</th>
+            <th>Mercado</th>
+            <th>Casas</th>
+            <th>Margen</th>
+            <th>Beneficio</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="history-empty" hidden>Todavía no se ha detectado ninguna surebet.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>
+    Datos generados automáticamente por el escaneo de GitHub Actions (cada ~5 min) a partir de
+    Sportium, Betfair y Winamax. Fuente: <code>docs/data.json</code>.
+    El margen es el que se calcula sobre las cuotas ya obtenidas por scraping: puede quedar
+    desfasado si la cuota cambia entre la lectura y tu apuesta real.
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

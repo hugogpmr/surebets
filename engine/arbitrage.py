@@ -1,4 +1,4 @@
-from .models import Market, SurebetOpportunity
+from .models import Market, MarketComparison, SurebetOpportunity
 
 
 def implied_probability(odds: float) -> float:
@@ -26,18 +26,48 @@ def calculate_stakes(market: Market, total_stake: float) -> dict[str, float]:
     return stakes
 
 
-def evaluate_market(
+def format_stakes(stakes: dict[str, float]) -> str:
+    """Formatea el reparto de stakes (clave `"casa:resultado"`) en líneas
+    legibles para un aviso, p.ej. "   Sportium: 120.50€ a 1".
+    """
+    lines = []
+    for key, amount in stakes.items():
+        bookmaker, outcome = key.split(":", 1)
+        lines.append(f"   {bookmaker}: {amount}€ a {outcome}")
+    return "\n".join(lines)
+
+
+def compare_market(
     market: Market, total_stake: float, min_margin: float = 0.0
-) -> SurebetOpportunity | None:
+) -> MarketComparison:
+    """Igual que evaluate_market, pero siempre devuelve un resultado (nunca
+    None): sirve para registrar toda comparación de cuotas, sea o no una
+    surebet, de cara al panel web que muestra el estado completo.
+    """
     m = margin(market)
-    if m <= min_margin:
-        return None
-    stakes = calculate_stakes(market, total_stake)
-    profit = round(total_stake * m, 2)
-    return SurebetOpportunity(
+    surebet = m > min_margin
+    stakes = calculate_stakes(market, total_stake) if surebet else None
+    profit = round(total_stake * m, 2) if surebet else None
+    return MarketComparison(
         market=market,
         margin=m,
+        is_surebet=surebet,
         stakes=stakes,
         total_stake=total_stake,
         guaranteed_profit=profit,
+    )
+
+
+def evaluate_market(
+    market: Market, total_stake: float, min_margin: float = 0.0
+) -> SurebetOpportunity | None:
+    comparison = compare_market(market, total_stake, min_margin)
+    if not comparison.is_surebet:
+        return None
+    return SurebetOpportunity(
+        market=market,
+        margin=comparison.margin,
+        stakes=comparison.stakes,
+        total_stake=comparison.total_stake,
+        guaranteed_profit=comparison.guaranteed_profit,
     )

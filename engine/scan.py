@@ -7,9 +7,9 @@ extraído de main.py para poder reutilizarlo tanto desde el proceso de larga dur
 from collections.abc import Awaitable, Callable
 
 from providers.base import OddsProvider
-from storage.db import save_opportunity
+from storage.db import save_comparisons, save_opportunity
 
-from .arbitrage import evaluate_market
+from .arbitrage import compare_market, format_stakes
 from .matching import best_odds_per_outcome, group_by_event
 
 # Margen mínimo de cambio para considerar que una oportunidad ya notificada
@@ -45,30 +45,41 @@ async def run_scan_cycle(
             logger.exception("Fallo obteniendo datos de %s", provider.name)
 
     seen_keys: set[str] = set()
+    comparisons = []
 
     for grouped in group_by_event(raw_markets):
         market = best_odds_per_outcome(grouped)
-        opp = evaluate_market(market, bankroll, min_margin)
-        if opp is None:
+        comparison = compare_market(market, bankroll, min_margin)
+        comparisons.append(comparison)
+
+        if not comparison.is_surebet:
             continue
 
-        key = opportunity_key(opp)
+        key = opportunity_key(comparison)
         seen_keys.add(key)
         previous_margin = active_state.get(key)
         is_new_or_changed = (
-            previous_margin is None or abs(opp.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
+            previous_margin is None
+            or abs(comparison.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
         )
-        active_state[key] = opp.margin
+        active_state[key] = comparison.margin
 
         if not is_new_or_changed:
             continue
 
-        row_id = save_opportunity(db_path, opp)
-        logger.info("Surebet detectada (#%s): %s margen %.2f%%", row_id, market.event, opp.margin * 100)
+        row_id = save_opportunity(db_path, comparison)
+        logger.info(
+            "Surebet detectada (#%s): %s margen %.2f%%", row_id, market.event, comparison.margin * 100
+        )
         await notify(
             f"🚨 Nueva surebet\n🎯 {market.event} ({market.sport}, {market.market_type})\n"
-            f"Margen: {opp.margin * 100:.2f}% | Beneficio: {opp.guaranteed_profit}€",
+            f"Margen: {comparison.margin * 100:.2f}% | Beneficio: {comparison.guaranteed_profit}€\n"
+            f"{format_stakes(comparison.stakes)}",
         )
+
+    # Registra el estado de *todas* las comparaciones (sean o no surebet)
+    # para el panel web, aparte del dedupe de arriba que solo mira surebets.
+    save_comparisons(db_path, comparisons)
 
     # Las que ya no aparecen en este scan se consideran cerradas: si vuelven a
     # aparecer más adelante, se tratan como nuevas y se vuelve a avisar.

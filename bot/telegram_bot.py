@@ -1,18 +1,22 @@
+import json
 from datetime import datetime, timedelta, timezone
 
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 import config
+from engine.arbitrage import format_stakes
 from storage.db import get_opportunities_since, get_stats
 
 
 def format_opportunity(row) -> str:
+    stakes = json.loads(row["stakes_json"])
     return (
         f"🎯 {row['event']} ({row['sport']}, {row['market_type']})\n"
         f"   Casas: {row['bookmakers']}\n"
         f"   Margen: {row['margin'] * 100:.2f}% | "
-        f"Banca: {row['total_stake']}€ | Beneficio: {row['guaranteed_profit']}€"
+        f"Banca: {row['total_stake']}€ | Beneficio: {row['guaranteed_profit']}€\n"
+        f"{format_stakes(stakes)}"
     )
 
 
