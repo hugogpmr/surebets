@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T19:42:32.201856+00:00",
+  "generated_at": "2026-09-16T19:53:20.704433+00:00",
   "stats": {
     "period_days": 7,
     "count": 27,
@@ -8,371 +8,73 @@
   },
   "comparisons": [
     {
-      "event": "Valencia vs. R. Sociedad",
+      "event": "Barcelona vs. Racing S.",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "codere,paf,sportium",
-      "margin": 0.03079127825993777,
-      "is_surebet": true,
+      "bookmakers": "sportium,winamax",
+      "margin": -0.027809997238331885,
+      "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "paf",
-          "odds": 2.88
-        },
-        {
-          "name": "X",
           "bookmaker": "sportium",
-          "odds": 3.4
-        },
-        {
-          "name": "2",
-          "bookmaker": "codere",
-          "odds": 3.05
-        }
-      ],
-      "guaranteed_profit": 7.94,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Osasuna",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "1xbet,codere,retabet",
-      "margin": 0.025260704208072582,
-      "is_surebet": true,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "codere",
-          "odds": 1.43
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 5.7
-        },
-        {
-          "name": "2",
-          "bookmaker": "1xbet",
-          "odds": 10.0
-        }
-      ],
-      "guaranteed_profit": 6.48,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Betis vs. Getafe",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,codere,paf",
-      "margin": 0.015620394930739634,
-      "is_surebet": true,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "codere",
-          "odds": 1.8
-        },
-        {
-          "name": "X",
-          "bookmaker": "bet365",
-          "odds": 3.9
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 5.8
-        }
-      ],
-      "guaranteed_profit": 3.97,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Barcelona vs. R. Racing Club",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,codere",
-      "margin": 0.004914004914005066,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 1.85
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 2.2
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Viking vs. Bayern Múnich",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,bwin,versus",
-      "margin": -0.005980861244019309,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "versus",
-          "odds": 22.0
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 12.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "bwin",
-          "odds": 1.14
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Sevilla vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bwin,versus,winamax",
-      "margin": -0.006896551724137945,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "versus",
-          "odds": 14.5
+          "odds": 1.02
         },
         {
           "name": "X",
           "bookmaker": "winamax",
-          "odds": 7.25
+          "odds": 30.0
         },
         {
           "name": "2",
-          "bookmaker": "bwin",
-          "odds": 1.25
+          "bookmaker": "sportium",
+          "odds": 71.0
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Deportivo de A Coruña vs. Sevilla",
+      "event": "Galatasaray vs. Barcelona",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "1xbet,bet365",
-      "margin": -0.00899710262796738,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.030303030303030276,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
           "bookmaker": "bet365",
-          "odds": 1.91
-        },
-        {
-          "name": "No",
-          "bookmaker": "1xbet",
-          "odds": 2.06
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Inter vs. Club Brujas",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,codere,paf",
-      "margin": -0.009126076059714494,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "paf",
-          "odds": 1.33
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 5.75
-        },
-        {
-          "name": "2",
-          "bookmaker": "codere",
-          "odds": 12.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Espanyol vs. Elche",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "codere,paf,winamax",
-      "margin": -0.013977364091780409,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "codere",
-          "odds": 1.9
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 3.7
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 4.6
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Barcelona vs. R. Racing Club",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,luckia,versus",
-      "margin": -0.014161220043572786,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "luckia",
-          "odds": 1.08
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 17.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "versus",
-          "odds": 34.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Viking vs. Bayern Múnich",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,codere",
-      "margin": -0.016731016731016624,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 1.85
+          "odds": 1.5
         },
         {
           "name": "No",
           "bookmaker": "888sport",
-          "odds": 2.1
+          "odds": 2.75
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Roma vs. Real Madrid",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bwin,paf,retabet",
-      "margin": -0.01790032931974883,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "paf",
-          "odds": 3.95
-        },
-        {
-          "name": "X",
-          "bookmaker": "bwin",
-          "odds": 4.1
-        },
-        {
-          "name": "2",
-          "bookmaker": "retabet",
-          "odds": 1.92
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Deportivo de A Coruña vs. Sevilla",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "codere,versus",
-      "margin": -0.018762208887485254,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "versus",
-          "odds": 2.76
-        },
-        {
-          "name": "X",
-          "bookmaker": "codere",
-          "odds": 3.15
-        },
-        {
-          "name": "2",
-          "bookmaker": "codere",
-          "odds": 2.95
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:02:40.940399+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Athletic vs. Alavés",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,betway,bwin",
-      "margin": -0.019151138716356098,
+      "bookmakers": "bet365,sportium,winamax",
+      "margin": -0.032455698428101476,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "bwin",
-          "odds": 1.68
+          "bookmaker": "sportium",
+          "odds": 1.67
         },
         {
           "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
+          "bookmaker": "winamax",
+          "odds": 3.85
         },
         {
           "name": "2",
@@ -382,206 +84,25 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Málaga vs. Villarreal",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betfair,retabet,versus",
-      "margin": -0.019291364118950494,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "versus",
-          "odds": 3.7
-        },
-        {
-          "name": "X",
-          "bookmaker": "betfair",
-          "odds": 3.9
-        },
-        {
-          "name": "2",
-          "bookmaker": "retabet",
-          "odds": 2.03
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Osasuna",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "1xbet,retabet",
-      "margin": -0.021365294424179115,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 2.02
-        },
-        {
-          "name": "No",
-          "bookmaker": "1xbet",
-          "odds": 1.9
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Arsenal vs. Lille",
       "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "codere,paf",
-      "margin": -0.022727272727272707,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 2.2
-        },
-        {
-          "name": "No",
-          "bookmaker": "paf",
-          "odds": 1.76
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Espanyol vs. Elche",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "codere,retabet",
-      "margin": -0.023632327980154022,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 1.85
-        },
-        {
-          "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.07
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Osasuna vs. Rayo V.",
-      "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "retabet,sportium,versus",
-      "margin": -0.024365352723561662,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.03333333333333344,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "retabet",
-          "odds": 2.34
+          "bookmaker": "888sport",
+          "odds": 1.25
         },
         {
           "name": "X",
-          "bookmaker": "sportium",
-          "odds": 3.35
-        },
-        {
-          "name": "2",
-          "bookmaker": "versus",
-          "odds": 3.35
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Bodo/Glimt vs. Borussia Dortmund",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,betway,retabet",
-      "margin": -0.02488687782805421,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
           "bookmaker": "bet365",
-          "odds": 3.4
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "retabet",
-          "odds": 2.08
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "RB Leipzig vs. PSV",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,paf,retabet",
-      "margin": -0.025291965667651573,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "retabet",
-          "odds": 2.06
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 3.45
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Arsenal vs. Lille",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,bwin,retabet",
-      "margin": -0.02560671651580737,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bwin",
-          "odds": 1.26
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 6.05
+          "odds": 6.0
         },
         {
           "name": "2",
@@ -591,285 +112,211 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Celta de Vigo vs. R. Racing Club",
+      "event": "Betis vs. Getafe",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,betway,versus",
-      "margin": -0.025729646697388642,
+      "bookmakers": "888sport,bet365,sportium",
+      "margin": -0.03703083343801916,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "versus",
-          "odds": 1.86
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "bet365",
-          "odds": 4.2
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Levante vs. Athletic Club",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "1xbet,codere",
-      "margin": -0.025839793281653645,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 1.72
-        },
-        {
-          "name": "No",
-          "bookmaker": "1xbet",
-          "odds": 2.25
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Galatasaray vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,bwin,retabet",
-      "margin": -0.02586717823944107,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bet365",
-          "odds": 8.0
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 5.85
-        },
-        {
-          "name": "2",
-          "bookmaker": "bwin",
-          "odds": 1.37
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Galatasaray vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.02588801926550266,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.51
-        },
-        {
-          "name": "No",
           "bookmaker": "888sport",
-          "odds": 2.75
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "At. Madrid vs. R. Madrid",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "paf,retabet,sportium",
-      "margin": -0.02631578947368407,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "paf",
-          "odds": 4.0
+          "odds": 1.67
         },
         {
           "name": "X",
-          "bookmaker": "sportium",
-          "odds": 4.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "retabet",
-          "odds": 1.9
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Real Madrid",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "codere,paf",
-      "margin": -0.030303030303030276,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "codere",
-          "odds": 1.5
-        },
-        {
-          "name": "No",
-          "bookmaker": "paf",
-          "odds": 2.75
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:22:22.329012+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Manchester Utd",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,betway,paf",
-      "margin": -0.030548184185954952,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
           "bookmaker": "bet365",
-          "odds": 2.38
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 3.8
+          "odds": 3.9
         },
         {
           "name": "2",
-          "bookmaker": "paf",
-          "odds": 2.88
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Levante vs. Athletic",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,luckia",
-      "margin": -0.030830695009799403,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "luckia",
-          "odds": 3.35
-        },
-        {
-          "name": "X",
-          "bookmaker": "luckia",
-          "odds": 3.6
-        },
-        {
-          "name": "2",
-          "bookmaker": "betway",
-          "odds": 2.2
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Aston Villa vs. Fenerbahçe",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betway,bwin,paf",
-      "margin": -0.0309711625501099,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bwin",
-          "odds": 1.85
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 3.8
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 4.4
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Villarreal vs. Levante",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "1xbet,bwin,retabet",
-      "margin": -0.032043407043407024,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bwin",
-          "odds": 1.6
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 4.44
-        },
-        {
-          "name": "2",
-          "bookmaker": "1xbet",
+          "bookmaker": "sportium",
           "odds": 5.5
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Inter vs. Club Brujas",
+      "event": "Sevilla vs. Barcelona",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "bet365,sportium,winamax",
+      "margin": -0.04093649896363294,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 12.0
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 7.25
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 1.22
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Espanyol vs. Elche",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365,winamax",
+      "margin": -0.041757693027900666,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 1.85
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.7
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 4.33
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Málaga vs. Villarreal",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "bet365,sportium,winamax",
+      "margin": -0.0425685425685427,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 3.6
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.85
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 1.98
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Bodo/Glimt vs. Borussia Dortmund",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04508041984444611,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 3.4
+        },
+        {
+          "name": "X",
+          "bookmaker": "888sport",
+          "odds": 3.8
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 2.05
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Atlético de Madrid vs. Osasuna",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.03376429105673684,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04644808743169393,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.96
+          "bookmaker": "bet365",
+          "odds": 2.0
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 1.83
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Roma vs. Real Madrid",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04663713250100687,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 3.75
+        },
+        {
+          "name": "X",
+          "bookmaker": "888sport",
+          "odds": 3.9
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 1.91
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo de A Coruña vs. Sevilla",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04712041884816753,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "bet365",
+          "odds": 1.91
         },
         {
           "name": "No",
@@ -878,44 +325,123 @@
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Villarreal vs. Nápoles",
+      "event": "Viking vs. Bayern Múnich",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,paf",
-      "margin": -0.033950617283950546,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04761904761904745,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
-          "bookmaker": "888sport",
-          "odds": 1.62
+          "bookmaker": "bet365",
+          "odds": 1.75
         },
         {
           "name": "No",
-          "bookmaker": "paf",
-          "odds": 2.4
+          "bookmaker": "888sport",
+          "odds": 2.1
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Bodo/Glimt vs. Borussia Dortmund",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04761904761904767,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "bet365",
+          "odds": 1.4
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 3.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Barcelona vs. R. Racing Club",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "bet365",
+      "margin": -0.04816839149978347,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 1.01
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 26.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 51.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo de A Coruña vs. Sevilla",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.04985337243401755,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 2.75
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.1
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 2.75
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:02:40.940399+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Celta vs. Racing S.",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "betfair,sportium,winamax",
-      "margin": -0.035046035046034874,
+      "bookmakers": "sportium,winamax",
+      "margin": -0.050061050061050105,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "betfair",
-          "odds": 1.85
+          "bookmaker": "winamax",
+          "odds": 1.8
         },
         {
           "name": "X",
@@ -930,43 +456,20 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Athletic Club vs. Alavés",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.035590045491035394,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 2.02
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 1.85
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Sabah Baku vs. Slavia Praga",
+      "event": "Atlético de Madrid vs. Manchester Utd",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,bwin,paf",
-      "margin": -0.036161685560517576,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05047109752992096,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "paf",
-          "odds": 3.55
+          "bookmaker": "bet365",
+          "odds": 2.38
         },
         {
           "name": "X",
@@ -975,104 +478,188 @@
         },
         {
           "name": "2",
-          "bookmaker": "bwin",
-          "odds": 2.05
+          "bookmaker": "888sport",
+          "odds": 2.75
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "LASK vs. Liverpool",
+      "event": "Shakhtar vs. AEK",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,betway,versus",
-      "margin": -0.03648582388739863,
+      "bookmakers": "bet365",
+      "margin": -0.05055780721179959,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "versus",
-          "odds": 10.5
+          "bookmaker": "bet365",
+          "odds": 2.6
         },
         {
           "name": "X",
-          "bookmaker": "betway",
-          "odds": 6.5
+          "bookmaker": "bet365",
+          "odds": 3.5
         },
         {
           "name": "2",
           "bookmaker": "bet365",
-          "odds": 1.27
+          "odds": 2.63
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Villarreal vs. Nápoles",
+      "event": "Viking vs. Bayern Múnich",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,bwin,retabet",
-      "margin": -0.03664302600472813,
+      "bookmakers": "888sport",
+      "margin": -0.05063352122175635,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "retabet",
-          "odds": 2.35
+          "bookmaker": "888sport",
+          "odds": 17.0
         },
         {
           "name": "X",
-          "bookmaker": "bwin",
-          "odds": 3.6
+          "bookmaker": "888sport",
+          "odds": 11.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 1.11
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Osasuna vs. Rayo V.",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "bet365,sportium,winamax",
+      "margin": -0.05064421482331927,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 2.25
+        },
+        {
+          "name": "X",
+          "bookmaker": "sportium",
+          "odds": 3.35
         },
         {
           "name": "2",
           "bookmaker": "bet365",
-          "odds": 3.0
+          "odds": 3.25
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Slovan Bratislava vs. Stuttgart",
+      "event": "Villarreal vs. Levante",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "betway,paf,versus",
-      "margin": -0.03674518911745195,
+      "bookmakers": "bet365,sportium,winamax",
+      "margin": -0.05066031015398087,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "versus",
-          "odds": 8.0
+          "bookmaker": "sportium",
+          "odds": 1.58
         },
         {
           "name": "X",
-          "bookmaker": "betway",
+          "bookmaker": "winamax",
+          "odds": 4.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 5.25
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Atlético de Madrid vs. Osasuna",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05104895104895091,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
           "odds": 5.5
         },
         {
           "name": "2",
-          "bookmaker": "paf",
-          "odds": 1.37
+          "bookmaker": "bet365",
+          "odds": 10.0
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Feyenoord vs. Como",
+      "event": "At. Madrid vs. R. Madrid",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,bwin,paf",
-      "margin": -0.03717404707503724,
+      "bookmakers": "888sport,sportium",
+      "margin": -0.05142602495543658,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 3.75
+        },
+        {
+          "name": "X",
+          "bookmaker": "sportium",
+          "odds": 4.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 1.87
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Sabah Baku vs. Slavia Praga",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05238095238095242,
       "is_surebet": false,
       "odds": [
         {
@@ -1082,413 +669,25 @@
         },
         {
           "name": "X",
-          "bookmaker": "bwin",
-          "odds": 3.9
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 2.02
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Slovan Bratislava vs. Stuttgart",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,paf",
-      "margin": -0.0373988864376511,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "888sport",
-          "odds": 1.67
-        },
-        {
-          "name": "No",
-          "bookmaker": "paf",
-          "odds": 2.28
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Getafe vs. Málaga",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bwin,paf,versus",
-      "margin": -0.03770649790182201,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "versus",
-          "odds": 2.18
-        },
-        {
-          "name": "X",
-          "bookmaker": "bwin",
-          "odds": 3.1
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 3.9
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Real Betis vs. Getafe",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.03886417516848262,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 2.17
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 1.73
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Aston Villa vs. Fenerbahçe",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.039340776182881454,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.71
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 2.2
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "LASK vs. Liverpool",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.04029106589408449,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.81
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 2.05
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Getafe vs. Málaga",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "paf,retabet",
-      "margin": -0.04079058031959626,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 2.32
-        },
-        {
-          "name": "No",
-          "bookmaker": "paf",
-          "odds": 1.64
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Sevilla vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "paf,versus",
-      "margin": -0.041162227602905554,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "versus",
-          "odds": 1.77
-        },
-        {
-          "name": "No",
-          "bookmaker": "paf",
-          "odds": 2.1
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Feyenoord vs. Como",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "retabet,versus",
-      "margin": -0.04247979251126832,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.51
-        },
-        {
-          "name": "No",
-          "bookmaker": "versus",
-          "odds": 2.63
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Bodo/Glimt vs. Borussia Dortmund",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.042553191489361764,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.41
-        },
-        {
-          "name": "No",
-          "bookmaker": "888sport",
-          "odds": 3.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Deportivo vs. Betis",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,paf,retabet",
-      "margin": -0.04284568949254863,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 2.88
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 3.42
-        },
-        {
-          "name": "2",
-          "bookmaker": "paf",
-          "odds": 2.48
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Villarreal vs. Levante",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "retabet",
-      "margin": -0.04293827291545038,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.66
-        },
-        {
-          "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.27
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Manchester City vs. PSG",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,bet365,bwin",
-      "margin": -0.0435285053929122,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 2.2
-        },
-        {
-          "name": "X",
           "bookmaker": "bet365",
-          "odds": 4.0
+          "odds": 3.75
         },
         {
           "name": "2",
-          "bookmaker": "bwin",
-          "odds": 2.95
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Manchester City vs. PSG",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.04431871758604444,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.4
-        },
-        {
-          "name": "No",
-          "bookmaker": "retabet",
-          "odds": 3.03
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Barcelona vs. Racing S.",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "betfair,winamax",
-      "margin": -0.04600801068090776,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "winamax",
-          "odds": 1.07
-        },
-        {
-          "name": "X",
-          "bookmaker": "betfair",
-          "odds": 14.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "betfair",
-          "odds": 25.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Espanyol vs. Elche",
-      "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair,sportium",
-      "margin": -0.04644808743169393,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Over",
-          "bookmaker": "sportium",
-          "odds": 1.83
-        },
-        {
-          "name": "Under",
-          "bookmaker": "betfair",
           "odds": 2.0
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "RB Leipzig vs. PSV",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "codere,retabet",
-      "margin": -0.048202909003486116,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.41
-        },
-        {
-          "name": "No",
-          "bookmaker": "codere",
-          "odds": 2.95
-        }
-      ],
-      "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Celta de Vigo vs. R. Racing Club",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.04925284566003141,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05334784975503548,
       "is_surebet": false,
       "odds": [
         {
@@ -1498,140 +697,89 @@
         },
         {
           "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.22
+          "bookmaker": "bet365",
+          "odds": 2.2
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Valencia vs. Real Sociedad",
+      "event": "Aston Villa vs. Fenerbahçe",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.049732795288472076,
+      "bookmakers": "888sport",
+      "margin": -0.05334784975503548,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.73
+          "odds": 1.67
         },
         {
           "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.12
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Deportivo de A Coruña vs. Real Betis",
-      "sport": "futbol",
-      "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.049732795288472076,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.73
-        },
-        {
-          "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.12
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:17:30.403577+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Lens vs. Sporting CP",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,bwin,retabet",
-      "margin": -0.04976187767176499,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 2.38
-        },
-        {
-          "name": "X",
-          "bookmaker": "retabet",
-          "odds": 3.76
-        },
-        {
-          "name": "2",
-          "bookmaker": "bwin",
-          "odds": 2.75
+          "odds": 2.2
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Málaga vs. Villarreal",
+      "event": "Osasuna vs. Rayo Vallecano",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.050165815655103474,
+      "bookmakers": "888sport,bet365",
+      "margin": -0.053361053361053346,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.57
+          "odds": 1.85
         },
         {
           "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.42
+          "bookmaker": "bet365",
+          "odds": 1.95
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Atlético de Madrid vs. Manchester Utd",
+      "event": "Athletic Club vs. Alavés",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "betway,versus",
-      "margin": -0.0501778922831555,
+      "bookmakers": "888sport",
+      "margin": -0.053361053361053346,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
-          "bookmaker": "betway",
-          "odds": 1.43
+          "bookmaker": "888sport",
+          "odds": 1.95
         },
         {
           "name": "No",
-          "bookmaker": "versus",
-          "odds": 2.85
+          "bookmaker": "888sport",
+          "odds": 1.85
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Lens vs. Sporting CP",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.050420168067226934,
+      "bookmakers": "888sport",
+      "margin": -0.0535947712418301,
       "is_surebet": false,
       "odds": [
         {
@@ -1641,49 +789,151 @@
         },
         {
           "name": "No",
-          "bookmaker": "retabet",
-          "odds": 2.52
+          "bookmaker": "888sport",
+          "odds": 2.5
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Osasuna vs. Rayo Vallecano",
+      "event": "Levante vs. Athletic",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "bet365,sportium",
+      "margin": -0.05386086781435617,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 3.3
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.5
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 2.15
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "LASK vs. Liverpool",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05406824146981615,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 10.0
+        },
+        {
+          "name": "X",
+          "bookmaker": "888sport",
+          "odds": 6.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 1.27
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Real Betis vs. Getafe",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.05074462217319353,
+      "bookmakers": "888sport",
+      "margin": -0.054225158271401064,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.85
+          "odds": 2.1
         },
         {
           "name": "No",
-          "bookmaker": "retabet",
-          "odds": 1.96
+          "bookmaker": "888sport",
+          "odds": 1.73
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo de A Coruña vs. Real Betis",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.054225158271401064,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.73
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.1
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:17:30.403577+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Málaga vs. Villarreal",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.057110742386126345,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.57
+        },
+        {
+          "name": "No",
+          "bookmaker": "bet365",
+          "odds": 2.38
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Sabah Baku vs. Slavia Praga",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.05307945963195393,
+      "bookmakers": "888sport",
+      "margin": -0.057110742386126345,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.58
+          "bookmaker": "888sport",
+          "odds": 1.57
         },
         {
           "name": "No",
@@ -1693,89 +943,188 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Betis vs. Getafe",
+      "event": "Lens vs. Sporting CP",
       "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair,sportium",
-      "margin": -0.05335157318741457,
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.057205104263927886,
       "is_surebet": false,
       "odds": [
         {
-          "name": "Over",
-          "bookmaker": "betfair",
-          "odds": 2.15
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 2.38
         },
         {
-          "name": "Under",
-          "bookmaker": "sportium",
-          "odds": 1.7
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.75
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 2.7
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Celta vs. Racing S.",
+      "event": "Valencia vs. R. Sociedad",
       "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair,sportium",
-      "margin": -0.05335157318741457,
+      "market_type": "1X2",
+      "bookmakers": "888sport,sportium",
+      "margin": -0.05775401069518726,
       "is_surebet": false,
       "odds": [
         {
-          "name": "Over",
+          "name": "1",
           "bookmaker": "sportium",
-          "odds": 1.7
+          "odds": 2.75
         },
         {
-          "name": "Under",
-          "bookmaker": "betfair",
-          "odds": 2.15
+          "name": "X",
+          "bookmaker": "sportium",
+          "odds": 3.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 2.5
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo vs. Betis",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,sportium,winamax",
+      "margin": -0.058006535947712434,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 2.88
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 2.4
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Athletic vs. Alavés",
+      "event": "Real Betis vs. Oporto",
       "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair,sportium",
-      "margin": -0.053361053361053346,
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05814905814905802,
       "is_surebet": false,
       "odds": [
         {
-          "name": "Over",
-          "bookmaker": "sportium",
-          "odds": 1.95
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 2.2
         },
         {
-          "name": "Under",
-          "bookmaker": "betfair",
-          "odds": 1.85
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.7
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 3.0
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "RB Leipzig vs. PSV",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.058655080477930444,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 2.05
+        },
+        {
+          "name": "X",
+          "bookmaker": "888sport",
+          "odds": 3.8
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 3.25
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Galatasaray vs. Barcelona",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.05869788106630214,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 8.0
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 5.5
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Roma vs. Real Madrid",
       "sport": "futbol",
       "market_type": "BTTS",
-      "bookmakers": "888sport,retabet",
-      "margin": -0.05404744436292486,
+      "bookmakers": "888sport",
+      "margin": -0.059113300492610765,
       "is_surebet": false,
       "odds": [
         {
           "name": "Yes",
-          "bookmaker": "retabet",
-          "odds": 1.41
+          "bookmaker": "888sport",
+          "odds": 1.4
         },
         {
           "name": "No",
@@ -1785,30 +1134,331 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Málaga vs. Villarreal",
+      "event": "Espanyol vs. Elche",
       "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair",
-      "margin": -0.054200542005419905,
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.059233449477351874,
       "is_surebet": false,
       "odds": [
         {
-          "name": "Over",
-          "bookmaker": "betfair",
-          "odds": 1.64
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.75
         },
         {
-          "name": "Under",
-          "bookmaker": "betfair",
-          "odds": 2.25
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.05
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Sevilla vs. Barcelona",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.059233449477351874,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "bet365",
+          "odds": 1.75
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.05
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "LASK vs. Liverpool",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.059233449477351874,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.75
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.05
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Real Betis vs. Oporto",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.05978260869565233,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.6
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.3
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Celta de Vigo vs. R. Racing Club",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.060317460317460325,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 1.8
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.75
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 4.2
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Villarreal vs. Levante",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.06060606060606055,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.65
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.2
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Feyenoord vs. Como",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.06169269327164062,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 3.5
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.8
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 1.95
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Villarreal vs. Nápoles",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.061728395061728225,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.62
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.25
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Villarreal vs. Nápoles",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.06223358908780918,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 2.3
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 3.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Aston Villa vs. Fenerbahçe",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.062321103304709746,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "bet365",
+          "odds": 1.83
+        },
+        {
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 3.6
+        },
+        {
+          "name": "2",
+          "bookmaker": "888sport",
+          "odds": 4.2
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Getafe vs. Málaga",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "sportium",
+      "margin": -0.06325540179905409,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "sportium",
+          "odds": 2.15
+        },
+        {
+          "name": "X",
+          "bookmaker": "sportium",
+          "odds": 3.05
+        },
+        {
+          "name": "2",
+          "bookmaker": "sportium",
+          "odds": 3.7
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Betis vs. Getafe",
+      "sport": "futbol",
+      "market_type": "OU_2.5",
+      "bookmakers": "sportium",
+      "margin": -0.06442577030812324,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Over",
+          "bookmaker": "sportium",
+          "odds": 2.1
+        },
+        {
+          "name": "Under",
+          "bookmaker": "sportium",
+          "odds": 1.7
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Arsenal vs. Lille",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.06442577030812324,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 2.1
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 1.7
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Osasuna vs. Rayo V.",
@@ -1831,7 +1481,30 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Celta vs. Racing S.",
+      "sport": "futbol",
+      "market_type": "OU_2.5",
+      "bookmakers": "sportium",
+      "margin": -0.06442577030812324,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Over",
+          "bookmaker": "sportium",
+          "odds": 1.7
+        },
+        {
+          "name": "Under",
+          "bookmaker": "sportium",
+          "odds": 2.1
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "At. Madrid vs. R. Madrid",
@@ -1854,30 +1527,127 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "FC Barcelona vs. Racing de Santander",
+      "event": "Valencia vs. Real Sociedad",
       "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair",
-      "margin": -0.06878306878306861,
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.06583956012970549,
       "is_surebet": false,
       "odds": [
         {
-          "name": "Over",
-          "bookmaker": "betfair",
-          "odds": 1.08
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.73
         },
         {
-          "name": "Under",
-          "bookmaker": "betfair",
-          "odds": 7.0
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.05
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Feyenoord vs. Como",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.06666666666666665,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.5
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.5
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Athletic vs. Alavés",
+      "sport": "futbol",
+      "market_type": "OU_2.5",
+      "bookmakers": "sportium",
+      "margin": -0.06837606837606858,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Over",
+          "bookmaker": "sportium",
+          "odds": 1.95
+        },
+        {
+          "name": "Under",
+          "bookmaker": "sportium",
+          "odds": 1.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Barcelona vs. Racing S.",
+      "sport": "futbol",
+      "market_type": "OU_5.5",
+      "bookmakers": "sportium",
+      "margin": -0.06837606837606858,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Over",
+          "bookmaker": "sportium",
+          "odds": 1.95
+        },
+        {
+          "name": "Under",
+          "bookmaker": "sportium",
+          "odds": 1.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Inter vs. Club Brujas",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.0692307692307692,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X",
+          "bookmaker": "888sport",
+          "odds": 5.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "bet365",
+          "odds": 10.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Sevilla vs. Barcelona",
@@ -1900,7 +1670,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Valencia vs. R. Sociedad",
@@ -1923,30 +1693,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Sevilla vs. FC Barcelona",
-      "sport": "futbol",
-      "market_type": "OU_2.5",
-      "bookmakers": "betfair",
-      "margin": -0.07007575757575757,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "Over",
-          "bookmaker": "betfair",
-          "odds": 1.32
-        },
-        {
-          "name": "Under",
-          "bookmaker": "betfair",
-          "odds": 3.2
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:02:40.940399+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Getafe vs. Málaga",
@@ -1969,7 +1716,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Villarreal vs. Levante",
@@ -1992,30 +1739,76 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Barcelona vs. Racing S.",
+      "event": "Atlético de Madrid vs. Manchester Utd",
       "sport": "futbol",
-      "market_type": "OU_4.5",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.0714285714285714,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.4
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "RB Leipzig vs. PSV",
+      "sport": "futbol",
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.0714285714285714,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "Yes",
+          "bookmaker": "888sport",
+          "odds": 1.4
+        },
+        {
+          "name": "No",
+          "bookmaker": "888sport",
+          "odds": 2.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Espanyol vs. Elche",
+      "sport": "futbol",
+      "market_type": "OU_2.5",
       "bookmakers": "sportium",
-      "margin": -0.07117688513037357,
+      "margin": -0.07276387690537822,
       "is_surebet": false,
       "odds": [
         {
           "name": "Over",
           "bookmaker": "sportium",
-          "odds": 1.65
+          "odds": 1.83
         },
         {
           "name": "Under",
           "bookmaker": "sportium",
-          "odds": 2.15
+          "odds": 1.9
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Deportivo vs. Betis",
@@ -2038,7 +1831,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Local vs. Visitante",
@@ -2066,658 +1859,139 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Valencia vs. Real Sociedad",
+      "event": "Atlético de Madrid vs. Real Madrid",
       "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,codere",
-      "margin": -0.9878269878269879,
+      "market_type": "BTTS",
+      "bookmakers": "888sport",
+      "margin": -0.07467258132657362,
       "is_surebet": false,
       "odds": [
         {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.56
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.35
-        },
-        {
-          "name": "X2",
-          "bookmaker": "codere",
-          "odds": 1.65
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Barcelona vs. R. Racing Club",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,bet365,bwin",
-      "margin": -1.0328397093102972,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "bwin",
-          "odds": 1.02
-        },
-        {
-          "name": "12",
+          "name": "Yes",
           "bookmaker": "888sport",
-          "odds": 1.04
+          "odds": 1.44
         },
         {
-          "name": "X2",
-          "bookmaker": "bet365",
-          "odds": 11.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Osasuna",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,codere",
-      "margin": -1.0398346551897233,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "codere",
-          "odds": 1.1
-        },
-        {
-          "name": "12",
-          "bookmaker": "codere",
-          "odds": 1.18
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 3.53
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Inter vs. Club Brujas",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "bet365,betway,retabet",
-      "margin": -1.0426665975569724,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "retabet",
-          "odds": 1.09
-        },
-        {
-          "name": "12",
-          "bookmaker": "bet365",
-          "odds": 1.18
-        },
-        {
-          "name": "X2",
-          "bookmaker": "betway",
-          "odds": 3.6
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Sevilla vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,retabet,versus",
-      "margin": -1.0427193039255669,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "versus",
-          "odds": 4.33
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.14
-        },
-        {
-          "name": "X2",
-          "bookmaker": "retabet",
-          "odds": 1.07
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Arsenal vs. Lille",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,bet365,retabet",
-      "margin": -1.0427193039255669,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "retabet",
-          "odds": 1.07
-        },
-        {
-          "name": "12",
+          "name": "No",
           "bookmaker": "888sport",
-          "odds": 1.14
-        },
-        {
-          "name": "X2",
-          "bookmaker": "bet365",
-          "odds": 4.33
+          "odds": 2.63
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "first_seen_at": "2026-09-16T19:22:22.329012+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Málaga vs. Villarreal",
+      "event": "Slovan Bratislava vs. Stuttgart",
       "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,betway,retabet",
-      "margin": -1.0499978361628441,
+      "market_type": "1X2",
+      "bookmakers": "888sport,bet365",
+      "margin": -0.07568922305764403,
       "is_surebet": false,
       "odds": [
         {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.87
+          "name": "1",
+          "bookmaker": "888sport",
+          "odds": 7.5
         },
         {
-          "name": "12",
-          "bookmaker": "retabet",
-          "odds": 1.31
+          "name": "X",
+          "bookmaker": "bet365",
+          "odds": 5.25
         },
         {
-          "name": "X2",
-          "bookmaker": "betway",
+          "name": "2",
+          "bookmaker": "888sport",
           "odds": 1.33
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Deportivo de A Coruña vs. Sevilla",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,betway,codere",
-      "margin": -1.0528119923768595,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.46
-        },
-        {
-          "name": "12",
-          "bookmaker": "betway",
-          "odds": 1.4
-        },
-        {
-          "name": "X2",
-          "bookmaker": "codere",
-          "odds": 1.53
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "LASK vs. Liverpool",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "bet365,betway,retabet",
-      "margin": -1.053118908382066,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "betway",
-          "odds": 4.0
-        },
-        {
-          "name": "12",
-          "bookmaker": "bet365",
-          "odds": 1.14
-        },
-        {
-          "name": "X2",
-          "bookmaker": "retabet",
-          "odds": 1.08
-        }
-      ],
-      "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Osasuna vs. Rayo Vallecano",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,betway",
-      "margin": -1.0533670836682711,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "betway",
-          "odds": 1.38
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.37
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 1.67
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Levante vs. Athletic Club",
       "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,betway,codere",
-      "margin": -1.0554630696774376,
+      "market_type": "BTTS",
+      "bookmakers": "bet365",
+      "margin": -0.07604017216642767,
       "is_surebet": false,
       "odds": [
         {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.71
-        },
-        {
-          "name": "12",
-          "bookmaker": "betway",
-          "odds": 1.35
-        },
-        {
-          "name": "X2",
-          "bookmaker": "codere",
-          "odds": 1.37
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Getafe vs. Málaga",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet",
-      "margin": -1.0564853094677225,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.3
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.41
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 1.73
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Galatasaray vs. Barcelona",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,bet365,retabet",
-      "margin": -1.0565400073072708,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
+          "name": "Yes",
           "bookmaker": "bet365",
-          "odds": 3.4
+          "odds": 1.7
         },
         {
-          "name": "12",
-          "bookmaker": "888sport",
-          "odds": 1.15
-        },
-        {
-          "name": "X2",
-          "bookmaker": "retabet",
-          "odds": 1.12
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Celta de Vigo vs. R. Racing Club",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,betway",
-      "margin": -1.0566494701491864,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.26
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.29
-        },
-        {
-          "name": "X2",
-          "bookmaker": "betway",
+          "name": "No",
+          "bookmaker": "bet365",
           "odds": 2.05
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Espanyol vs. Elche",
+      "event": "Málaga vs. Villarreal",
       "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,codere",
-      "margin": -1.0569302042986255,
+      "market_type": "OU_2.5",
+      "bookmakers": "sportium",
+      "margin": -0.07954545454545459,
       "is_surebet": false,
       "odds": [
         {
-          "name": "1X",
-          "bookmaker": "codere",
-          "odds": 1.25
+          "name": "Over",
+          "bookmaker": "sportium",
+          "odds": 1.6
         },
         {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.33
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 1.98
+          "name": "Under",
+          "bookmaker": "sportium",
+          "odds": 2.2
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Athletic Club vs. Alavés",
+      "event": "Arsenal vs. Lille",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "1xbet",
-      "margin": -1.057217030710647,
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0605208170541829,
       "is_surebet": false,
       "odds": [
         {
           "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.18
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.3
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 2.27
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Villarreal vs. Levante",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet,retabet",
-      "margin": -1.0572936926924146,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "retabet",
-          "odds": 1.18
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.25
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 2.44
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Atlético de Madrid vs. Real Madrid",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet",
-      "margin": -1.0580018100971942,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.97
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.29
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 1.29
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:22:22.329012+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Deportivo de A Coruña vs. Real Betis",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "1xbet",
-      "margin": -1.0585836399951187,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "1xbet",
-          "odds": 1.58
-        },
-        {
-          "name": "12",
-          "bookmaker": "1xbet",
-          "odds": 1.35
-        },
-        {
-          "name": "X2",
-          "bookmaker": "1xbet",
-          "odds": 1.46
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:17:30.403577+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Slovan Bratislava vs. Stuttgart",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,bet365,retabet",
-      "margin": -1.0632940632940633,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "bet365",
-          "odds": 3.25
+          "bookmaker": "888sport",
+          "odds": 1.05
         },
         {
           "name": "12",
           "bookmaker": "888sport",
-          "odds": 1.17
+          "odds": 1.14
         },
         {
           "name": "X2",
-          "bookmaker": "retabet",
-          "odds": 1.11
+          "bookmaker": "bet365",
+          "odds": 4.33
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Roma vs. Real Madrid",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "bet365,paf,versus",
-      "margin": -1.065257901013715,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "paf",
-          "odds": 1.92
-        },
-        {
-          "name": "12",
-          "bookmaker": "bet365",
-          "odds": 1.29
-        },
-        {
-          "name": "X2",
-          "bookmaker": "versus",
-          "odds": 1.3
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "RB Leipzig vs. PSV",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "bet365,betway",
-      "margin": -1.0660434716522267,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "betway",
-          "odds": 1.36
-        },
-        {
-          "name": "12",
-          "bookmaker": "bet365",
-          "odds": 1.29
-        },
-        {
-          "name": "X2",
-          "bookmaker": "betway",
-          "odds": 1.8
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Bodo/Glimt vs. Borussia Dortmund",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "bet365,betway,retabet",
-      "margin": -1.0660434716522267,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "betway",
-          "odds": 1.8
-        },
-        {
-          "name": "12",
-          "bookmaker": "bet365",
-          "odds": 1.29
-        },
-        {
-          "name": "X2",
-          "bookmaker": "retabet",
-          "odds": 1.36
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Viking vs. Bayern Múnich",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,bwin",
-      "margin": -1.0681161666690153,
+      "bookmakers": "888sport",
+      "margin": -1.0771008926348733,
       "is_surebet": false,
       "odds": [
         {
@@ -2727,8 +2001,8 @@
         },
         {
           "name": "12",
-          "bookmaker": "bwin",
-          "odds": 1.06
+          "bookmaker": "888sport",
+          "odds": 1.05
         },
         {
           "name": "X2",
@@ -2738,76 +2012,244 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Aston Villa vs. Fenerbahçe",
+      "event": "LASK vs. Liverpool",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,bwin,codere",
-      "margin": -1.069450289401619,
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0837471036080766,
       "is_surebet": false,
       "odds": [
         {
           "name": "1X",
-          "bookmaker": "bwin",
-          "odds": 1.24
+          "bookmaker": "888sport",
+          "odds": 3.8
         },
         {
           "name": "12",
-          "bookmaker": "888sport",
-          "odds": 1.29
+          "bookmaker": "bet365",
+          "odds": 1.14
         },
         {
           "name": "X2",
-          "bookmaker": "codere",
-          "odds": 2.05
+          "bookmaker": "888sport",
+          "odds": 1.06
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Sabah Baku vs. Slavia Praga",
+      "event": "Sevilla vs. Barcelona",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,betway,bwin",
-      "margin": -1.079217643457064,
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0873367045933415,
       "is_surebet": false,
       "odds": [
         {
           "name": "1X",
-          "bookmaker": "betway",
-          "odds": 1.83
+          "bookmaker": "bet365",
+          "odds": 4.0
         },
         {
           "name": "12",
           "bookmaker": "888sport",
-          "odds": 1.29
+          "odds": 1.13
         },
         {
           "name": "X2",
-          "bookmaker": "bwin",
-          "odds": 1.32
+          "bookmaker": "888sport",
+          "odds": 1.05
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Atlético de Madrid vs. Real Madrid",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0880143112701255,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "bet365",
+          "odds": 1.95
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.25
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:22:22.329012+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Real Betis vs. Getafe",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0890479030013913,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.17
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 2.15
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Málaga vs. Villarreal",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0909281374397652,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.85
+        },
+        {
+          "name": "12",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.29
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Roma vs. Real Madrid",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0909281374397652,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.85
+        },
+        {
+          "name": "12",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.29
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Atlético de Madrid vs. Osasuna",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0922147281747727,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.06
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.17
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 3.4
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Villarreal vs. Levante",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0945410530752864,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.17
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.22
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 2.38
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Atlético de Madrid vs. Manchester Utd",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,betway,retabet",
-      "margin": -1.0821329214806896,
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0946382428940566,
       "is_surebet": false,
       "odds": [
         {
           "name": "1X",
-          "bookmaker": "retabet",
-          "odds": 1.45
+          "bookmaker": "bet365",
+          "odds": 1.44
         },
         {
           "name": "12",
@@ -2816,82 +2258,222 @@
         },
         {
           "name": "X2",
-          "bookmaker": "betway",
-          "odds": 1.62
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Feyenoord vs. Como",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,bwin,retabet",
-      "margin": -1.0910568660576478,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
           "bookmaker": "888sport",
-          "odds": 1.83
-        },
-        {
-          "name": "12",
-          "bookmaker": "retabet",
-          "odds": 1.28
-        },
-        {
-          "name": "X2",
-          "bookmaker": "bwin",
-          "odds": 1.31
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
-    },
-    {
-      "event": "Villarreal vs. Nápoles",
-      "sport": "futbol",
-      "market_type": "DC",
-      "bookmakers": "888sport,betway,retabet",
-      "margin": -1.0911654135338344,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1X",
-          "bookmaker": "888sport",
-          "odds": 1.4
-        },
-        {
-          "name": "12",
-          "bookmaker": "retabet",
-          "odds": 1.33
-        },
-        {
-          "name": "X2",
-          "bookmaker": "betway",
           "odds": 1.6
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Aston Villa vs. Fenerbahçe",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0948659295971535,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "bet365",
+          "odds": 1.22
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 2.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "RB Leipzig vs. PSV",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.098502069126304,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        },
+        {
+          "name": "12",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.75
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Bodo/Glimt vs. Borussia Dortmund",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.098502069126304,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.75
+        },
+        {
+          "name": "12",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:42:32.178506+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Athletic Club vs. Alavés",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0991452991452992,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.17
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.25
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 2.25
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo de A Coruña vs. Real Betis",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.0999189149343946,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.53
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 1.44
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:17:30.403577+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Sabah Baku vs. Slavia Praga",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.099980123235937,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.8
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Real Betis vs. Oporto",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.1033272820874087,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.36
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.67
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:53:20.684408+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
       "event": "Lens vs. Sporting CP",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,betway",
-      "margin": -1.1017916460226411,
+      "bookmakers": "888sport",
+      "margin": -1.1065809180532922,
       "is_surebet": false,
       "odds": [
         {
           "name": "1X",
-          "bookmaker": "betway",
-          "odds": 1.45
+          "bookmaker": "888sport",
+          "odds": 1.44
         },
         {
           "name": "12",
@@ -2906,14 +2488,70 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     },
     {
-      "event": "Manchester City vs. PSG",
+      "event": "Espanyol vs. Elche",
       "sport": "futbol",
       "market_type": "DC",
-      "bookmakers": "888sport,bwin,retabet",
-      "margin": -1.1031746031746033,
+      "bookmakers": "888sport",
+      "margin": -1.1124631098023938,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.22
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.91
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Feyenoord vs. Como",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.1156788566624631,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.83
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.25
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Villarreal vs. Nápoles",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.120459158675719,
       "is_surebet": false,
       "odds": [
         {
@@ -2923,18 +2561,158 @@
         },
         {
           "name": "12",
-          "bookmaker": "retabet",
-          "odds": 1.26
+          "bookmaker": "888sport",
+          "odds": 1.3
         },
         {
           "name": "X2",
-          "bookmaker": "bwin",
-          "odds": 1.68
+          "bookmaker": "888sport",
+          "odds": 1.57
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T19:32:31.958938+00:00",
-      "last_seen_at": "2026-09-16T19:42:32.178506+00:00"
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Osasuna vs. Rayo Vallecano",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport,bet365",
+      "margin": -1.1210433491135245,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.33
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 1.62
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Deportivo de A Coruña vs. Sevilla",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.1241830065359477,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.44
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.36
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.44
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Valencia vs. Real Sociedad",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.1303418803418803,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.5
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.3
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.44
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Celta de Vigo vs. R. Racing Club",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "888sport",
+      "margin": -1.132492643968054,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "888sport",
+          "odds": 1.22
+        },
+        {
+          "name": "12",
+          "bookmaker": "888sport",
+          "odds": 1.25
+        },
+        {
+          "name": "X2",
+          "bookmaker": "888sport",
+          "odds": 1.95
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T18:57:39.799309+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
+    },
+    {
+      "event": "Levante vs. Athletic Club",
+      "sport": "futbol",
+      "market_type": "DC",
+      "bookmakers": "bet365",
+      "margin": -1.1617085182976652,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1X",
+          "bookmaker": "bet365",
+          "odds": 1.62
+        },
+        {
+          "name": "12",
+          "bookmaker": "bet365",
+          "odds": 1.29
+        },
+        {
+          "name": "X2",
+          "bookmaker": "bet365",
+          "odds": 1.3
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T19:25:45.925997+00:00",
+      "last_seen_at": "2026-09-16T19:53:20.684408+00:00"
     }
   ],
   "recent_opportunities": [
