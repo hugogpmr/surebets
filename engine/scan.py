@@ -4,6 +4,7 @@ extraído de main.py para poder reutilizarlo tanto desde el proceso de larga dur
 (GitHub Actions, con el estado cargado/guardado en un JSON entre ejecuciones).
 """
 
+import asyncio
 from collections.abc import Awaitable, Callable
 
 from providers.base import OddsProvider
@@ -40,7 +41,13 @@ async def run_scan_cycle(
     raw_markets = []
     for provider in providers:
         try:
-            raw_markets.extend(provider.fetch_markets(sports))
+            # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
+            # provider lanza su propio Playwright); como run_scan_cycle ya
+            # corre dentro de un event loop (main.py o scan_once_action.py),
+            # llamarlo directamente aquí chocaría con ese loop en marcha
+            # ("asyncio.run() cannot be called from a running event loop").
+            # Se ejecuta en un hilo aparte para darle un loop propio.
+            raw_markets.extend(await asyncio.to_thread(provider.fetch_markets, sports))
         except Exception:
             logger.exception("Fallo obteniendo datos de %s", provider.name)
 
