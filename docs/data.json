@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T18:13:58.861562+00:00",
+  "generated_at": "2026-09-16T18:18:46.717770+00:00",
   "stats": {
     "period_days": 7,
     "count": 3,
@@ -8,106 +8,78 @@
   },
   "comparisons": [
     {
-      "event": "Ath Bilbao vs. Alavés",
+      "event": "Málaga vs. Villarreal",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "888sport,bet365,betway",
-      "margin": -0.02271543868784187,
+      "bookmakers": "winamax",
+      "margin": -0.06505924972980104,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.67
-        },
-        {
-          "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "bet365",
-          "odds": 5.75
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Espanyol vs. Elche",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,betway,winamax",
-      "margin": -0.033033033033032844,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.85
+          "bookmaker": "winamax",
+          "odds": 3.45
         },
         {
           "name": "X",
           "bookmaker": "winamax",
-          "odds": 3.7
+          "odds": 3.85
         },
         {
           "name": "2",
-          "bookmaker": "betway",
-          "odds": 4.5
+          "bookmaker": "winamax",
+          "odds": 1.94
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
-      "event": "Celta de Vigo vs. R. Racing Club",
+      "event": "Levante vs. Ath Bilbao",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "888sport,bet365,betway",
-      "margin": -0.04365079365079372,
+      "bookmakers": "winamax",
+      "margin": -0.06646825396825395,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.8
+          "bookmaker": "winamax",
+          "odds": 3.2
         },
         {
           "name": "X",
-          "bookmaker": "betway",
-          "odds": 4.0
+          "bookmaker": "winamax",
+          "odds": 3.6
         },
         {
           "name": "2",
-          "bookmaker": "bet365",
-          "odds": 4.2
+          "bookmaker": "winamax",
+          "odds": 2.1
         }
       ],
       "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:13:58.858691+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Real Betis vs. Getafe",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "888sport,bet365,winamax",
-      "margin": -0.04389189690285633,
+      "bookmakers": "winamax",
+      "margin": -0.06912109063714489,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.67
+          "bookmaker": "winamax",
+          "odds": 1.62
         },
         {
           "name": "X",
-          "bookmaker": "bet365",
-          "odds": 3.9
+          "bookmaker": "winamax",
+          "odds": 3.8
         },
         {
           "name": "2",
@@ -117,154 +89,42 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
-      "event": "Levante vs. Ath Bilbao",
+      "event": "Espanyol vs. Elche",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "888sport,bet365,winamax",
-      "margin": -0.045924359877848264,
+      "bookmakers": "winamax",
+      "margin": -0.06972826485021599,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
-          "bookmaker": "888sport",
-          "odds": 3.3
+          "bookmaker": "winamax",
+          "odds": 1.8
         },
         {
           "name": "X",
           "bookmaker": "winamax",
-          "odds": 3.6
+          "odds": 3.7
         },
         {
           "name": "2",
-          "bookmaker": "bet365",
-          "odds": 2.15
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Barcelona vs. R. Racing Club",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,bet365",
-      "margin": -0.04632726371856788,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.08
-        },
-        {
-          "name": "X",
-          "bookmaker": "bet365",
-          "odds": 13.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "888sport",
-          "odds": 23.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T18:13:58.858691+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Málaga vs. Villarreal",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "bet365,winamax",
-      "margin": -0.05033855033855028,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bet365",
-          "odds": 3.6
-        },
-        {
-          "name": "X",
           "bookmaker": "winamax",
-          "odds": 3.85
-        },
-        {
-          "name": "2",
-          "bookmaker": "bet365",
-          "odds": 1.95
+          "odds": 4.1
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Atl. Madrid vs. Osasuna",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "winamax",
-      "margin": -0.05035274815422475,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "winamax",
-          "odds": 1.06
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 11.5
-        },
-        {
-          "name": "2",
-          "bookmaker": "winamax",
-          "odds": 50.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Villarreal vs. Levante",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,bet365,winamax",
-      "margin": -0.054691592908153286,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 1.57
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 4.4
-        },
-        {
-          "name": "2",
-          "bookmaker": "bet365",
-          "odds": 5.25
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Osasuna vs. Rayo Vallecano",
       "sport": "futbol",
       "market_type": "1X2",
-      "bookmakers": "bet365,winamax",
-      "margin": -0.05516705516705511,
+      "bookmakers": "winamax",
+      "margin": -0.07005539263603788,
       "is_surebet": false,
       "odds": [
         {
@@ -279,69 +139,13 @@
         },
         {
           "name": "2",
-          "bookmaker": "bet365",
-          "odds": 3.25
+          "bookmaker": "winamax",
+          "odds": 3.1
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Atl. Madrid vs. R. Madrid",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,winamax",
-      "margin": -0.05686299223940772,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 3.8
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 3.95
-        },
-        {
-          "name": "2",
-          "bookmaker": "888sport",
-          "odds": 1.85
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Valencia vs. R. Sociedad",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,bet365,winamax",
-      "margin": -0.06448801742919397,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "bet365",
-          "odds": 2.7
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 3.4
-        },
-        {
-          "name": "2",
-          "bookmaker": "888sport",
-          "odds": 2.5
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "FC Barcelona vs. R. Santander",
@@ -369,63 +173,35 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
-    },
-    {
-      "event": "Getafe vs. Málaga",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "888sport,betway,winamax",
-      "margin": -0.07619047619047614,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "888sport",
-          "odds": 2.1
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 3.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "betway",
-          "odds": 3.75
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Deportivo vs. Sevilla",
       "sport": "futbol",
       "market_type": "1X2",
       "bookmakers": "winamax",
-      "margin": -0.07693145908248877,
+      "margin": -0.0796019900497511,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
           "bookmaker": "winamax",
-          "odds": 11.5
+          "odds": 12.0
         },
         {
           "name": "X",
           "bookmaker": "winamax",
-          "odds": 4.2
+          "odds": 4.0
         },
         {
           "name": "2",
           "bookmaker": "winamax",
-          "odds": 1.33
+          "odds": 1.34
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Celta Vigo vs. R. Santander",
@@ -453,7 +229,91 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
+    },
+    {
+      "event": "Atl. Madrid vs. R. Madrid",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.08649789029535859,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 3.6
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.95
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 1.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
+    },
+    {
+      "event": "Valencia vs. R. Sociedad",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.08814280429152799,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 2.65
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 2.4
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
+    },
+    {
+      "event": "Ath Bilbao vs. Alavés",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.08882189239332083,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 1.6
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 3.85
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 4.9
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Deportivo vs. Real Betis",
@@ -481,7 +341,63 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
+    },
+    {
+      "event": "Local vs. Visitante",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.0924223602484473,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 1.15
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 12.5
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 7.0
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
+    },
+    {
+      "event": "Villarreal vs. Levante",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.09350079744816586,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 1.52
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 4.4
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 4.8
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
       "event": "Sevilla vs. FC Barcelona",
@@ -509,35 +425,35 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     },
     {
-      "event": "Local vs. Visitante",
+      "event": "Getafe vs. Málaga",
       "sport": "futbol",
       "market_type": "1X2",
       "bookmakers": "winamax",
-      "margin": -0.10000000000000009,
+      "margin": -0.09511081412183975,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
           "bookmaker": "winamax",
-          "odds": 1.25
+          "odds": 2.05
         },
         {
           "name": "X",
           "bookmaker": "winamax",
-          "odds": 10.0
+          "odds": 3.0
         },
         {
           "name": "2",
           "bookmaker": "winamax",
-          "odds": 5.0
+          "odds": 3.65
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:13:58.858691+00:00"
+      "last_seen_at": "2026-09-16T18:18:46.714791+00:00"
     }
   ],
   "recent_opportunities": [
