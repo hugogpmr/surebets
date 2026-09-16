@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T12:38:03.777721+00:00",
+  "generated_at": "2026-09-16T12:43:26.596391+00:00",
   "stats": {
     "period_days": 7,
     "count": 1,
@@ -33,7 +33,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Barcelona vs. Racing S.",
@@ -61,7 +61,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Sevilla vs. Barcelona",
@@ -89,7 +89,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "At. Madrid vs. Osasuna",
@@ -117,7 +117,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Málaga vs. Villarreal",
@@ -145,7 +145,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Athletic vs. Alavés",
@@ -173,7 +173,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Deportivo vs. Sevilla",
@@ -201,7 +201,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Celta vs. Racing S.",
@@ -229,7 +229,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Villarreal vs. Levante",
@@ -257,7 +257,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Levante vs. Athletic",
@@ -285,7 +285,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Deportivo vs. Betis",
@@ -313,7 +313,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Espanyol vs. Elche",
@@ -341,7 +341,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Getafe vs. Málaga",
@@ -369,7 +369,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Osasuna vs. Rayo V.",
@@ -392,7 +392,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Celta vs. Racing S.",
@@ -415,7 +415,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "At. Madrid vs. R. Madrid",
@@ -438,7 +438,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "At. Madrid vs. R. Madrid",
@@ -466,7 +466,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Osasuna vs. Rayo V.",
@@ -494,7 +494,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Valencia vs. R. Sociedad",
@@ -522,7 +522,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Athletic vs. Alavés",
@@ -545,7 +545,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Espanyol vs. Elche",
@@ -568,7 +568,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Sevilla vs. Barcelona",
@@ -591,7 +591,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Valencia vs. R. Sociedad",
@@ -614,7 +614,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Getafe vs. Málaga",
@@ -637,7 +637,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Villarreal vs. Levante",
@@ -660,7 +660,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Deportivo vs. Sevilla",
@@ -683,7 +683,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Betis vs. Getafe",
@@ -706,7 +706,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "At. Madrid vs. Osasuna",
@@ -729,7 +729,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Levante vs. Athletic",
@@ -752,7 +752,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Deportivo vs. Betis",
@@ -775,7 +775,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:38:03.773729+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Barcelona vs. Racing S.",
@@ -798,7 +798,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Málaga vs. Villarreal",
@@ -821,7 +821,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T12:33:39.254218+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     },
     {
       "event": "Local vs. Visitante",
@@ -849,7 +849,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T12:38:03.773729+00:00"
+      "last_seen_at": "2026-09-16T12:43:26.591356+00:00"
     }
   ],
   "recent_opportunities": [
