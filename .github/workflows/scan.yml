@@ -1,8 +1,12 @@
 name: Escaneo de surebets
 
+# El scraping en produccion se movio al PC local (Programador de tareas de
+# Windows + scripts/local_scan.ps1) porque Betfair y CuotasAhora devolvian 0
+# datos corriendo en runners de GitHub-hosted (IP fuera de España, ver
+# checklist.md seccion 7). Este workflow se deja solo como respaldo manual
+# (boton "Run workflow"), sin disparo automatico, para evitar carreras de
+# `git push` con el runner local.
 on:
-  schedule:
-    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 concurrency:

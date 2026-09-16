@@ -220,3 +220,127 @@ fine-grained personal access token (scope: solo Actions read/write de este repo)
   escuchando 24/7) — ahí sí justificaría pagar Hetzner, pero sería por esa función, no por redundancia; o
   (b) se recupera el acceso a la cuenta de Oracle más adelante, lo que haría la VM gratis y quitaría el
   dilema de precio.
+
+## 6. Ampliación de mercados y competiciones (iniciado 2026-09-16)
+
+**Contexto**: hasta ahora el sistema solo cubría 1X2 (+ OU_2.5 en Sportium/Betfair) de LaLiga. Se evaluó qué
+ampliar primero por relación esfuerzo/cobertura, dado que cada casa scrapeada en directo (Sportium, Betfair,
+Winamax) tiene su propio DOM y hay que verificar cada mercado/competición nueva en vivo antes de darlo por
+bueno (mismo criterio que el resto de este documento).
+
+**Hecho:**
+- [x] `providers/cuotasahora.py`: mercados "Ambos equipos marcan" (`BTTS`) y "Doble oportunidad" (`DC`),
+      verificados en vivo contra partidos reales de Champions League. Se generalizó `_EXTRACT_ODDS_TABLE_JS`
+      para leer los nombres de resultado desde la cabecera `<thead>` de la tabla en vez de fijarlos a mano,
+      porque la tabla es idéntica en forma (casa | resultado... | payout%) en las tres pestañas probadas
+      (1X2, BTTS, Doble oportunidad) - así, sumar otra pestaña de mercado con esa misma forma de tabla plana
+      es una entrada más en `EXTRA_MARKET_TABS`, no una función nueva. Ver detalle y motivación completa en
+      README.md ("Mercados soportados").
+- [x] Competición Champions League, solo en CuotasAhora (`league_urls["futbol_champions"]`) - de momento no
+      sumada a Sportium/Betfair/Winamax porque `engine/team_aliases.py` solo cubre los 20 equipos de LaLiga
+      y el fallback de similitud genérica es justo lo que causó los falsos positivos del 30-40% documentados
+      en la sección 0 del README; sumarla a más de un proveedor sin ampliar esa tabla antes arriesga
+      repetir ese bug con equipos europeos. CuotasAhora no tiene ese riesgo porque agrega varias casas en su
+      propia tabla por partido (no necesita cruzar el evento con otro proveedor para arbitrar).
+- [x] Verificado en vivo el pipeline completo tras el cambio: 18 partidos de Champions League, extracción
+      correcta de 1X2/BTTS/DC con cuotas reales de bet365/888sport/Betway/etc. Un puñado de partidos (3-5 de
+      18 en pruebas repetidas) falla por timeout cargando la tabla en `_fetch_match` - no es una regresión
+      de este cambio, ya existía ese patrón de fallo transitorio por partido (try/except + log + skip, igual
+      que antes); no investigado a fondo si es rate-limiting del sitio por visitar muchas páginas seguidas.
+
+**Pendiente / candidatas siguientes (por esfuerzo, de menor a mayor):**
+- [ ] Mercados adicionales de CuotasAhora con la misma tabla plana, vistos en el desplegable "Más" del
+      partido pero no confirmados en detalle: "Resultado sin empate" (draw no bet), "Par/Impar",
+      "Hándicap europeo" (línea fija con selector, a confirmar si es tabla plana o acordeón como
+      "Más/Menos"), "Marcador correcto" (probablemente demasiadas filas/outcomes para ser útil en
+      arbitraje). Añadir una entrada a `EXTRA_MARKET_TABS` por cada uno tras verificar en vivo su forma de
+      tabla.
+- [ ] "Más/Menos de" (over/under) de CuotasAhora: a diferencia de 1X2/BTTS/DC, agrupa las cuotas en un
+      acordeón por línea de goles (0.5, 1.5, 2, 2.25, 2.5...) que hay que expandir fila a fila para ver las
+      casas - no es la misma tabla plana, necesitaría una extracción dedicada. Cubriría de golpe más líneas
+      de las que hoy solo dan Sportium (línea variable) y Betfair (fija en 2,5).
+- [ ] Ampliar `engine/team_aliases.py` con los equipos de Champions League (y de cualquier otra competición
+      europea que se quiera sumar) como paso previo a activar esa competición también en Sportium, Betfair y
+      Winamax - hoy esos tres siguen solo en LaLiga.
+- [ ] Otras competiciones de fútbol candidatas una vez ampliados los alias: Segunda División (misma casa de
+      alias que LaLiga necesitaría su propia tabla, equipos distintos), Premier League, Europa League.
+- [ ] Otros deportes (baloncesto, tenis): no evaluado todavía qué estructura de DOM usa cada sitio para esos
+      deportes - probablemente distinta a la de fútbol en cada casa, así que cada uno necesitaría su propia
+      verificación en vivo antes de asumir que el patrón actual (URL de competición + selectors ya conocidos)
+      se puede reutilizar sin más.
+
+## 7. Migración a scraper local: viabilidad evaluada (2026-09-16)
+
+**Contexto**: el usuario planteó un nuevo documento
+([Arquitectura actual y transición...](<Arquitectura actual y transición de tu proyecto de surebets con GitHub Actions, web en GitHub y bot de Telegram.md>))
+proponiendo mover la ejecución del scraper fuera de GitHub Actions por los bloqueos de IP, empezando por
+correrlo en local (coste cero) antes de valorar una VPS con IP española. Se evaluó la viabilidad concreta
+para este repo, no en abstracto.
+
+**Hallazgo clave — el problema de IP ya está confirmado con datos reales, no es solo teoría del documento:**
+
+- El propio repo ya tenía un diagnóstico en curso: el commit `4374168` ("debug: imprimir IP/pais del runner
+  en scan.yml") documenta que **Betfair y CuotasAhora devuelven 0 datos cuando corren en GitHub Actions**,
+  pero funcionan bien en local — hipótesis explícita del propio historial: geo-bloqueo, porque ambas casas
+  tienen licencia DGOJ (obligadas a restringir a España) y los runners de GitHub-hosted corren fuera.
+- Se ha verificado esa hipótesis contra el snapshot real que consume el panel web (`docs/data.json`,
+  generado exclusivamente por runs de GitHub Actions): **todas** las comparaciones presentes usan solo
+  `sportium` y/o `winamax` como bookmakers. Ni una sola aparición de `betfair` ni de ningún bookmaker que
+  solo llega vía CuotasAhora (bet365, bwin, codere, luckia, william hill, 888sport, betway, retabet, paf,
+  speedybet, versus, 1xbet). Es decir: **2 de las 4 fuentes activas (Betfair y CuotasAhora) están
+  efectivamente muertas en producción ahora mismo**, no por un bug de código sino por la IP del runner —
+  justo el problema que motiva el documento del usuario. Esto no es un supuesto, es el estado real
+  documentado en el propio JSON que sirve GitHub Pages hoy.
+
+**Viabilidad de "scraper local primero": alta, y de esfuerzo de implementación bajo.** Motivo: no hace
+falta escribir código nuevo, todo el que hace falta ya existe y está probado:
+
+- `scripts/scan_once_action.py` ya hace exactamente un ciclo de escaneo + export a
+  `docs/data.json` + persistencia de dedupe en `data/active_opportunities.json` — es agnóstico de dónde
+  corre (no depende de nada específico de GitHub Actions salvo que hoy lo invoca `scan.yml`).
+- El `.venv` ya existe en el propio PC del usuario (`.venv/Scripts/python.exe`), con Playwright y Chromium
+  ya instalados y probados en local — es el mismo entorno donde ya se confirmó que Betfair/CuotasAhora sí
+  funcionan.
+- Lo único que faltaría por escribir es un script wrapper (`.ps1` o `.bat`) que replique en local los 3
+  pasos que hoy hace `scan.yml` fuera del propio scraping: `python scripts/scan_once_action.py` →
+  `git add data/ docs/data.json` → `git commit` + `git push` (si hay cambios) — calcado del bloque
+  "Guardar estado y base de datos actualizados" del workflow, sin lógica nueva.
+- Ese wrapper se registraría en el **Programador de tareas de Windows** (Task Scheduler) con un disparador
+  de intervalo (cada 5-15 min, igual que ahora), en vez de en `schedule`/cron-job.org.
+
+**Lo que cambia respecto a hoy y trade-offs a decidir con el usuario (no implementado todavía, pendiente de
+confirmación explícita porque toca automatización en producción):**
+
+- [ ] **Evitar doble ejecución**: si se activa el runner local hay que apagar el disparo actual (el cron de
+      cron-job.org que llama a `workflow_dispatch`, y opcionalmente también el `schedule` interno de
+      `scan.yml`) — si ambos corren a la vez se arriesgan carreras de `git push` (non-fast-forward) sobre
+      `data/` y `docs/data.json`. Alternativa más simple: dejar `scan.yml` solo con `workflow_dispatch`
+      manual (sin cron ni schedule) como respaldo puntual, no como fuente activa.
+- [ ] **Disponibilidad**: a diferencia de GitHub Actions (corre pase lo que pase), el runner local solo
+      escanea/actualiza mientras el PC del usuario esté encendido y con red. El panel web se queda
+      desactualizado y no llegan avisos nuevos mientras el PC esté apagado/dormido — trade-off aceptado
+      explícitamente por el usuario a cambio de coste cero, pero conviene que Task Scheduler tenga marcada
+      la opción "Wake the computer to run this task" si el PC entra en suspensión, o si no, asumir que solo
+      escanea en horario en que el PC está encendido.
+- [ ] **Bot con comandos interactivos** (`/hoy`, `/ahora`, `/stats`): el wrapper de arriba mantiene el mismo
+      modo "solo avisos" que ya tiene `scan_once_action.py` hoy en Actions (no hay proceso escuchando
+      permanentemente Telegram). Si se quisiera recuperar esos comandos sin pasar todavía a VPS, haría falta
+      dejar `main.py` corriendo continuamente en el PC en vez del wrapper por intervalos — viable, pero
+      `main.py` hoy **no** exporta a `docs/data.json` (solo lo hace `scan_once_action.py`); habría que
+      añadirle esa llamada a `storage.db.export_snapshot` + el `git push` periódico si se quiere ese modo.
+      No urgente: el usuario no ha pedido explícitamente recuperar los comandos ahora mismo.
+- [ ] **Credenciales**: el token de Telegram pasaría de vivir en un GitHub Secret a vivir en el `.env` local
+      (ya es el modelo que usa `main.py` en local hoy) — sin cambios de riesgo siempre que `.env` siga fuera
+      de git (ya está en `.gitignore`).
+- [ ] **Decisión pendiente de confirmar con el usuario antes de tocar nada en producción**: si procedo a (a)
+      crear el script wrapper + instrucciones de Task Scheduler, y (b) desactivar el cron de cron-job.org y
+      dejar `scan.yml` solo en `workflow_dispatch` manual. Ambas cosas tocan automatización ya desplegada y
+      en marcha, así que se pide confirmación explícita en vez de aplicarlas directamente.
+
+**Conclusión**: la idea del usuario no es solo viable, sino que los datos de producción ya muestran que el
+problema que la motiva es real y activo (Betfair/CuotasAhora a 0 en Actions). Es además la opción de menor
+esfuerzo de las evaluadas en la sección 5/6: reutiliza el 100% del código ya escrito y probado, sin VPS ni
+cuenta cloud nueva, y dado que ya se decidió no pagar una VM solo por redundancia (sección 5), tiene sentido
+probar primero si el scraper local basta antes de valorar el salto a una VPS con IP española (sección 6.1 del
+documento de arquitectura) — que seguiría siendo la vía natural más adelante si el PC local no da la
+disponibilidad suficiente.

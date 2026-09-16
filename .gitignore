@@ -7,3 +7,4 @@ __pycache__/
 venv/
 surebets.tar.gz
 .pytest_cache/
+logs/
