@@ -26,6 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Debug: IP y país del runner (diagnóstico geo-bloqueo Betfair/CuotasAhora)"
+        run: curl -s https://ipinfo.io/json || echo "No se pudo consultar ipinfo.io"
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
