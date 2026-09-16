@@ -32,6 +32,7 @@ let state = {
   comparisons: [],
   sortKey: "margin",
   sortDir: "desc",
+  expandedGroups: new Set(),
 };
 
 function pct(n) {
@@ -63,6 +64,40 @@ function bookmakersCell(bookmakersStr) {
     .split(",")
     .map((b) => bookmakerSpan(b))
     .join(", ");
+}
+
+function groupMatches(tableId, rows) {
+  const map = new Map();
+  for (const row of rows) {
+    const key = `${tableId}::${row.event}||${row.sport}`;
+    if (!map.has(key)) {
+      map.set(key, { key, event: row.event, sport: row.sport, markets: [] });
+    }
+    map.get(key).markets.push(row);
+  }
+  return [...map.values()].map((g) => {
+    const bookmakerSet = new Set();
+    let bestMargin = -Infinity;
+    let anySurebet = false;
+    let lastSeenAt = null;
+    let totalProfit = 0;
+    for (const m of g.markets) {
+      m.bookmakers.split(",").forEach((b) => bookmakerSet.add(b.trim()));
+      if (m.margin > bestMargin) bestMargin = m.margin;
+      if (m.is_surebet) anySurebet = true;
+      if (m.guaranteed_profit) totalProfit += m.guaranteed_profit;
+      if (!lastSeenAt || new Date(m.last_seen_at) > new Date(lastSeenAt)) lastSeenAt = m.last_seen_at;
+    }
+    g.markets.sort((a, b) => b.margin - a.margin);
+    return {
+      ...g,
+      bookmakers: [...bookmakerSet],
+      bestMargin,
+      anySurebet,
+      lastSeenAt,
+      totalProfit,
+    };
+  });
 }
 
 function marginClass(row) {
@@ -102,37 +137,56 @@ function renderStats(data) {
     .join("");
 }
 
-function renderActiveTable(data) {
-  const active = data.comparisons
-    .filter((c) => c.is_surebet)
-    .sort((a, b) => b.margin - a.margin);
+function activeGroupRowsHtml(g) {
+  const single = g.markets.length === 1;
+  const expanded = !single && state.expandedGroups.has(g.key);
+  const chevron = single ? "•" : expanded ? "▾" : "▸";
+  const summary = `
+    <tr class="row-surebet group-row" data-group-key="${g.key}">
+      <td class="event-cell"><span class="chevron">${chevron}</span> ${g.event}</td>
+      <td>${g.sport}</td>
+      <td>${single ? g.markets[0].market_type : `${g.markets.length} mercados`}</td>
+      <td>${g.bookmakers.map(bookmakerSpan).join(", ")}</td>
+      <td class="odds-cell">${single ? oddsSummary(g.markets[0].odds) : "Ver detalle ▸"}</td>
+      <td class="margin-value margin-positive">${pct(g.bestMargin)}</td>
+      <td>${money(g.totalProfit)}</td>
+      <td>${timeAgo(g.lastSeenAt)}</td>
+    </tr>`;
+  if (!expanded || single) return summary;
+  const detailRows = g.markets
+    .map(
+      (m) => `
+      <tr class="row-surebet detail-row">
+        <td class="event-cell detail-indent">↳</td>
+        <td></td>
+        <td>${m.market_type}</td>
+        <td>${bookmakersCell(m.bookmakers)}</td>
+        <td class="odds-cell">${oddsSummary(m.odds)}</td>
+        <td class="margin-value margin-positive">${pct(m.margin)}</td>
+        <td>${money(m.guaranteed_profit)}</td>
+        <td>${timeAgo(m.last_seen_at)}</td>
+      </tr>`
+    )
+    .join("");
+  return summary + detailRows;
+}
 
-  document.getElementById("active-count").textContent = active.length;
+function renderActiveTable(data) {
+  const active = data.comparisons.filter((c) => c.is_surebet);
+  const groups = groupMatches("active", active).sort((a, b) => b.bestMargin - a.bestMargin);
+
+  document.getElementById("active-count").textContent = groups.length;
   const tbody = document.querySelector("#active-table tbody");
   const empty = document.getElementById("active-empty");
 
-  if (!active.length) {
+  if (!groups.length) {
     tbody.innerHTML = "";
     empty.hidden = false;
     return;
   }
   empty.hidden = true;
 
-  tbody.innerHTML = active
-    .map(
-      (row) => `
-      <tr class="row-surebet">
-        <td class="event-cell">${row.event}</td>
-        <td>${row.sport}</td>
-        <td>${row.market_type}</td>
-        <td>${bookmakersCell(row.bookmakers)}</td>
-        <td class="odds-cell">${oddsSummary(row.odds)}</td>
-        <td class="margin-value margin-positive">${pct(row.margin)}</td>
-        <td>${money(row.guaranteed_profit)}</td>
-        <td>${timeAgo(row.last_seen_at)}</td>
-      </tr>`
-    )
-    .join("");
+  tbody.innerHTML = groups.map(activeGroupRowsHtml).join("");
 }
 
 function populateFilterOptions(data) {
@@ -168,12 +222,75 @@ function applyFilters(comparisons) {
   });
 }
 
-function sortRows(rows) {
+function groupStatusPill(g) {
+  return g.anySurebet
+    ? '<span class="pill pill-surebet">Surebet</span>'
+    : '<span class="pill pill-none">Sin arbitraje</span>';
+}
+
+function groupMarginClass(g) {
+  if (g.anySurebet) return "margin-positive";
+  if (g.bestMargin > 0) return "margin-amber";
+  return "margin-negative";
+}
+
+function groupRowClass(g) {
+  if (g.anySurebet) return "row-surebet";
+  if (g.bestMargin > 0) return "row-amber";
+  return "row-neutral";
+}
+
+function allGroupRowsHtml(g) {
+  const single = g.markets.length === 1;
+  const expanded = !single && state.expandedGroups.has(g.key);
+  const chevron = single ? "•" : expanded ? "▾" : "▸";
+  const summary = `
+    <tr class="${groupRowClass(g)} group-row" data-group-key="${g.key}">
+      <td class="event-cell"><span class="chevron">${chevron}</span> ${g.event}</td>
+      <td>${g.sport}</td>
+      <td>${single ? g.markets[0].market_type : `${g.markets.length} mercados`}</td>
+      <td>${g.bookmakers.map(bookmakerSpan).join(", ")}</td>
+      <td class="odds-cell">${single ? oddsSummary(g.markets[0].odds) : "Ver detalle ▸"}</td>
+      <td class="margin-value ${groupMarginClass(g)}">${pct(g.bestMargin)}</td>
+      <td>${groupStatusPill(g)}</td>
+      <td>${timeAgo(g.lastSeenAt)}</td>
+    </tr>`;
+  if (!expanded || single) return summary;
+  const detailRows = g.markets
+    .map(
+      (m) => `
+      <tr class="${rowClass(m)} detail-row">
+        <td class="event-cell detail-indent">↳</td>
+        <td></td>
+        <td>${m.market_type}</td>
+        <td>${bookmakersCell(m.bookmakers)}</td>
+        <td class="odds-cell">${oddsSummary(m.odds)}</td>
+        <td class="margin-value ${marginClass(m)}">${pct(m.margin)}</td>
+        <td>${
+          m.is_surebet
+            ? '<span class="pill pill-surebet">Surebet</span>'
+            : '<span class="pill pill-none">Sin arbitraje</span>'
+        }</td>
+        <td>${timeAgo(m.last_seen_at)}</td>
+      </tr>`
+    )
+    .join("");
+  return summary + detailRows;
+}
+
+function sortGroups(groups) {
   const { sortKey, sortDir } = state;
   const dir = sortDir === "asc" ? 1 : -1;
-  return [...rows].sort((a, b) => {
-    const av = a[sortKey];
-    const bv = b[sortKey];
+  const keyed = {
+    event: (g) => g.event,
+    sport: (g) => g.sport,
+    margin: (g) => g.bestMargin,
+    last_seen_at: (g) => new Date(g.lastSeenAt).getTime(),
+  };
+  const getValue = keyed[sortKey] || keyed.margin;
+  return [...groups].sort((a, b) => {
+    const av = getValue(a);
+    const bv = getValue(b);
     if (typeof av === "string") return av.localeCompare(bv) * dir;
     return (av - bv) * dir;
   });
@@ -181,38 +298,21 @@ function sortRows(rows) {
 
 function renderAllTable(data) {
   populateFilterOptions(data);
-  const filtered = sortRows(applyFilters(data.comparisons));
+  const filtered = applyFilters(data.comparisons);
+  const groups = sortGroups(groupMatches("all", filtered));
 
-  document.getElementById("all-count").textContent = `${filtered.length} / ${data.comparisons.length}`;
+  document.getElementById("all-count").textContent = `${groups.length} partidos (${filtered.length} comparaciones) / ${data.comparisons.length} totales`;
   const tbody = document.querySelector("#all-table tbody");
   const empty = document.getElementById("all-empty");
 
-  if (!filtered.length) {
+  if (!groups.length) {
     tbody.innerHTML = "";
     empty.hidden = false;
     return;
   }
   empty.hidden = true;
 
-  tbody.innerHTML = filtered
-    .map(
-      (row) => `
-      <tr class="${rowClass(row)}">
-        <td class="event-cell">${row.event}</td>
-        <td>${row.sport}</td>
-        <td>${row.market_type}</td>
-        <td>${bookmakersCell(row.bookmakers)}</td>
-        <td class="odds-cell">${oddsSummary(row.odds)}</td>
-        <td class="margin-value ${marginClass(row)}">${pct(row.margin)}</td>
-        <td>${
-          row.is_surebet
-            ? '<span class="pill pill-surebet">Surebet</span>'
-            : '<span class="pill pill-none">Sin arbitraje</span>'
-        }</td>
-        <td>${timeAgo(row.last_seen_at)}</td>
-      </tr>`
-    )
-    .join("");
+  tbody.innerHTML = groups.map(allGroupRowsHtml).join("");
 }
 
 function renderHistoryTable(data) {
@@ -269,6 +369,15 @@ async function load() {
   }
 }
 
+function toggleGroupRow(e, rerender) {
+  const tr = e.target.closest("tr.group-row");
+  if (!tr) return;
+  const key = tr.dataset.groupKey;
+  if (state.expandedGroups.has(key)) state.expandedGroups.delete(key);
+  else state.expandedGroups.add(key);
+  if (window.__surebetsData) rerender(window.__surebetsData);
+}
+
 function wireControls() {
   document.getElementById("refresh-btn").addEventListener("click", load);
   ["filter-search", "filter-sport", "filter-market", "filter-surebet-only"].forEach((id) => {
@@ -289,6 +398,9 @@ function wireControls() {
       if (window.__surebetsData) renderAllTable(window.__surebetsData);
     });
   });
+
+  document.querySelector("#active-table tbody").addEventListener("click", (e) => toggleGroupRow(e, renderActiveTable));
+  document.querySelector("#all-table tbody").addEventListener("click", (e) => toggleGroupRow(e, renderAllTable));
 }
 
 wireControls();

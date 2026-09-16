@@ -171,6 +171,17 @@ tr.row-surebet { background: var(--green-bg); }
 tr.row-amber { background: var(--amber-bg); }
 tr.row-neutral { background: var(--gray-bg); }
 
+tr.group-row { cursor: pointer; }
+tr.group-row:hover { filter: brightness(1.08); }
+.chevron {
+  display: inline-block;
+  width: 1em;
+  color: var(--muted);
+}
+tr.detail-row { font-size: 0.9em; }
+tr.detail-row td { opacity: 0.9; }
+td.detail-indent { color: var(--muted); font-weight: 400; padding-left: 22px; }
+
 .margin-value { font-weight: 700; }
 .margin-positive { color: var(--green); }
 .margin-amber { color: var(--amber); }
