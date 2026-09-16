@@ -1,10 +1,13 @@
 import asyncio
+import logging
 import urllib.parse
 
 from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_LEAGUE_URLS = {
     "futbol": "https://www.cuotasahora.com/football/spain/laliga-ea-sports/",
@@ -93,6 +96,13 @@ class CuotasAhoraProvider(OddsProvider):
                 if not url:
                     continue
                 match_urls = await self._collect_match_urls(page, url)
+                if not match_urls:
+                    logger.warning(
+                        "CuotasAhora: 0 partidos encontrados en %s (title=%r) - "
+                        "puede que el gate de edad/cookies no se haya cerrado o la web esté bloqueando el runner",
+                        url,
+                        await page.title(),
+                    )
                 for match_url in match_urls:
                     market = await self._fetch_match(page, match_url, sport)
                     if market is not None:
@@ -146,9 +156,18 @@ class CuotasAhoraProvider(OddsProvider):
 
             raw_rows = await page.evaluate(_EXTRACT_ODDS_TABLE_JS)
         except Exception:
+            logger.warning("CuotasAhora: fallo cargando partido %s", match_url, exc_info=True)
             return None
 
-        return self._parse_match(teams[0], teams[1], raw_rows, sport)
+        market = self._parse_match(teams[0], teams[1], raw_rows, sport)
+        if market is None and raw_rows:
+            logger.warning(
+                "CuotasAhora: %s devolvió %d filas pero ninguna casó con ALLOWED_BOOKMAKERS/odds válidas: %r",
+                match_url,
+                len(raw_rows),
+                [r.get("bookmaker") for r in raw_rows],
+            )
+        return market
 
     def _parse_match(self, home: str, away: str, raw_rows: list[dict], sport: str) -> Market | None:
         outcomes = []
