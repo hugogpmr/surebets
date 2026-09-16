@@ -52,6 +52,45 @@ en el repo.
 - Si hay una surebet real, te llega el aviso a Telegram igual que antes.
 - Si algo falla, el log del job en esa misma pestaña dice el error exacto.
 
+### El `schedule` de GitHub Actions no es fiable a 5 minutos (comprobado 2026-09-16)
+
+`schedule: cron: "*/5 * * * *"` está puesto en `.github/workflows/scan.yml`, pero GitHub **no garantiza**
+ese intervalo: en periodos de carga alta retrasa o directamente descarta ejecuciones programadas, sobre
+todo con intervalos cortos como cada 5 min. Comprobado con la API real de Actions del repo: hubo huecos de
+~5 horas entre ejecuciones programadas en vez de 5 minutos.
+
+**Solución: disparar el workflow desde un cron externo** (llamando a la API de `workflow_dispatch`, que sí
+se ejecuta al instante) en vez de depender solo del `schedule` interno. El `schedule` se deja puesto como
+red de respaldo — no molesta, el `concurrency` del workflow evita que se pisen dos ejecuciones a la vez.
+
+**Lo que tienes que hacer tú (credenciales tuyas, no debo tocarlas yo):**
+
+1. Crea un **fine-grained personal access token**: github.com → foto de perfil → **Settings → Developer
+   settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+   - **Repository access**: "Only select repositories" → `surebets` (nunca "All repositories").
+   - **Permissions → Repository permissions → Actions**: `Read and write`. No hace falta ningún otro permiso.
+   - Expiración: la que prefieras (se puede rotar cuando quieras desde la misma pantalla).
+   - Copia el token (`github_pat_...`) — solo se muestra una vez.
+2. Crea una cuenta gratis en https://cron-job.org (o el servicio de cron externo que prefieras).
+3. **Create cronjob**:
+   - **URL**: `https://api.github.com/repos/hugogpmr/surebets/actions/workflows/scan.yml/dispatches`
+   - **Request method**: `POST`
+   - **Headers**:
+     - `Accept: application/vnd.github+json`
+     - `Authorization: Bearer TU_TOKEN_AQUI`
+     - `Content-Type: application/json`
+     - `User-Agent: cron-job.org` (la API de GitHub exige un User-Agent, si no la request falla)
+   - **Body**: `{"ref":"main"}`
+   - **Schedule**: cada 5 minutos.
+   - (El token lo pegas tú directamente en el formulario de cron-job.org — es tu credencial, no debo
+     introducirla yo en ningún sitio.)
+4. Guarda el cronjob y pulsa "Run now" una vez para probarlo: una respuesta `204 No Content` significa que
+   disparó bien. Confírmalo también en la pestaña **Actions** del repo — debería aparecer un run nuevo con
+   evento `workflow_dispatch`.
+
+**Seguridad del token**: solo tiene permiso de escritura en Actions de este repo (nada de código, nada de
+otros repos). Si alguna vez quieres revocarlo: misma pantalla de **Fine-grained tokens** → Delete.
+
 ---
 
 ## Opción B: VM propia (Hetzner de pago, o reintentar Oracle Always Free)

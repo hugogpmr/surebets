@@ -4,7 +4,7 @@ from providers.cuotasahora import CuotasAhoraProvider
 # (ver _EXTRACT_ODDS_TABLE_JS), capturada en vivo el 2026-09-16 en la página
 # de Atlético de Madrid - Osasuna.
 RAW_ROWS = [
-    {"bookmaker": "1xBet.es", "odds": ["1.38", "4.84", "8.40"]},  # no DGOJ, se descarta
+    {"bookmaker": "1xBet.es", "odds": ["1.38", "4.84", "8.40"]},  # DGOJ verificado (WAGERFAIR, S.A.)
     {"bookmaker": "888sport", "odds": ["1.40", "4.50", "7.50"]},
     {"bookmaker": "bet365", "odds": ["1.38", "4.75", "8.50"]},
     {"bookmaker": "Betway", "odds": ["1.38", "4.75", "8.00"]},
@@ -33,11 +33,10 @@ def test_parses_only_allowed_bookmakers():
 
     bookmakers = {o.bookmaker for o in market.outcomes}
     assert bookmakers == {
-        "888sport", "bet365", "betway", "bwin", "codere", "luckia",
+        "1xbet", "888sport", "bet365", "betway", "bwin", "codere", "luckia",
         "paf", "retabet", "speedybet", "versus", "williamhill",
     }
-    # ni el offshore sin licencia ni las casas que ya scrapeamos en directo
-    assert "1xbet" not in bookmakers
+    # Sportium/Winamax se excluyen porque ya los scrapeamos en directo (no por licencia)
     assert "sportium" not in bookmakers
     assert "winamax" not in bookmakers
 
@@ -47,5 +46,5 @@ def test_parses_only_allowed_bookmakers():
 
 def test_returns_none_when_no_allowed_bookmaker_present():
     provider = CuotasAhoraProvider()
-    market = provider._parse_match("A", "B", [{"bookmaker": "1xBet.es", "odds": ["1.5", "2.5", "3.5"]}], "futbol")
+    market = provider._parse_match("A", "B", [{"bookmaker": "Sportium.es", "odds": ["1.5", "2.5", "3.5"]}], "futbol")
     assert market is None

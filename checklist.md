@@ -57,15 +57,23 @@ Playwright real (no teórico):
 - **Coste**: ~75-80s para escanear toda la jornada de LaLiga (una `page.goto` por partido, ~16-18 partidos).
   Sale a cuenta: un solo provider desbloquea de golpe bet365, bwin, Codere, Luckia y William Hill
   (bloqueadas en directo) más 888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es (no probadas antes).
-- **Filtro de licencia aplicado en `providers/cuotasahora.py` (`ALLOWED_BOOKMAKERS`)**: se excluye
-  explícitamente **1xBet.es** por no tener licencia DGOJ confirmada (pese al dominio .es), y se excluyen
-  **Sportium.es/Winamax.es** aunque aparezcan en la tabla, porque ya se scrapean en directo — mezclar ambas
-  fuentes para la misma casa arriesgaría comparar una cuota fresca con una del comparador potencialmente
-  desfasada unos segundos/minutos.
-- ⚠️ **Pendiente real**: la lista de "casas permitidas" **no se ha contrastado contra el registro oficial de
-  la DGOJ** (ordenacionjuego.es — la URL directa que se intentó dio 404, haría falta navegar el buscador de
-  operadores). Antes de operar con dinero real en cualquiera de las casas nuevas, confirmar que tienen
-  licencia vigente en España.
+- **Filtro en `providers/cuotasahora.py` (`ALLOWED_BOOKMAKERS`)**: excluye a propósito **Sportium.es/
+  Winamax.es** aunque aparezcan en la tabla, porque ya se scrapean en directo — mezclar ambas fuentes para la
+  misma casa arriesgaría comparar una cuota fresca con una del comparador potencialmente desfasada unos
+  segundos/minutos. **1xBet.es sí se incluye** (ver verificación DGOJ abajo — la sospecha inicial de que no
+  tuviera licencia era incorrecta).
+- ✅ **Licencias DGOJ verificadas a mano (2026-09-16)**: la URL directa a `ordenacionjuego.es` daba 404, la
+  correcta es el buscador de operadores
+  (`ordenacionjuego.es/operadores-juego/operadores-licencia/operadores`). Se repasaron las 78 fichas de
+  operadores con licencia, página a página (búsqueda por nombre no siempre encontraba por marca comercial —
+  p.ej. buscar "bet365" o "bwin" no daba resultados porque el campo solo indexa la razón social, "HILLSIDE
+  ESPAÑA LEISURE" y "ELECTRAWORKS CEUTA" respectivamente — paginar entero fue más fiable). Resultado:
+  **todas** las casas usadas por este sistema tienen licencia vigente, incluido 1xBet.es (WAGERFAIR, S.A.).
+  De propina, se confirmó que Paston (EUROAPUESTAS ONLINE), Botemanía (GAMESYS SPAIN), Zebet (ZEBETTING Y
+  GAMING) y PokerStars Sports (TSG INTERACTIVE) también tienen licencia — de la lista de "sin confirmar" de
+  abajo, aunque su scraping directo sigue sin implementarse. El panel web (`docs/app.js`,
+  `DGOJ_LICENSED_BOOKMAKERS`) marca en rojo cualquier casa fuera de esta lista verificada. Es una foto de un
+  momento dado — la DGOJ actualiza el registro mensualmente, revisar de nuevo si pasa mucho tiempo.
 - Verificado en pipeline completo (las 4 fuentes juntas + cruce de eventos): márgenes realistas, incluidas
   dos surebets pequeñas y plausibles (+0.27% Betis-Getafe entre Codere/Winamax/Paf, +2.09% Valencia-Real
   Sociedad entre Paf/Sportium/Codere) — nada de los falsos positivos del 30-40% de los bugs anteriores.
@@ -75,7 +83,8 @@ urgentes dado que CuotasAhora cubre mucho de golpe):
 
 Paston, PokerStars Sports, Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible en su momento,
 pero no se llegó a localizar con certeza el contenedor DOM real de la tabla de cuotas. (888sport ya quedó
-cubierto vía CuotasAhora, se quita de esta lista).
+cubierto vía CuotasAhora, se quita de esta lista). Las 4 tienen licencia DGOJ confirmada (ver verificación
+arriba), así que si algún día se scrapean en directo no haría falta añadir nada al filtro de licencias.
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos

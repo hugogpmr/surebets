@@ -188,6 +188,13 @@ tr.row-neutral { background: var(--gray-bg); }
 .pill-surebet { background: var(--green); color: #06210f; }
 .pill-none { background: var(--gray-bg); color: var(--muted); }
 
+.bookmaker-unlicensed {
+  color: var(--red);
+  font-weight: 700;
+  border-bottom: 1px dotted var(--red);
+  cursor: help;
+}
+
 .empty-msg { color: var(--muted); font-size: 0.9rem; padding: 18px 6px; }
 
 .hint { color: var(--muted); font-size: 0.78rem; margin: 10px 0 0; }

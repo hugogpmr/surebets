@@ -75,16 +75,24 @@ u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/
 | **Winamax** | ✅ Funciona (`providers/winamax.py`) | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. Solo 1X2: el over/under no está en la página de listado, solo en la ficha de cada partido (requeriría una petición extra por partido). |
 | **CuotasAhora.com** (comparador) | ✅ Funciona (`providers/cuotasahora.py`) | Playwright headless. No es una casa, es un comparador (versión española de OddsPortal) que agrega 1X2 de ~14 casas por partido en una sola tabla HTML. Ver detalle abajo — es la vía por la que se desbloquean, indirectamente, bet365/bwin/Codere/Luckia/William Hill. |
 | **bet365, bwin, Codere, Luckia, William Hill** | ⚠️ Indirecto, vía CuotasAhora.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través del comparador. |
-| **888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es** | ✅ Vía CuotasAhora.com | No probadas directamente, cubiertas de golpe a través del comparador. |
+| **888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es, 1xBet.es** | ✅ Vía CuotasAhora.com | No probadas directamente, cubiertas de golpe a través del comparador. |
 | **Kirolbet** | ⚠️ Implementado pero bloqueado (`providers/kirolbet.py`) | Akamai Bot Manager. Ver detalle abajo. |
 | **Betsson** | ❌ Bloqueado | API antifraude propia. Ver detalle abajo. |
 | **Suertia (OlyBet)** | ❌ Bloqueado a nivel de red | "Access Denied" del proveedor. Ver detalle abajo. |
 | **Marca Apuestas** | ❌ Bloqueado | Cloudflare / 403 en API de cuotas. Ver detalle abajo. |
 | **Interwetten** | ❌ Bloqueado | Cloudflare "Just a moment...". Ver detalle abajo. |
-| **1xBet.es** | 🚫 Descartado a propósito | Aparece en CuotasAhora, pero no se cree que tenga licencia DGOJ en España — excluido de `ALLOWED_BOOKMAKERS` en `providers/cuotasahora.py`. |
-| **Paston, PokerStars Sports, Zebet, Botemanía** | ❓ Sin confirmar | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
+| **Paston, PokerStars Sports, Zebet, Botemanía** | ❓ Sin confirmar para scraping directo, pero **ya con licencia DGOJ confirmada** (ver abajo) | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
 
-⚠️ **Aviso importante**: la lista de casas de `ALLOWED_BOOKMAKERS` (en `providers/cuotasahora.py`) **no se ha contrastado contra el registro oficial de la DGOJ** (ordenacionjuego.es) — antes de operar con dinero real en cualquiera de las casas nuevas (888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es, o las "indirectas"), confirma que tienen licencia vigente en España.
+✅ **Licencias DGOJ verificadas (2026-09-16)**: se contrastaron a mano las 78 fichas del buscador oficial
+de operadores ([ordenacionjuego.es](https://www.ordenacionjuego.es/operadores-juego/operadores-licencia/operadores)).
+**Todas** las casas usadas por este sistema (directas + vía CuotasAhora, incluido 1xBet.es) tienen licencia
+vigente en España — la sospecha inicial de que 1xBet.es no la tuviera era incorrecta (licencia bajo WAGERFAIR,
+S.A.). De paso se confirmó que Paston, Botemanía, Zebet y PokerStars Sports también están licenciadas
+(EUROAPUESTAS ONLINE, GAMESYS SPAIN, ZEBETTING Y GAMING, TSG INTERACTIVE respectivamente), aunque su scraping
+directo sigue sin confirmar. El panel web ([docs/](docs/)) marca en rojo cualquier casa que no esté en esta
+lista verificada — hoy no debería salir ninguna en rojo; si sale alguna, es una señal de fallo de scraping o
+de una casa nueva sin comprobar. Esta verificación es una foto de un momento dado (la DGOJ actualiza el
+registro mensualmente) — revisar de nuevo si ha pasado mucho tiempo.
 
 **4 fuentes reales funcionando** (Sportium, Betfair, Winamax + CuotasAhora.com como comparador) — entre ellas cubren más de 15 casas DGOJ distintas, suficiente para que el motor de arbitraje compare cuotas de verdad entre muchas casas. Validado en vivo: el cruce de eventos agrupa correctamente el mismo partido aunque cada casa lo nombre distinto ("At. Madrid" / "Atl. Madrid" / "Atlético de Madrid"), y **dos bugs reales de cruce de eventos** se detectaron y corrigieron con datos en vivo (no en teoría):
 - Comparar el nombre completo del evento como un solo string confundía partidos distintos que comparten texto (p.ej. "Atlético Madrid vs. Osasuna" con "Atlético Madrid vs. Real Madrid", por la palabra común "Madrid").

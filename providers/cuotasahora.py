@@ -11,13 +11,15 @@ DEFAULT_LEAGUE_URLS = {
 }
 
 # Casas que devuelve CuotasAhora (comparador, no una casa en sí) y que
-# tratamos como fuente para arbitraje. Solo se incluyen las que se cree que
-# operan con licencia DGOJ en España bajo dominio .es o marca reconocida
-# (verificado por el propio provider directo cuando lo tenemos: Sportium,
-# Betfair, Winamax). NO se ha contrastado esta lista contra el registro
-# oficial de la DGOJ (ordenacionjuego.es) — revisar antes de operar con
-# dinero real. Se excluye explícitamente 1xBet.es: pese al dominio .es, es
-# un operador offshore sin licencia DGOJ confirmada.
+# tratamos como fuente para arbitraje. Verificado a mano el 2026-09-16 contra
+# el buscador oficial de la DGOJ (ordenacionjuego.es/operadores-juego/
+# operadores-licencia/operadores, las 78 fichas de operadores con licencia,
+# una por una): TODAS las casas de esta lista tienen licencia vigente en
+# España, incluido 1xBet.es (WAGERFAIR, S.A. — pese a la sospecha inicial de
+# que fuera un operador offshore sin licencia, sí la tiene). Esta
+# verificación es una foto de un momento dado: la DGOJ actualiza el registro
+# mensualmente, así que puede quedar desfasada — revisar de nuevo en
+# ordenacionjuego.es antes de operar con dinero real si ha pasado tiempo.
 #
 # Sportium/Betfair/Winamax se excluyen aquí a propósito aunque aparezcan en
 # la tabla: ya los scrapeamos en directo (providers/sportium.py, betfair.py,
@@ -25,6 +27,7 @@ DEFAULT_LEAGUE_URLS = {
 # una cuota fresca (scraping directo) con una del comparador que puede ir
 # unos segundos/minutos por detrás.
 ALLOWED_BOOKMAKERS = {
+    "1xbet.es": "1xbet",
     "888sport": "888sport",
     "bet365": "bet365",
     "betway": "betway",

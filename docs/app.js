@@ -1,6 +1,33 @@
 const DATA_URL = "data.json";
 const AUTO_REFRESH_MS = 60_000;
 
+// Casas con licencia DGOJ vigente en España, verificado a mano el 2026-09-16
+// contra el buscador oficial (ordenacionjuego.es/operadores-juego/operadores-
+// licencia/operadores, las 78 fichas de operadores, una por una). Claves en
+// minúscula, deben coincidir con el `bookmaker` que pone cada provider en
+// engine/models.Outcome (ver providers/*.py). Cualquier casa que no esté en
+// este set se pinta en rojo en la tabla: o es un fallo de scraping (nombre
+// mal parseado) o una casa nueva todavía sin verificar contra la DGOJ — en
+// ambos casos, no fiarse de esa fila para dinero real sin comprobarlo. Esta
+// verificación es una foto de un momento dado (la DGOJ actualiza el registro
+// mensualmente); si ha pasado mucho tiempo, puede estar desfasada.
+const DGOJ_LICENSED_BOOKMAKERS = new Set([
+  "sportium", "betfair", "winamax", "kirolbet",
+  "1xbet", "888sport", "bet365", "betway", "bwin", "codere", "luckia",
+  "paf", "retabet", "speedybet", "versus", "williamhill",
+]);
+
+function isLicensed(bookmaker) {
+  return DGOJ_LICENSED_BOOKMAKERS.has(bookmaker.trim().toLowerCase());
+}
+
+function bookmakerSpan(name) {
+  const licensed = isLicensed(name);
+  const cls = licensed ? "bookmaker-licensed" : "bookmaker-unlicensed";
+  const title = licensed ? "Con licencia DGOJ (verificado 2026-09-16)" : "Sin verificar contra la DGOJ";
+  return `<span class="${cls}" title="${title}">${name}${licensed ? "" : " ⚠"}</span>`;
+}
+
 let state = {
   comparisons: [],
   sortKey: "margin",
@@ -28,7 +55,14 @@ function timeAgo(iso) {
 }
 
 function oddsSummary(odds) {
-  return odds.map((o) => `${o.name}: ${o.bookmaker} @${o.odds.toFixed(2)}`).join(" · ");
+  return odds.map((o) => `${o.name}: ${bookmakerSpan(o.bookmaker)} @${o.odds.toFixed(2)}`).join(" · ");
+}
+
+function bookmakersCell(bookmakersStr) {
+  return bookmakersStr
+    .split(",")
+    .map((b) => bookmakerSpan(b))
+    .join(", ");
 }
 
 function marginClass(row) {
@@ -91,7 +125,7 @@ function renderActiveTable(data) {
         <td class="event-cell">${row.event}</td>
         <td>${row.sport}</td>
         <td>${row.market_type}</td>
-        <td>${row.bookmakers}</td>
+        <td>${bookmakersCell(row.bookmakers)}</td>
         <td class="odds-cell">${oddsSummary(row.odds)}</td>
         <td class="margin-value margin-positive">${pct(row.margin)}</td>
         <td>${money(row.guaranteed_profit)}</td>
@@ -167,7 +201,7 @@ function renderAllTable(data) {
         <td class="event-cell">${row.event}</td>
         <td>${row.sport}</td>
         <td>${row.market_type}</td>
-        <td>${row.bookmakers}</td>
+        <td>${bookmakersCell(row.bookmakers)}</td>
         <td class="odds-cell">${oddsSummary(row.odds)}</td>
         <td class="margin-value ${marginClass(row)}">${pct(row.margin)}</td>
         <td>${
@@ -202,7 +236,7 @@ function renderHistoryTable(data) {
         <td class="event-cell">${row.event}</td>
         <td>${row.sport}</td>
         <td>${row.market_type}</td>
-        <td>${row.bookmakers}</td>
+        <td>${bookmakersCell(row.bookmakers)}</td>
         <td class="margin-value margin-positive">${pct(row.margin)}</td>
         <td>${money(row.guaranteed_profit)}</td>
       </tr>`
