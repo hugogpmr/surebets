@@ -369,4 +369,39 @@ El usuario pausó el cron externo de cron-job.org el mismo día, quedando el run
 activo (GitHub Actions solo como respaldo manual vía `workflow_dispatch`). Efecto colateral de las pruebas en
 vivo: se detectaron y notificaron por Telegram varias surebets reales, incluidas un par de márgenes
 sospechosamente altos (candidatos a falso positivo, no relacionado con esta migración) — investigación
-delegada a una tarea aparte en vez de bloquear este despliegue.
+delegada a una tarea aparte en vez de bloquear este despliegue. Ver sección 8 para el resultado.
+
+## 8. Márgenes anómalos (>20%) en CuotasAhora: causa encontrada y corregida (2026-09-16)
+
+**Síntoma**: durante las pruebas en vivo de la sección 7 se detectaron y notificaron por Telegram varias
+"surebets" con márgenes disparatados para un mercado de solo 2 resultados — Galatasaray vs. Barcelona (BTTS)
+70.41%, Valencia vs. Real Sociedad (BTTS) 36.04%, además de otras vistas en corridas de prueba anteriores
+(RB Leipzig-PSV 26.46%, Bodo/Glimt-Dortmund 45.59%). Los márgenes reales de este sistema son de un orden de
+magnitud menor (0.27%-5%, ver sección 0).
+
+**Causa confirmada contra la web en vivo** (no hipótesis): se volvió a abrir a mano la página del partido
+Galatasaray-Barcelona y se comparó la pestaña 1X2 con la pestaña "Ambos equipos marcan" (BTTS) en el momento
+del hallazgo. La tabla 1X2 mostraba bet365 con cuota "1" (victoria local) = 8.00 y Retabet con cuota "X"
+(empate) = 5.85 — **exactamente** los mismos dos números que el scraper había guardado como BTTS
+`Yes: bet365 @8.00` / `No: retabet @5.85`. La cabecera de la tabla sí se actualiza al instante al cambiar de
+pestaña, pero cada fila (casa) refresca su propia cuota de forma independiente y con retardo variable en el
+propio sitio (React o similar); `providers/cuotasahora.py:_switch_market_tab` leía la tabla tras un
+`wait_for_timeout(800)` fijo, que a veces cae a medio refresco: la cabecera ya dice "Yes"/"No" pero alguna
+fila concreta (no siempre la misma, no siempre las mismas casas) todavía arrastra el número de la pestaña
+anterior, coincidiendo por casualidad en número de columnas y colando un "margen" disparatado como si fuera
+arbitraje real. No es un bug de bloqueo/geo-IP ni de la lógica de `_parse_match` (que ya tenía tests
+correctos con datos reales, ver `tests/test_cuotasahora_provider.py`) — es puramente un problema de timing en
+el propio scraping.
+
+**Corrección aplicada**: `_switch_market_tab` ya no espera un tiempo fijo — llama a
+`_read_table_when_stable`, que relee la tabla cada 400ms (hasta 8 intentos, ~3.2s máximo) y solo la da por
+buena cuando dos lecturas consecutivas son idénticas. Verificado en vivo contra el mismo partido
+(Galatasaray-Barcelona) tras el fix: BTTS ahora lee correctamente bet365 `Yes @1.50 / No @2.50` y Retabet
+`Yes @1.51 / No @2.57` — coincide con los valores reales de la web y con el fixture de test ya existente
+(`BTTS_TABLE` en `tests/test_cuotasahora_provider.py`, capturado en vivo el mismo día). Suite de tests
+completa (24 tests) sigue en verde tras el cambio.
+
+**Nota**: el fix vive dentro de `providers/cuotasahora.py`, en el mismo fichero que ya tenía cambios sin
+commitear de una sesión anterior (los mercados BTTS/DC y Champions League descritos en README.md/checklist.md
+secciones "Mercados soportados"/6) — no se ha commiteado nada de este fichero todavía, queda junto al resto
+de ese trabajo pendiente de revisión y commit por el usuario.
