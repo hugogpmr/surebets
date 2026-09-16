@@ -7,7 +7,7 @@ on:
 
 concurrency:
   group: surebets-scan
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: write

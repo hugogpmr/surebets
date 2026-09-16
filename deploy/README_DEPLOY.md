@@ -5,9 +5,7 @@ Dos caminos, según prioridad:
 - **Opción A — GitHub Actions: 100% gratis, sin tarjeta, sin crear cuenta en ningún cloud.** Recomendada
   ahora mismo. Limitación real: el bot pasa a ser "solo avisos" — sigues recibiendo la notificación
   automática de cada surebet nueva en Telegram, pero los comandos `/hoy`, `/ahora`, `/stats` dejan de
-  responder (necesitan un proceso escuchando todo el rato, que aquí no existe). Por el mismo motivo,
-  la fuente de tips de Telegram (`telegram_source/`, ver README) tampoco funciona aquí: necesita una
-  conexión de escucha en vivo, no un ciclo suelto cada 15 min. Ver sección A.
+  responder (necesitan un proceso escuchando todo el rato, que aquí no existe). Ver sección A.
 - **Opción B — VM propia (Hetzner de pago, u Oracle Always Free si consigues capacidad).** El bot sigue
   siendo el mismo proceso de siempre (con `/hoy`, `/ahora`, `/stats` funcionando) corriendo 24/7 vía
   systemd. Ver sección B.
