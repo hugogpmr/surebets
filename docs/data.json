@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T18:03:33.797952+00:00",
+  "generated_at": "2026-09-16T18:07:46.966193+00:00",
   "stats": {
     "period_days": 7,
     "count": 3,
@@ -12,7 +12,7 @@
       "sport": "futbol",
       "market_type": "1X2",
       "bookmakers": "winamax",
-      "margin": -0.05513865065751844,
+      "margin": -0.0543053173241852,
       "is_surebet": false,
       "odds": [
         {
@@ -28,12 +28,12 @@
         {
           "name": "2",
           "bookmaker": "winamax",
-          "odds": 48.0
+          "odds": 50.0
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Málaga vs. Villarreal",
@@ -61,7 +61,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Levante vs. Ath Bilbao",
@@ -89,7 +89,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Real Betis vs. Getafe",
@@ -117,20 +117,20 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Espanyol vs. Elche",
       "sport": "futbol",
       "market_type": "1X2",
       "bookmakers": "winamax",
-      "margin": -0.06972081972081967,
+      "margin": -0.06972826485021599,
       "is_surebet": false,
       "odds": [
         {
           "name": "1",
           "bookmaker": "winamax",
-          "odds": 1.82
+          "odds": 1.8
         },
         {
           "name": "X",
@@ -140,12 +140,12 @@
         {
           "name": "2",
           "bookmaker": "winamax",
-          "odds": 4.0
+          "odds": 4.1
         }
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Osasuna vs. Rayo Vallecano",
@@ -173,7 +173,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "FC Barcelona vs. R. Santander",
@@ -201,7 +201,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:58:28.601831+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Celta Vigo vs. R. Santander",
@@ -229,7 +229,35 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
+    },
+    {
+      "event": "Deportivo vs. Sevilla",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.08448540706605212,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 3.5
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 2.1
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 3.1
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Atl. Madrid vs. R. Madrid",
@@ -257,7 +285,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Valencia vs. R. Sociedad",
@@ -285,7 +313,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Ath Bilbao vs. Alavés",
@@ -313,7 +341,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Deportivo vs. Real Betis",
@@ -341,7 +369,35 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
+    },
+    {
+      "event": "Local vs. Visitante",
+      "sport": "futbol",
+      "market_type": "1X2",
+      "bookmakers": "winamax",
+      "margin": -0.09204709386197596,
+      "is_surebet": false,
+      "odds": [
+        {
+          "name": "1",
+          "bookmaker": "winamax",
+          "odds": 1.14
+        },
+        {
+          "name": "X",
+          "bookmaker": "winamax",
+          "odds": 13.0
+        },
+        {
+          "name": "2",
+          "bookmaker": "winamax",
+          "odds": 7.25
+        }
+      ],
+      "guaranteed_profit": null,
+      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Villarreal vs. Levante",
@@ -369,7 +425,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Sevilla vs. FC Barcelona",
@@ -397,7 +453,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T17:39:22.920072+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     },
     {
       "event": "Getafe vs. Málaga",
@@ -425,63 +481,7 @@
       ],
       "guaranteed_profit": null,
       "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
-    },
-    {
-      "event": "Deportivo vs. Sevilla",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "winamax",
-      "margin": -0.09523809523809512,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "winamax",
-          "odds": 3.5
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 2.1
-        },
-        {
-          "name": "2",
-          "bookmaker": "winamax",
-          "odds": 3.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T01:35:49.892150+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
-    },
-    {
-      "event": "Local vs. Visitante",
-      "sport": "futbol",
-      "market_type": "1X2",
-      "bookmakers": "winamax",
-      "margin": -0.0969732022363603,
-      "is_surebet": false,
-      "odds": [
-        {
-          "name": "1",
-          "bookmaker": "winamax",
-          "odds": 1.14
-        },
-        {
-          "name": "X",
-          "bookmaker": "winamax",
-          "odds": 13.0
-        },
-        {
-          "name": "2",
-          "bookmaker": "winamax",
-          "odds": 7.0
-        }
-      ],
-      "guaranteed_profit": null,
-      "first_seen_at": "2026-09-16T11:26:37.468283+00:00",
-      "last_seen_at": "2026-09-16T18:03:33.794889+00:00"
+      "last_seen_at": "2026-09-16T18:07:46.945869+00:00"
     }
   ],
   "recent_opportunities": [
