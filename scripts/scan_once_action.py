@@ -29,6 +29,7 @@ import config
 from engine.scan import run_scan_cycle
 from providers.base import OddsProvider
 from providers.betfair import BetfairProvider
+from providers.cuotasahora import CuotasAhoraProvider
 from providers.sportium import SportiumProvider
 from providers.winamax import WinamaxProvider
 from storage.db import export_snapshot, init_db
@@ -40,6 +41,7 @@ PROVIDERS: list[OddsProvider] = [
     SportiumProvider(),
     BetfairProvider(),
     WinamaxProvider(),
+    CuotasAhoraProvider(),
 ]
 SPORTS = ["futbol"]
 

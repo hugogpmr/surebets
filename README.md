@@ -73,19 +73,20 @@ u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/
 | **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2 y over/under (Goles Totales) en vivo verificados. |
 | **Betfair** | ✅ Funciona (`providers/betfair.py`) | Playwright headless normal. 1X2 y over/under 2,5 goles en vivo verificados sobre el listado completo de LaLiga. |
 | **Winamax** | ✅ Funciona (`providers/winamax.py`) | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. Solo 1X2: el over/under no está en la página de listado, solo en la ficha de cada partido (requeriría una petición extra por partido). |
+| **CuotasAhora.com** (comparador) | ✅ Funciona (`providers/cuotasahora.py`) | Playwright headless. No es una casa, es un comparador (versión española de OddsPortal) que agrega 1X2 de ~14 casas por partido en una sola tabla HTML. Ver detalle abajo — es la vía por la que se desbloquean, indirectamente, bet365/bwin/Codere/Luckia/William Hill. |
+| **bet365, bwin, Codere, Luckia, William Hill** | ⚠️ Indirecto, vía CuotasAhora.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través del comparador. |
+| **888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es** | ✅ Vía CuotasAhora.com | No probadas directamente, cubiertas de golpe a través del comparador. |
 | **Kirolbet** | ⚠️ Implementado pero bloqueado (`providers/kirolbet.py`) | Akamai Bot Manager. Ver detalle abajo. |
-| **Bwin** | ❌ Bloqueado | reCAPTCHA Enterprise invisible. Ver detalle abajo. |
 | **Betsson** | ❌ Bloqueado | API antifraude propia. Ver detalle abajo. |
-| **Codere** | ❌ Bloqueado a nivel de red | Denegación directa. Ver detalle abajo. |
 | **Suertia (OlyBet)** | ❌ Bloqueado a nivel de red | "Access Denied" del proveedor. Ver detalle abajo. |
-| **bet365** | ❌ No viable | Spinner infinito. Ver detalle abajo. |
 | **Marca Apuestas** | ❌ Bloqueado | Cloudflare / 403 en API de cuotas. Ver detalle abajo. |
-| **Luckia** | ❌ Bloqueado | Cloudflare "Just a moment...". Ver detalle abajo. |
 | **Interwetten** | ❌ Bloqueado | Cloudflare "Just a moment...". Ver detalle abajo. |
-| **William Hill** | ❌ Bloqueo explícito | Mensaje "Data Centre block". Ver detalle abajo. |
-| **Paston, 888sport, PokerStars Sports, Zebet, Botemanía** | ❓ Sin confirmar | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar. |
+| **1xBet.es** | 🚫 Descartado a propósito | Aparece en CuotasAhora, pero no se cree que tenga licencia DGOJ en España — excluido de `ALLOWED_BOOKMAKERS` en `providers/cuotasahora.py`. |
+| **Paston, PokerStars Sports, Zebet, Botemanía** | ❓ Sin confirmar | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
 
-**3 casas reales funcionando** (Sportium, Betfair, Winamax) — suficiente para que el motor de arbitraje compare cuotas entre casas de verdad. Validado en vivo: el cruce de eventos agrupa correctamente el mismo partido aunque cada casa lo nombre distinto ("At. Madrid" / "Atl. Madrid" / "Atlético de Madrid"), y **dos bugs reales de cruce de eventos** se detectaron y corrigieron con datos en vivo (no en teoría):
+⚠️ **Aviso importante**: la lista de casas de `ALLOWED_BOOKMAKERS` (en `providers/cuotasahora.py`) **no se ha contrastado contra el registro oficial de la DGOJ** (ordenacionjuego.es) — antes de operar con dinero real en cualquiera de las casas nuevas (888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es, o las "indirectas"), confirma que tienen licencia vigente en España.
+
+**4 fuentes reales funcionando** (Sportium, Betfair, Winamax + CuotasAhora.com como comparador) — entre ellas cubren más de 15 casas DGOJ distintas, suficiente para que el motor de arbitraje compare cuotas de verdad entre muchas casas. Validado en vivo: el cruce de eventos agrupa correctamente el mismo partido aunque cada casa lo nombre distinto ("At. Madrid" / "Atl. Madrid" / "Atlético de Madrid"), y **dos bugs reales de cruce de eventos** se detectaron y corrigieron con datos en vivo (no en teoría):
 - Comparar el nombre completo del evento como un solo string confundía partidos distintos que comparten texto (p.ej. "Atlético Madrid vs. Osasuna" con "Atlético Madrid vs. Real Madrid", por la palabra común "Madrid").
 - La similitud de texto genérica para nombres de equipo cortos daba falsos positivos (p.ej. "Barcelona" y "Celta" resultaron tener suficiente parecido de letras como para confundirse cuando ambos jugaban contra el mismo rival).
 

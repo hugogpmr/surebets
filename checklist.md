@@ -7,38 +7,75 @@ parte de esta info vivía también en el README). Corrección importante sobre e
 **no** quedó resuelto como decía la primera versión de este checklist — está bloqueado por Akamai (ver
 sección 0).
 
+**Actualización 2026-09-16 (tarde): CuotasAhora.com desbloquea varias de estas indirectamente.** Ver el
+bloque dedicado justo debajo de la tabla de bloqueadas — cambia el diagnóstico de bet365, Bwin, Codere,
+Luckia y William Hill de "sin vía" a "cubiertas, aunque no en directo".
+
 ## 0. Resultado verificado en vivo (no teórico) — 2026-09-16
 
-**Funcionan (3, integradas en `main.py`):**
+**Funcionan (4 fuentes, integradas en `main.py` y `scripts/scan_once_action.py`):**
 
-| Casa | Provider | Notas |
+| Casa / fuente | Provider | Notas |
 |---|---|---|
-| Sportium | `providers/sportium.py` ✅ | Playwright headless normal, sin trucos. 1X2 verificado. Over/under pendiente (línea y cuota concatenadas en el mismo texto del DOM). |
-| Betfair | `providers/betfair.py` ✅ | Playwright headless normal. 1X2 verificado sobre el listado completo de LaLiga. |
-| Winamax | `providers/winamax.py` ✅ | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. |
+| Sportium | `providers/sportium.py` ✅ | Playwright headless normal, sin trucos. 1X2 y over/under (Goles Totales, línea variable por partido) verificados. |
+| Betfair | `providers/betfair.py` ✅ | Playwright headless normal. 1X2 y over/under 2,5 goles verificados sobre el listado completo de LaLiga. |
+| Winamax | `providers/winamax.py` ✅ | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. Solo 1X2 (over/under solo en la ficha de cada partido, no en el listado — no implementado). |
+| **CuotasAhora.com** (comparador, no una casa) | `providers/cuotasahora.py` ✅ | Playwright headless. Agrega 1X2 de hasta 14 casas por partido en una sola `<table>` HTML. Ver bloque dedicado abajo. |
 
-**Bloqueadas (con causa técnica confirmada):**
+**Bloqueadas para scraping directo (con causa técnica confirmada):**
 
 | Casa | Causa | Detalle |
 |---|---|---|
 | Kirolbet | Akamai Bot Manager | API JSON (`/Api/esp/Lib/Competicion`) ya localizada y parseada en `providers/kirolbet.py`, pero Akamai devuelve 403 incluso con `fetch()` real ejecutado dentro de la página — detecta el propio Chromium automatizado (fingerprint), no solo el patrón de la petición. |
-| Bwin | reCAPTCHA Enterprise invisible | Se dispara nada más entrar y bloquea la petición que trae los datos del widget de cuotas. |
+| Bwin | reCAPTCHA Enterprise invisible | Se dispara nada más entrar y bloquea la petición que trae los datos del widget de cuotas. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Betsson | API antifraude propia | 403 en `/api/fraud/v1/groupib/tokens/generate`, antes de poder pedir cuotas. |
-| Codere | Bloqueo de red | Denegación directa, sin completar el intercambio HTTP normal desde el entorno de pruebas (cloud). |
+| Codere | Bloqueo de red | Denegación directa, sin completar el intercambio HTTP normal desde el entorno de pruebas (cloud). **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Suertia (OlyBet) | Bloqueo de red | "Access Denied" servido por el proveedor de infraestructura, mismo patrón que Codere. |
-| bet365 | Anti-bot agresivo | Spinner de carga infinito con cualquier navegador automatizado; nunca renderiza cuotas. Es la protección más dura de todas las probadas. |
+| bet365 | Anti-bot agresivo | Spinner de carga infinito con cualquier navegador automatizado; nunca renderiza cuotas. Es la protección más dura de todas las probadas. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Marca Apuestas | Cloudflare / API propia | Challenge "Just a moment..." o 403 directo en `sportswidget.../refresh-bets`. |
-| Luckia | Cloudflare | Challenge JS "Just a moment...". |
+| Luckia | Cloudflare | Challenge JS "Just a moment...". **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Interwetten | Cloudflare | Challenge JS "Just a moment...". |
-| William Hill | Bloqueo de IP explícito | La web devuelve literalmente el mensaje "Data Centre block" — es el único bloqueo que se declara a sí mismo como por rango de IP, no por fingerprint. |
+| William Hill | Bloqueo de IP explícito | La web devuelve literalmente el mensaje "Data Centre block" — es el único bloqueo que se declara a sí mismo como por rango de IP, no por fingerprint. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 
-**Sin confirmar (candidatas a re-probar primero, sin bloqueo aparente):**
+### CuotasAhora.com: comparador de cuotas como vía indirecta (hallazgo 2026-09-16)
 
-Paston, 888sport, PokerStars Sports, Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible, pero no
-se llegó a localizar con certeza el contenedor DOM real de la tabla de cuotas en el tiempo dedicado a cada
-una. Es el trabajo pendiente más rentable: no requieren ninguna técnica especial, solo más tiempo de
-inspección (y comprobar si cargan las cuotas vía XHR/JSON, que sería más fácil de parsear que el DOM, como
-pasa con Kirolbet).
+En vez de pelear con el anti-bot de cada casa bloqueada una por una, se probó scrapear un **comparador**
+(cuotasahora.com, la versión española de OddsPortal, mismo grupo). Resultado, verificado en vivo con
+Playwright real (no teórico):
+
+- **Sin bloqueo anti-bot.** Solo dos gates estándar de UI que hay que aceptar una vez por sesión de
+  navegador: verificación de edad 18+ y el banner de cookies OneTrust — ninguno es un WAF, son botones
+  normales (`page.click(...)`).
+- **Cada partido tiene su propia página** (`/football/h2h/equipo-a/equipo-b/`) con una tabla HTML normal
+  (no CSS modules con hash, un `<table>` de verdad) listando 1X2 de hasta **14 casas a la vez**: 1xBet.es,
+  888sport, bet365, Betway, bwin.es, Codere, Luckia.es, Paf.es, Retabet, Speedybet.es, Sportium.es,
+  Versus.es, William Hill, Winamax.es.
+- **Su API interna sí está deliberadamente cifrada** (`/proxy/ajax-nextgames-odds/...` devuelve un blob
+  base64 de contenido encriptado, técnica anti-scraping conocida de OddsPortal) — pero como el propio
+  navegador la descifra para pintar la tabla, no hace falta romper el cifrado: se lee el DOM ya renderizado,
+  exactamente igual que con Sportium/Betfair/Winamax. No es evasión de nada, es scraping normal de HTML.
+- **Coste**: ~75-80s para escanear toda la jornada de LaLiga (una `page.goto` por partido, ~16-18 partidos).
+  Sale a cuenta: un solo provider desbloquea de golpe bet365, bwin, Codere, Luckia y William Hill
+  (bloqueadas en directo) más 888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es (no probadas antes).
+- **Filtro de licencia aplicado en `providers/cuotasahora.py` (`ALLOWED_BOOKMAKERS`)**: se excluye
+  explícitamente **1xBet.es** por no tener licencia DGOJ confirmada (pese al dominio .es), y se excluyen
+  **Sportium.es/Winamax.es** aunque aparezcan en la tabla, porque ya se scrapean en directo — mezclar ambas
+  fuentes para la misma casa arriesgaría comparar una cuota fresca con una del comparador potencialmente
+  desfasada unos segundos/minutos.
+- ⚠️ **Pendiente real**: la lista de "casas permitidas" **no se ha contrastado contra el registro oficial de
+  la DGOJ** (ordenacionjuego.es — la URL directa que se intentó dio 404, haría falta navegar el buscador de
+  operadores). Antes de operar con dinero real en cualquiera de las casas nuevas, confirmar que tienen
+  licencia vigente en España.
+- Verificado en pipeline completo (las 4 fuentes juntas + cruce de eventos): márgenes realistas, incluidas
+  dos surebets pequeñas y plausibles (+0.27% Betis-Getafe entre Codere/Winamax/Paf, +2.09% Valencia-Real
+  Sociedad entre Paf/Sportium/Codere) — nada de los falsos positivos del 30-40% de los bugs anteriores.
+
+**Sin confirmar / de menor prioridad ahora** (candidatas si se quiere ampliar aún más, pero ya no son
+urgentes dado que CuotasAhora cubre mucho de golpe):
+
+Paston, PokerStars Sports, Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible en su momento,
+pero no se llegó a localizar con certeza el contenedor DOM real de la tabla de cuotas. (888sport ya quedó
+cubierto vía CuotasAhora, se quita de esta lista).
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos
@@ -114,10 +151,15 @@ solo de similitud de texto. Sin esto, el sistema mostraba "surebets" falsas del 
 - [ ] Usar Betfair Exchange (API oficial, no el scraping actual del sitio de apuestas fijas) como cuota
       "líquida" de referencia — no probado; hoy `providers/betfair.py` scrapea la web de apuestas normales,
       no la Exchange API.
-- [ ] Evaluar APIs de cuotas de terceros (The Odds API, OddsJam, Pinnacle API) — no evaluado en detalle;
-      vía legítima y estable si el sistema crece, evita pelear con anti-bot caso por caso, pero tiene coste
-      mensual.
-- [ ] Comparadores públicos (oddsportal.com, oddschecker) como contraste manual — no usado todavía.
+- [x] Evaluar APIs de cuotas de terceros — The Odds API investigada y **descartada** (ver más abajo, sección
+      0): no cubre casas españolas relevantes y el tier gratis no alcanza. OddsJam/Pinnacle API sin evaluar
+      todavía, de menor prioridad ahora que CuotasAhora.com ya da cobertura amplia gratis.
+- [x] Comparadores públicos (oddsportal.com / cuotasahora.com) — **hecho, mucho más que un simple
+      contraste manual**: `providers/cuotasahora.py` scrapea el comparador en vivo y desbloquea
+      indirectamente bet365, bwin, Codere, Luckia y William Hill (ver sección 0). El otro comparador
+      probado, The Odds API, se descartó: no cubre las casas españolas relevantes (sin Sportium, sin
+      Winamax España, Betfair sin confirmar si es la .es) y su tier gratis (500 créditos/mes) no da para
+      escanear cada 5 min.
 - [ ] Programas de afiliados con datafeed oficial (XML/JSON) de alguna de las casas bloqueadas — no
       investigado para ninguna.
 - [ ] Herramientas SaaS de arbitraje (RebelBetting, BetBurger) como alternativa de pago al scraping propio —
