@@ -344,3 +344,29 @@ cuenta cloud nueva, y dado que ya se decidió no pagar una VM solo por redundanc
 probar primero si el scraper local basta antes de valorar el salto a una VPS con IP española (sección 6.1 del
 documento de arquitectura) — que seguiría siendo la vía natural más adelante si el PC local no da la
 disponibilidad suficiente.
+
+**Estado: implementado y en producción (2026-09-16).** `scripts/local_scan.ps1` registrado como tarea
+"SurebetsLocalScan" en el Programador de tareas de Windows de este PC (cada 5 min, con "despertar el equipo").
+Dos bugs reales encontrados y corregidos durante la puesta en marcha (ver commit `51d3950`):
+
+- El cache global de navegadores de Playwright (`%LOCALAPPDATA%\ms-playwright`) resultaba invisible para el
+  proceso lanzado por el Programador de tareas, aunque el mismo fichero existía y se veía bien desde una
+  sesión interactiva normal — causa exacta no diagnosticada (aislamiento de sesión/perfil propio del
+  Programador de tareas en esta máquina). Solución: `PLAYWRIGHT_BROWSERS_PATH=0`, que instala/busca el
+  navegador dentro del propio `.venv` del proyecto en vez de en el perfil de usuario.
+- El script usaba por defecto el `DB_PATH` del `.env` local (pensado para pruebas manuales con `main.py`,
+  `surebets.db` suelto en la raíz), no `data/surebets.db` — forzado explícitamente para que coincida con la
+  base de datos real que lee el panel web y que está en git.
+
+También se añadió `.gitattributes` con `merge=ours` para los ficheros de estado regenerados en cada ciclo
+(`docs/data.json`, `data/active_opportunities.json`, `data/surebets.db`), necesario porque durante la
+transición hubo dos escritores activos a la vez (el runner local nuevo y GitHub Actions/cron-job.org
+todavía sin pausar) y un `git pull` normal abortaba el merge entero en cuanto ambos habían tocado el mismo
+fichero regenerado. Requiere `git config merge.ours.driver true` en cada máquina que escriba a este repo
+(ya configurado en este PC).
+
+El usuario pausó el cron externo de cron-job.org el mismo día, quedando el runner local como único escritor
+activo (GitHub Actions solo como respaldo manual vía `workflow_dispatch`). Efecto colateral de las pruebas en
+vivo: se detectaron y notificaron por Telegram varias surebets reales, incluidas un par de márgenes
+sospechosamente altos (candidatos a falso positivo, no relacionado con esta migración) — investigación
+delegada a una tarea aparte en vez de bloquear este despliegue.
