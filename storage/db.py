@@ -58,6 +58,8 @@ COMPARISONS_EXTRA_COLUMNS = {
     # Desde cuándo es surebet de forma continua (la "edad" del arb); NULL si
     # ahora mismo no lo es.
     "surebet_since": "TEXT",
+    # "verificada" / "pendiente" solo para márgenes muy altos (ver engine/scan.py)
+    "verification": "TEXT",
 }
 
 
@@ -157,8 +159,8 @@ def save_comparisons(path: str, comparisons: list[MarketComparison]) -> None:
                        (key, event, sport, market_type, bookmakers, margin, is_surebet,
                         odds_json, guaranteed_profit, first_seen_at, last_seen_at,
                         start_time, flags_json, reliability, rounded_stakes_json,
-                        rounded_profit, surebet_since)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        rounded_profit, surebet_since, verification)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(key) DO UPDATE SET
                        bookmakers = excluded.bookmakers,
                        margin = excluded.margin,
@@ -171,7 +173,8 @@ def save_comparisons(path: str, comparisons: list[MarketComparison]) -> None:
                        reliability = excluded.reliability,
                        rounded_stakes_json = excluded.rounded_stakes_json,
                        rounded_profit = excluded.rounded_profit,
-                       surebet_since = excluded.surebet_since""",
+                       surebet_since = excluded.surebet_since,
+                       verification = excluded.verification""",
                 (
                     key,
                     market.event,
@@ -190,6 +193,7 @@ def save_comparisons(path: str, comparisons: list[MarketComparison]) -> None:
                     json.dumps(comparison.rounded_stakes) if comparison.rounded_stakes else None,
                     comparison.rounded_profit,
                     surebet_since,
+                    comparison.verification or None,
                 ),
             )
         if keys:
@@ -251,6 +255,7 @@ def export_snapshot(
             "rounded_stakes": json.loads(r["rounded_stakes_json"]) if r["rounded_stakes_json"] else None,
             "rounded_profit": r["rounded_profit"],
             "surebet_since": r["surebet_since"],
+            "verification": r["verification"],
         }
         for r in get_all_comparisons(path)[:max_comparisons]
     ]

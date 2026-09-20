@@ -58,8 +58,10 @@ const FILTERS_KEY = "surebets_active_filters_v1";
 const FLAG_DESCRIPTIONS = {
   una_sola_casa: "todas las patas son de la misma casa (error de datos)",
   mercado_incompleto: "faltan resultados del mercado (error de datos)",
-  margen_absurdo: "margen imposible de creer (error de datos)",
+  margen_absurdo: "margen por encima del máximo creíble (error de datos)",
   margen_alto: "margen inusualmente alto: comprueba las cuotas en las casas",
+  margen_a_verificar: "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
+  margen_verificado: "margen muy alto confirmado con una segunda lectura directa de las casas",
   solo_comparador: "todas las cuotas vienen de comparadores (pueden ir desfasadas)",
   cerca_inicio: "empieza pronto y alguna cuota viene de un comparador",
   cuotas_desfasadas: "las cuotas se leyeron con mucha diferencia de tiempo",
@@ -223,7 +225,14 @@ function reliabilityBadge(m) {
   const list = flags.length
     ? `<span class="flag-list ${blocked ? "blocked" : ""}">${flags.map((t) => `⚠ ${t}`).join("<br>")}</span>`
     : "";
-  return `<span class="pill pill-${m.reliability}" title="${title}">${m.reliability}</span>${list}`;
+  let verification = "";
+  if (m.verification === "verificada") {
+    verification = ' <span class="pill pill-alta" title="Una segunda lectura directa de las casas, en el mismo escaneo, confirmó este margen tan alto">✓ verificada</span>';
+  } else if (m.verification === "pendiente") {
+    verification =
+      ' <span class="pill pill-media" title="Margen muy alto que no se pudo comprobar en directo (alguna cuota viene de un comparador): solo se avisa tras varios escaneos seguidos. Comprueba las cuotas en las casas.">🔎 en verificación</span>';
+  }
+  return `<span class="pill pill-${m.reliability}" title="${title}">${m.reliability}</span>${verification}${list}`;
 }
 
 function oddsSummary(odds) {
@@ -314,6 +323,7 @@ function renderStats(data) {
   const cards = [
     { label: "Surebets activas", value: activeSurebets.length, highlight: activeSurebets.length > 0 },
     { label: "Fiabilidad media o alta", value: trusted.length, highlight: trusted.length > 0 },
+    { label: "En verificación (margen muy alto)", value: activeSurebets.filter((c) => c.verification === "pendiente").length },
     { label: "Descartadas (error de datos)", value: discarded.length },
     { label: "Comparaciones activas", value: data.comparisons.length },
     { label: "Mejor margen (válido)", value: bestValid !== null ? pct(bestValid) : "—" },

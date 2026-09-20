@@ -10,6 +10,11 @@ Solo `una_sola_casa`, `mercado_incompleto` y `margen_absurdo` invalidan la
 surebet: no son una oportunidad rara sino un error de datos (verificado en el
 estado real: había "surebets" del 35-60 % y alguna con una sola pata, por
 faltar el resto de resultados del mercado).
+
+Los márgenes muy altos pero creíbles (VERIFY_MARGIN..MAX_MARGIN, 15-25 %) NO se
+descartan: pueden ser reales, así que se marcan `margen_a_verificar` y
+engine/scan.py los comprueba con una segunda lectura de las fuentes directas
+en el mismo escaneo (o, si solo hay comparadores, exige más ciclos seguidos).
 """
 
 from datetime import datetime, timedelta, timezone
@@ -22,11 +27,15 @@ DIRECT_SOURCES = frozenset({"altenar", "kambi", "sportium", "betfair", "winamax"
 # ~7 % en 1X2 en la hora previa al partido, ver README).
 COMPARATOR_SOURCES = frozenset({"cuotasahora", "betexplorer"})
 
-# Un margen por encima de esto casi nunca es real (BetBurger recomienda
-# 0,5-5 %): se avisa pero se deja pasar...
+# Un margen por encima de esto es raro (BetBurger recomienda 0,5-5 %): se avisa
+# pero se deja pasar tal cual.
 WARN_MARGIN = 0.05
-# ...y por encima de esto se considera un error de datos y se descarta.
-MAX_MARGIN = 0.15
+# Por encima de esto solo se avisa tras verificarlo (segunda lectura directa en
+# el mismo escaneo, o más ciclos seguidos): puede ser real, pero es más probable
+# un precio erróneo o desfasado.
+VERIFY_MARGIN = 0.15
+# Por encima de esto se considera un error de datos y se descarta.
+MAX_MARGIN = 0.25
 # Si hay alguna pata de comparador y el partido empieza en menos de esto, la
 # cuota pudo cambiar (alineaciones) desde que el comparador la leyó.
 NEAR_KICKOFF = timedelta(hours=2)
@@ -40,8 +49,10 @@ BLOCKING_FLAGS = frozenset({"una_sola_casa", "mercado_incompleto", "margen_absur
 FLAG_DESCRIPTIONS = {
     "una_sola_casa": "todas las patas son de la misma casa (error de datos)",
     "mercado_incompleto": "faltan resultados del mercado (error de datos)",
-    "margen_absurdo": "margen imposible de creer (error de datos)",
+    "margen_absurdo": "margen por encima del máximo creíble (error de datos)",
     "margen_alto": "margen inusualmente alto: comprueba las cuotas en las casas",
+    "margen_a_verificar": "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
+    "margen_verificado": "margen muy alto confirmado con una segunda lectura directa de las casas",
     "solo_comparador": "todas las cuotas vienen de comparadores (pueden ir desfasadas)",
     "cerca_inicio": "empieza pronto y alguna cuota viene de un comparador",
     "cuotas_desfasadas": "las cuotas se leyeron con mucha diferencia de tiempo",
@@ -74,11 +85,16 @@ def assess(
     now: datetime | None = None,
     warn_margin: float = WARN_MARGIN,
     max_margin: float = MAX_MARGIN,
+    verify_margin: float = VERIFY_MARGIN,
+    verified: bool = False,
 ) -> tuple[list[str], str]:
     """Devuelve (flags, fiabilidad) de una surebet ya evaluada.
 
     `market` es el mercado final (mejor cuota por resultado), con sus
-    `Outcome.source` / `fetched_at` rellenados por engine.scan.
+    `Outcome.source` / `fetched_at` rellenados por engine.scan. `verified`
+    indica que engine.scan ya confirmó un margen alto con una segunda lectura
+    directa: entonces se marca `margen_verificado` en vez de `margen_a_verificar`
+    y no rebaja la fiabilidad.
     """
     now = now or datetime.now(timezone.utc)
     flags: list[str] = []
@@ -89,6 +105,8 @@ def assess(
         flags.append("una_sola_casa")
     if margin > max_margin:
         flags.append("margen_absurdo")
+    elif margin > verify_margin:
+        flags.append("margen_verificado" if verified else "margen_a_verificar")
     elif margin > warn_margin:
         flags.append("margen_alto")
 
@@ -111,6 +129,8 @@ def assess(
     if any(f in BLOCKING_FLAGS for f in flags):
         return flags, "baja"
     if only_comparators or "cerca_inicio" in flags or "cuotas_desfasadas" in flags:
+        return flags, "baja"
+    if "margen_a_verificar" in flags:
         return flags, "baja"
     if comparator_legs or "margen_alto" in flags:
         return flags, "media"

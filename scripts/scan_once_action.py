@@ -133,6 +133,8 @@ async def main() -> None:
         round_step=config.ROUND_STEP,
         warn_margin=config.WARN_MARGIN,
         max_margin=config.MAX_MARGIN,
+        verify_margin=config.VERIFY_MARGIN,
+        verify_cycles=config.VERIFY_CYCLES,
     )
 
     STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -144,7 +146,9 @@ async def main() -> None:
             "confirm_cycles": config.CONFIRM_CYCLES,
             "round_step": config.ROUND_STEP,
             "warn_margin": config.WARN_MARGIN,
+            "verify_margin": config.VERIFY_MARGIN,
             "max_margin": config.MAX_MARGIN,
+            "verify_cycles": config.VERIFY_CYCLES,
         },
     )
     SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)

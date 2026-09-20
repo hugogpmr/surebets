@@ -19,7 +19,12 @@ CONFIRM_CYCLES = int(os.getenv("CONFIRM_CYCLES", "2"))
 # Los importes del reparto se redondean a múltiplos de este valor (€), para que
 # las casas tarden más en limitar la cuenta. 0 = importes exactos al céntimo.
 ROUND_STEP = float(os.getenv("ROUND_STEP", "5"))
-# Márgenes a partir de los cuales se avisa de "margen alto" y se descarta como
-# error de datos (ver engine/quality.py).
+# Umbrales de margen (ver engine/quality.py): por encima de WARN_MARGIN se avisa
+# de "margen alto"; por encima de VERIFY_MARGIN la surebet no se descarta pero
+# solo se avisa tras verificarla (segunda lectura directa en el mismo escaneo, o
+# VERIFY_CYCLES escaneos seguidos si no se puede); por encima de MAX_MARGIN se
+# descarta como error de datos.
 WARN_MARGIN = float(os.getenv("WARN_MARGIN", "0.05"))
-MAX_MARGIN = float(os.getenv("MAX_MARGIN", "0.15"))
+VERIFY_MARGIN = float(os.getenv("VERIFY_MARGIN", "0.15"))
+MAX_MARGIN = float(os.getenv("MAX_MARGIN", "0.25"))
+VERIFY_CYCLES = int(os.getenv("VERIFY_CYCLES", "3"))

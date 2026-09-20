@@ -10,11 +10,11 @@ from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
 
 from providers.base import OddsProvider
-from storage.db import save_comparisons, save_opportunity
+from storage.db import comparison_key, save_comparisons, save_opportunity
 
 from .arbitrage import compare_market, format_stakes
 from .matching import best_odds_per_outcome, group_by_event
-from .quality import BLOCKING_FLAGS, FLAG_DESCRIPTIONS, MAX_MARGIN, WARN_MARGIN, assess
+from .quality import BLOCKING_FLAGS, FLAG_DESCRIPTIONS, MAX_MARGIN, VERIFY_MARGIN, WARN_MARGIN, assess
 
 # Margen mínimo de cambio para considerar que una oportunidad ya notificada
 # "cambió" y merece un nuevo aviso (en puntos porcentuales, no fracción).
@@ -83,8 +83,13 @@ def format_alert(comparison) -> str:
     sources = _source_by_leg(comparison)
     if sources:
         lines.append(f"Fuentes: {sources}")
+    if comparison.verification == "verificada":
+        lines.append("✅ Margen muy alto verificado con una segunda lectura directa de las casas")
+    elif comparison.verification == "pendiente":
+        lines.append("🔎 Margen muy alto sin verificar en directo: solo se avisa tras aparecer en varios escaneos seguidos")
     for flag in comparison.flags:
-        lines.append(f"⚠️ {FLAG_DESCRIPTIONS.get(flag, flag)}")
+        if flag not in ("margen_verificado", "margen_a_verificar"):  # ya explicados arriba
+            lines.append(f"⚠️ {FLAG_DESCRIPTIONS.get(flag, flag)}")
     return "\n".join(lines)
 
 
@@ -96,6 +101,124 @@ def _invalidate(comparison) -> None:
     comparison.guaranteed_profit = None
     comparison.rounded_stakes = None
     comparison.rounded_profit = None
+
+
+def _stamp(provider: OddsProvider, markets: list) -> None:
+    """Cada cuota recuerda de qué proveedor vino y cuándo se leyó: es lo que
+    permite luego distinguir precios directos de la casa de los de un
+    comparador (engine/quality.py)."""
+    for market in markets:
+        for outcome in market.outcomes:
+            if not outcome.source:
+                outcome.source = provider.name
+            if outcome.fetched_at is None:
+                outcome.fetched_at = market.fetched_at
+
+
+async def _fetch(provider: OddsProvider, sports: list[str], logger) -> list | None:
+    try:
+        # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
+        # provider lanza su propio Playwright); como run_scan_cycle ya corre
+        # dentro de un event loop (main.py o scan_once_action.py), llamarlo
+        # directamente aquí chocaría con ese loop en marcha ("asyncio.run()
+        # cannot be called from a running event loop"). Se ejecuta en un hilo
+        # aparte para darle un loop propio.
+        fetched = await asyncio.to_thread(provider.fetch_markets, sports)
+    except Exception:
+        logger.exception("Fallo obteniendo datos de %s", provider.name)
+        return None
+    _stamp(provider, fetched)
+    return fetched
+
+
+def _build_comparisons(
+    raw_markets: list,
+    bankroll: float,
+    min_margin: float,
+    round_step: float,
+    now: datetime,
+    warn_margin: float,
+    verify_margin: float,
+    max_margin: float,
+) -> list:
+    comparisons = []
+    for grouped in group_by_event(raw_markets):
+        market = best_odds_per_outcome(grouped)
+        comparison = compare_market(market, bankroll, min_margin, round_step)
+        comparisons.append(comparison)
+        if comparison.margin > 0:
+            comparison.flags, comparison.reliability = assess(
+                market, comparison.margin, now, warn_margin, max_margin, verify_margin
+            )
+            if comparison.is_surebet and any(f in BLOCKING_FLAGS for f in comparison.flags):
+                _invalidate(comparison)
+    return comparisons
+
+
+async def _verify_high_margins(
+    comparisons: list,
+    providers: list[OddsProvider],
+    raw_by_provider: dict[str, list],
+    sports: list[str],
+    args: tuple,
+    logger,
+) -> list:
+    """Verifica en el mismo escaneo las surebets de margen muy alto
+    (`margen_a_verificar`): vuelve a leer las fuentes directas y baratas
+    (`fast_recheck`: Altenar, Kambi) y recalcula. Una candidata cuyas patas
+    vienen TODAS de esas fuentes y sigue siendo surebet con la lectura fresca
+    queda `verificada`. Las que tienen alguna pata de comparador no se pueden
+    comprobar aquí (releer un comparador cuesta minutos de navegador): quedan
+    `pendiente`, y run_scan_cycle exigirá más ciclos seguidos antes de avisar.
+    Si tras la relectura la candidata ya no es surebet, desaparece sola.
+    Devuelve la lista de comparaciones final (la fresca, si hubo relectura).
+    """
+    candidates = {
+        comparison_key(c): c for c in comparisons if c.is_surebet and "margen_a_verificar" in c.flags
+    }
+    if not candidates:
+        return comparisons
+
+    rechecked = [p for p in providers if p.fast_recheck]
+    names = {p.name for p in rechecked}
+    involved = {o.source for c in candidates.values() for o in c.market.outcomes} & names
+    if involved:
+        logger.info(
+            "Verificando %d surebets de margen muy alto con una segunda lectura de: %s",
+            len(candidates),
+            ", ".join(sorted(involved)),
+        )
+        refreshed = False
+        for provider in rechecked:
+            if provider.name not in involved:
+                continue
+            fresh = await _fetch(provider, sports, logger)
+            if fresh is not None:
+                raw_by_provider[provider.name] = fresh
+                refreshed = True
+        if refreshed:
+            raw_markets = [m for p in providers for m in raw_by_provider.get(p.name, [])]
+            comparisons = _build_comparisons(raw_markets, *args)
+
+    _, _, _, now, warn_margin, verify_margin, max_margin = args
+    fresh_by_key = {comparison_key(c): c for c in comparisons}
+    refuted = 0
+    for key in candidates:
+        comparison = fresh_by_key.get(key)
+        if comparison is None or not comparison.is_surebet:
+            refuted += 1
+            continue
+        legs = {o.source for o in comparison.market.outcomes}
+        if involved and legs <= names and "margen_a_verificar" in comparison.flags:
+            comparison.verification = "verificada"
+            comparison.flags, comparison.reliability = assess(
+                comparison.market, comparison.margin, now, warn_margin, max_margin, verify_margin, verified=True
+            )
+        else:
+            comparison.verification = "pendiente"
+    if refuted:
+        logger.info("La segunda lectura no confirmó %d surebets de margen muy alto: descartadas", refuted)
+    return comparisons
 
 
 async def run_scan_cycle(
@@ -111,6 +234,8 @@ async def run_scan_cycle(
     round_step: float = 0.0,
     warn_margin: float = WARN_MARGIN,
     max_margin: float = MAX_MARGIN,
+    verify_margin: float = VERIFY_MARGIN,
+    verify_cycles: int = 3,
 ) -> None:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -118,53 +243,30 @@ async def run_scan_cycle(
 
     Una surebet solo se avisa (y se guarda en el histórico) cuando lleva
     `confirm_cycles` escaneos seguidos apareciendo: es lo que filtra las cuotas
-    que parpadean un instante o que un comparador tenía ya desfasadas.
+    que parpadean un instante o que un comparador tenía ya desfasadas. Las de
+    margen muy alto (> `verify_margin`) se verifican además con una segunda
+    lectura directa en el mismo escaneo (avisan enseguida si se confirman) o,
+    si no se pueden verificar así, necesitan `verify_cycles` escaneos seguidos.
     """
-    raw_markets = []
+    raw_by_provider: dict[str, list] = {}
     for provider in providers:
-        try:
-            # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
-            # provider lanza su propio Playwright); como run_scan_cycle ya
-            # corre dentro de un event loop (main.py o scan_once_action.py),
-            # llamarlo directamente aquí chocaría con ese loop en marcha
-            # ("asyncio.run() cannot be called from a running event loop").
-            # Se ejecuta en un hilo aparte para darle un loop propio.
-            fetched = await asyncio.to_thread(provider.fetch_markets, sports)
-        except Exception:
-            logger.exception("Fallo obteniendo datos de %s", provider.name)
-            continue
-        # Cada cuota recuerda de qué proveedor vino y cuándo se leyó: es lo que
-        # permite luego distinguir precios directos de la casa de los de un
-        # comparador (engine/quality.py).
-        for market in fetched:
-            for outcome in market.outcomes:
-                if not outcome.source:
-                    outcome.source = provider.name
-                if outcome.fetched_at is None:
-                    outcome.fetched_at = market.fetched_at
-        raw_markets.extend(fetched)
+        fetched = await _fetch(provider, sports, logger)
+        if fetched is not None:
+            raw_by_provider[provider.name] = fetched
+    raw_markets = [m for p in providers for m in raw_by_provider.get(p.name, [])]
 
     now = datetime.now(timezone.utc)
+    args = (bankroll, min_margin, round_step, now, warn_margin, verify_margin, max_margin)
+    comparisons = _build_comparisons(raw_markets, *args)
+    comparisons = await _verify_high_margins(comparisons, providers, raw_by_provider, sports, args, logger)
+
+    discarded = sum(1 for c in comparisons if c.margin > 0 and any(f in BLOCKING_FLAGS for f in c.flags))
     seen_keys: set[str] = set()
-    comparisons = []
-    discarded = 0
 
-    for grouped in group_by_event(raw_markets):
-        market = best_odds_per_outcome(grouped)
-        comparison = compare_market(market, bankroll, min_margin, round_step)
-        comparisons.append(comparison)
-
-        if comparison.margin > 0:
-            comparison.flags, comparison.reliability = assess(
-                market, comparison.margin, now, warn_margin, max_margin
-            )
-            if comparison.is_surebet and any(f in BLOCKING_FLAGS for f in comparison.flags):
-                _invalidate(comparison)
-                discarded += 1
-
+    for comparison in comparisons:
         if not comparison.is_surebet:
             continue
-
+        market = comparison.market
         key = opportunity_key(comparison)
         seen_keys.add(key)
         entry = active_state.get(key)
@@ -177,7 +279,13 @@ async def run_scan_cycle(
             previous_margin = float(entry) if entry is not None else None
             notified = entry is not None
 
-        confirmed = cycles >= confirm_cycles
+        if comparison.verification == "verificada":
+            needed = 1  # ya leída dos veces en directo dentro de este escaneo
+        elif comparison.verification == "pendiente":
+            needed = max(confirm_cycles, verify_cycles)
+        else:
+            needed = confirm_cycles
+        confirmed = cycles >= needed
         should_notify = confirmed and (
             not notified or abs(comparison.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
         )
@@ -192,10 +300,11 @@ async def run_scan_cycle(
 
         row_id = save_opportunity(db_path, comparison)
         logger.info(
-            "Surebet confirmada (#%s, %d ciclos, fiabilidad %s): %s margen %.2f%%",
+            "Surebet confirmada (#%s, %d ciclos, fiabilidad %s%s): %s margen %.2f%%",
             row_id,
             cycles,
             comparison.reliability,
+            f", {comparison.verification}" if comparison.verification else "",
             market.event,
             comparison.margin * 100,
         )

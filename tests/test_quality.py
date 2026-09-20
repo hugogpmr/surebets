@@ -69,6 +69,27 @@ def test_high_margin_warns_and_absurd_margin_blocks():
     assert "margen_absurdo" in blocked and reliability == "baja"
 
 
+def test_margin_between_15_and_25_is_not_discarded_but_needs_verification():
+    m = market([leg("Over", "betway", 3.0, "altenar"), leg("Under", "paf", 3.0, "kambi")])
+    flags, reliability = assess(m, 0.20, NOW)
+    assert "margen_a_verificar" in flags
+    assert not any(f in ("margen_absurdo", "una_sola_casa", "mercado_incompleto") for f in flags)
+    assert reliability == "baja"  # sin verificar no se le da fiabilidad
+
+
+def test_verified_high_margin_keeps_the_reliability_of_its_sources():
+    m = market([leg("Over", "betway", 3.0, "altenar"), leg("Under", "paf", 3.0, "kambi")])
+    flags, reliability = assess(m, 0.20, NOW, verified=True)
+    assert flags == ["margen_verificado"]
+    assert reliability == "alta"
+
+
+def test_margin_above_the_maximum_is_discarded_even_if_verified():
+    m = market([leg("Over", "betway", 3.0, "altenar"), leg("Under", "paf", 3.0, "kambi")])
+    flags, _ = assess(m, 0.30, NOW, verified=True)
+    assert "margen_absurdo" in flags
+
+
 def test_single_bookmaker_is_blocked():
     m = market([leg("Yes", "bet365", 2.2, "cuotasahora"), leg("No", "bet365", 2.1, "cuotasahora")], "BTTS")
     flags, _ = assess(m, 0.02, NOW)

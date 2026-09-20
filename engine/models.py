@@ -57,6 +57,10 @@ class MarketComparison:
     # "media" o "baja"; "" si aún no se ha evaluado).
     flags: list[str] = field(default_factory=list)
     reliability: str = ""
+    # Solo para márgenes muy altos (ver engine/quality.py): "verificada" si una
+    # segunda lectura directa en el mismo escaneo la confirmó, "pendiente" si no
+    # se pudo (solo comparadores) y hay que esperar más ciclos seguidos.
+    verification: str = ""
     # Reparto con importes "naturales" (múltiplos de 5 € por defecto) que sigue
     # garantizando beneficio; None si no existe uno válido.
     rounded_stakes: dict[str, float] | None = None

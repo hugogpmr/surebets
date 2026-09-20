@@ -228,6 +228,7 @@ class KambiProvider(OddsProvider):
     """
 
     name = "kambi"
+    fast_recheck = True
 
     def __init__(
         self,

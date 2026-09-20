@@ -443,7 +443,16 @@ avisar, cada candidata pasa por estos controles:
 - **Errores de datos descartados** (dejan de contar como surebet, pero siguen visibles en el panel como
   "Descartada" con su motivo): `mercado_incompleto` (falta un resultado del mercado, p.ej. un 1X2 sin empate o un
   BTTS con una sola pata: suma de probabilidades <1 sin ser arbitraje real), `una_sola_casa` y `margen_absurdo`
-  (> `MAX_MARGIN`, 15 %). El estado guardado antes de este cambio tenía "surebets" del 16-61 % que eran justo esto.
+  (> `MAX_MARGIN`, 25 %). El estado guardado antes de este cambio tenía "surebets" del 16-61 % que eran justo esto
+  (sobre todo mercados incompletos, que ahora se descartan por su propio motivo sea cual sea el margen).
+- **Márgenes muy altos (15-25 %) se verifican, no se descartan** (`VERIFY_MARGIN`..`MAX_MARGIN`): pueden ser reales.
+  Se marcan `margen_a_verificar` y, en el mismo escaneo, `engine/scan.py::_verify_high_margins` vuelve a leer las
+  fuentes directas y baratas (`fast_recheck`: Altenar y Kambi, sin navegador; ~70 s, solo si hay candidatas). Si todas
+  las patas de la candidata vienen de esas fuentes y sigue siendo surebet con la lectura fresca queda **verificada**
+  (se avisa enseguida, sin esperar a `CONFIRM_CYCLES`); si la lectura fresca ya no la confirma, desaparece. Si alguna
+  pata viene de un comparador (releerlo cuesta minutos de navegador) queda **en verificación**: visible en el panel
+  y solo se avisa tras `VERIFY_CYCLES` (3) escaneos seguidos. La verificación no comprueba las cuotas en la propia
+  casa: confirma que no eran un parpadeo, así que la comprobación final en la web de la casa sigue siendo tuya.
 - **Avisos** (no descartan): `margen_alto` (> `WARN_MARGIN`, 5 %), `solo_comparador`, `cerca_inicio` (<2 h con
   alguna pata de comparador) y `cuotas_desfasadas`. Salen en el aviso de Telegram y en la columna Fiabilidad.
 - **Hora de inicio** (`Market.start_time`): la rellenan Altenar y Kambi (los comparadores no la exponen todavía).
@@ -457,7 +466,8 @@ avisar, cada candidata pasa por estos controles:
   filtros por deporte, fiabilidad, "empieza en < N h", rango de margen y orden por margen / inicio / antigüedad
   (se recuerdan en el navegador). Las filas descartadas van siempre al final y no cuentan como mejor margen.
 
-Las variables (`CONFIRM_CYCLES`, `ROUND_STEP`, `WARN_MARGIN`, `MAX_MARGIN`) están en `.env.example`.
+Las variables (`CONFIRM_CYCLES`, `ROUND_STEP`, `WARN_MARGIN`, `VERIFY_MARGIN`, `MAX_MARGIN`, `VERIFY_CYCLES`) están
+en `.env.example`.
 `storage/db.py::init_db` migra con `ALTER TABLE` la tabla `comparisons` de bases de datos ya existentes.
 
 **Decisión de producto**: no se implementa value betting (apostar a cuotas por encima del precio justo); el

@@ -106,6 +106,8 @@ async def scan_once(app) -> None:
         round_step=config.ROUND_STEP,
         warn_margin=config.WARN_MARGIN,
         max_margin=config.MAX_MARGIN,
+        verify_margin=config.VERIFY_MARGIN,
+        verify_cycles=config.VERIFY_CYCLES,
     )
 
 

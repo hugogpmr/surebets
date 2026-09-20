@@ -414,6 +414,7 @@ class AltenarProvider(OddsProvider):
     """
 
     name = "altenar"
+    fast_recheck = True
 
     def __init__(
         self,

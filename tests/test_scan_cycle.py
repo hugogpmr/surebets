@@ -14,11 +14,21 @@ LOGGER = logging.getLogger("test")
 
 
 class FakeProvider(OddsProvider):
-    def __init__(self, name, markets):
+    """`markets` puede ser una lista (siempre lo mismo) o, con `readings`, una
+    lista de listas: una por llamada (para simular que la cuota cambia entre la
+    primera lectura y la de verificación)."""
+
+    def __init__(self, name, markets, fast_recheck=False, readings=None):
         self.name = name
+        self.fast_recheck = fast_recheck
         self._markets = markets
+        self._readings = list(readings) if readings else None
+        self.calls = 0
 
     def fetch_markets(self, sports):
+        self.calls += 1
+        if self._readings:
+            return self._readings[min(self.calls, len(self._readings)) - 1]
         return self._markets
 
 
@@ -146,3 +156,67 @@ def test_init_db_migrates_an_old_comparisons_table(tmp_path):
     with sqlite3.connect(path) as conn:
         columns = {row[1] for row in conn.execute("PRAGMA table_info(comparisons)")}
     assert {"start_time", "flags_json", "reliability", "surebet_since"} <= columns
+
+
+def direct_pair(over, under, fast=True, readings_a=None, readings_b=None):
+    """betway (altenar) + paf (kambi): con 2.5/2.5 el margen es un 20 %."""
+    a = FakeProvider("altenar", [ou("betway", over, 1.5)], fast_recheck=fast, readings=readings_a)
+    b = FakeProvider("kambi", [ou("paf", 1.5, under)], fast_recheck=fast, readings=readings_b)
+    return a, b
+
+
+def test_high_margin_confirmed_by_a_second_direct_read_is_notified_at_once(db):
+    a, b = direct_pair(2.5, 2.5)
+    sent = run([a, b], db, {}, confirm_cycles=2)
+    assert a.calls == 2 and b.calls == 2  # segunda lectura de las dos fuentes directas
+    assert len(sent) == 1 and "verificado con una segunda lectura" in sent[0]
+    row = export_snapshot(db)["comparisons"][0]
+    assert row["is_surebet"] and row["verification"] == "verificada" and "margen_verificado" in row["flags"]
+    assert row["reliability"] == "alta"
+
+
+def test_high_margin_that_vanishes_on_the_second_read_is_dropped(db):
+    # primera lectura: Over a 2.5 (margen 20 %); en la segunda la casa ya lo bajó
+    a, b = direct_pair(
+        2.5, 2.5, readings_a=[[ou("betway", 2.5, 1.5)], [ou("betway", 1.6, 1.5)]]
+    )
+    sent = run([a, b], db, {}, confirm_cycles=1)
+    assert sent == []
+    row = export_snapshot(db)["comparisons"][0]
+    assert not row["is_surebet"]
+
+
+def test_high_margin_from_comparators_is_pending_until_verify_cycles(db):
+    def providers():
+        return [FakeProvider("cuotasahora", [ou("bet365", 2.5, 1.5), ou("bwin", 1.5, 2.5)])]
+
+    state = {}
+    assert run(providers(), db, state, confirm_cycles=2, verify_cycles=3) == []
+    assert run(providers(), db, state, confirm_cycles=2, verify_cycles=3) == []  # ya cumpliría confirm_cycles
+    row = export_snapshot(db)["comparisons"][0]
+    assert row["is_surebet"] and row["verification"] == "pendiente"  # visible en el panel
+    third = run(providers(), db, state, confirm_cycles=2, verify_cycles=3)
+    assert len(third) == 1 and "sin verificar en directo" in third[0]
+
+
+def test_mixed_sources_high_margin_cannot_be_verified_in_scan(db):
+    direct = FakeProvider("kambi", [ou("paf", 1.5, 2.5)], fast_recheck=True)
+    comparator = FakeProvider("cuotasahora", [ou("bet365", 2.5, 1.5)])
+    assert run([comparator, direct], db, {}, confirm_cycles=1, verify_cycles=2) == []
+    assert direct.calls == 2  # se releyó la directa, pero la pata del comparador queda sin verificar
+    assert export_snapshot(db)["comparisons"][0]["verification"] == "pendiente"
+
+
+def test_margin_above_maximum_is_discarded_and_not_rechecked(db):
+    a = FakeProvider("altenar", [ou("betway", 3.0, 1.5)], fast_recheck=True)
+    b = FakeProvider("kambi", [ou("paf", 1.5, 3.0)], fast_recheck=True)  # margen 33 %
+    assert run([a, b], db, {}, confirm_cycles=1) == []
+    assert a.calls == 1 and b.calls == 1
+    row = export_snapshot(db)["comparisons"][0]
+    assert not row["is_surebet"] and "margen_absurdo" in row["flags"]
+
+
+def test_normal_margin_never_triggers_a_second_read(db):
+    a, b = direct_pair(2.1, 2.05)
+    run([a, b], db, {}, confirm_cycles=1)
+    assert a.calls == 1 and b.calls == 1
