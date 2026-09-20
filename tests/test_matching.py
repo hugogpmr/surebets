@@ -67,3 +67,66 @@ def test_best_odds_per_outcome_keeps_highest_value_per_result():
     assert by_name["1"] == ("sportium", 1.45)
     assert by_name["X"] == ("kirolbet", 4.90)
     assert by_name["2"] == ("kirolbet", 7.50)
+
+
+def test_same_bookmaker_reported_by_two_providers_keeps_the_lowest_odds():
+    # Betway llega por dos proveedores (comparador desfasado + API directa):
+    # nos quedamos con la cuota menor para no fabricar una surebet con datos viejos.
+    market = Market(
+        event="Valencia vs. Real Sociedad",
+        sport="futbol",
+        market_type="1X2",
+        outcomes=[
+            Outcome(name="1", bookmaker="betway", odds=2.88),  # comparador, desfasado
+            Outcome(name="2", bookmaker="bet365", odds=2.63),
+            Outcome(name="1", bookmaker="betway", odds=2.67),  # API directa, fresca
+        ],
+    )
+
+    result = best_odds_per_outcome(market)
+
+    assert {(o.name, o.bookmaker, o.odds) for o in result.outcomes} == {
+        ("1", "betway", 2.67),
+        ("2", "bet365", 2.63),
+    }
+
+
+def test_different_bookmakers_still_keep_the_highest_odds_per_result():
+    market = Market(
+        event="A vs. B",
+        sport="futbol",
+        market_type="1X2",
+        outcomes=[
+            Outcome(name="1", bookmaker="bet365", odds=2.0),
+            Outcome(name="1", bookmaker="codere", odds=2.2),
+        ],
+    )
+
+    result = best_odds_per_outcome(market)
+
+    assert [(o.bookmaker, o.odds) for o in result.outcomes] == [("codere", 2.2)]
+
+
+def test_same_teams_with_very_different_start_times_are_not_merged():
+    from datetime import datetime, timedelta, timezone
+
+    first = datetime(2026, 9, 20, 19, 0, tzinfo=timezone.utc)
+    a = make_market("Ajax vs. Feyenoord", "paf", {"1": 2.0, "X": 3.4, "2": 3.6})
+    b = make_market("Ajax vs. Feyenoord", "betway", {"1": 2.1, "X": 3.3, "2": 3.5})
+    a.start_time, b.start_time = first, first + timedelta(days=7)
+    assert len(group_by_event([a, b])) == 2
+
+    b.start_time = first + timedelta(minutes=30)
+    assert len(group_by_event([a, b])) == 1
+
+
+def test_unknown_start_time_still_merges_by_name_and_adopts_the_known_one():
+    from datetime import datetime, timezone
+
+    start = datetime(2026, 9, 20, 19, 0, tzinfo=timezone.utc)
+    comparator = make_market("Ajax vs. Feyenoord", "bet365", {"1": 2.0, "X": 3.4, "2": 3.6})
+    direct = make_market("Ajax vs. Feyenoord", "paf", {"1": 2.1, "X": 3.3, "2": 3.5})
+    direct.start_time = start
+    (group,) = group_by_event([comparator, direct])
+    assert group.start_time == start
+    assert best_odds_per_outcome(group).start_time == start

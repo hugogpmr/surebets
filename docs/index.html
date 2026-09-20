@@ -26,25 +26,84 @@
       <h2>🚀 Surebets activas ahora mismo</h2>
       <span class="badge" id="active-count">0</span>
     </div>
+    <div class="filters" id="active-filters">
+      <select id="a-filter-sport"><option value="">Todos los deportes</option></select>
+      <select id="a-filter-reliability" title="Fiabilidad según el origen de las cuotas">
+        <option value="any">Cualquier fiabilidad</option>
+        <option value="media">Media o alta</option>
+        <option value="alta">Solo alta (cuotas directas de la casa)</option>
+      </select>
+      <select id="a-filter-start" title="Partidos que empiezan pronto liberan antes la banca">
+        <option value="any">Empiece cuando empiece</option>
+        <option value="3">Empieza en menos de 3 h</option>
+        <option value="6">Empieza en menos de 6 h</option>
+        <option value="24">Empieza en menos de 24 h</option>
+      </select>
+      <label class="range-label">Margen
+        <input type="number" id="a-filter-min" min="0" step="0.1" placeholder="mín %">
+        –
+        <input type="number" id="a-filter-max" min="0" step="0.1" placeholder="máx %">
+      </label>
+      <select id="a-sort">
+        <option value="margin">Ordenar: mayor margen</option>
+        <option value="start">Ordenar: empieza antes</option>
+        <option value="age">Ordenar: más antiguas</option>
+      </select>
+    </div>
     <div class="table-wrap">
       <table id="active-table">
         <thead>
           <tr>
             <th>Evento</th>
+            <th>Inicio</th>
             <th>Deporte</th>
             <th>Mercados</th>
             <th>Casas</th>
             <th>Cuotas</th>
-            <th data-sort="margin">Margen ▾</th>
-            <th data-sort="guaranteed_profit">Beneficio*</th>
-            <th data-sort="last_seen_at">Visto</th>
+            <th>Margen</th>
+            <th title="Alta: todas las cuotas vienen directas de la casa. Media: alguna viene de un comparador. Baja: solo comparadores, cuotas desfasadas o partido a punto de empezar.">Fiabilidad</th>
+            <th>Acción</th>
+            <th title="Tiempo que lleva siendo surebet de forma continua">Edad</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-      <p class="empty-msg" id="active-empty" hidden>No hay ninguna surebet activa ahora mismo. Vuelve a mirar en unos minutos — el escaneo corre cada 5 min.</p>
+      <p class="empty-msg" id="active-empty" hidden>No hay ninguna surebet activa ahora mismo con estos filtros. Vuelve a mirar en unos minutos — el escaneo corre cada 5 min.</p>
     </div>
-    <p class="hint">*Beneficio estimado repartiendo la banca configurada (<code>BANKROLL</code>) entre las casas del arbitraje.</p>
+    <p class="hint" id="active-hint">Una surebet solo aparece en Telegram tras confirmarse en varios escaneos seguidos, pero aquí ves todas las candidatas con su fiabilidad. Las cuotas de comparadores pueden ir desfasadas: comprueba el precio en la casa antes de apostar.</p>
+    <p class="hint">No se muestra ningún beneficio estimado hasta que apuestas de verdad: pulsa "Calcular y marcar" en una fila para repartir tu importe entre las casas y registrarla como apuesta colocada.</p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>💰 Apuestas colocadas</h2>
+      <span class="badge" id="placed-count">0</span>
+    </div>
+    <div class="table-wrap">
+      <table id="placed-table">
+        <thead>
+          <tr>
+            <th>Colocada</th>
+            <th>Evento</th>
+            <th>Mercado</th>
+            <th>Reparto por casa</th>
+            <th>Importe total</th>
+            <th>Beneficio garantizado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty-msg" id="placed-empty" hidden>Todavía no has marcado ninguna apuesta como colocada.</p>
+    </div>
+    <p class="hint">Estos datos son tuyos: se guardan solo en este navegador (no se suben a ningún sitio).</p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>🏠 Casas de apuestas</h2>
+    </div>
+    <div class="bookmaker-links" id="bookmaker-links"></div>
   </section>
 
   <section class="panel">
@@ -56,6 +115,12 @@
       <input type="search" id="filter-search" placeholder="Buscar evento…">
       <select id="filter-sport"><option value="">Todos los deportes</option></select>
       <select id="filter-market"><option value="">Todos los mercados</option></select>
+      <select id="filter-start" title="Partidos que empiezan pronto">
+        <option value="any">Empiece cuando empiece</option>
+        <option value="3">Empieza en menos de 3 h</option>
+        <option value="6">Empieza en menos de 6 h</option>
+        <option value="24">Empieza en menos de 24 h</option>
+      </select>
       <label class="checkbox">
         <input type="checkbox" id="filter-surebet-only">
         Solo surebets
@@ -66,6 +131,7 @@
         <thead>
           <tr>
             <th data-sort="event">Evento</th>
+            <th data-sort="start">Inicio</th>
             <th data-sort="sport">Deporte</th>
             <th>Mercados</th>
             <th>Casas</th>
@@ -122,6 +188,44 @@
     todavía. No apuestes ahí sin verificarlo tú mismo primero.
   </p>
 </footer>
+
+<div class="modal-overlay" id="stake-modal" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="stake-modal-title">Calculadora de reparto</h3>
+      <button class="modal-close" id="stake-modal-close" title="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="modal-label" for="stake-total-input">Importe total a invertir (€)</label>
+      <input type="number" id="stake-total-input" min="0" step="0.01" placeholder="p. ej. 100">
+      <label class="modal-label" for="stake-round-select">Importes</label>
+      <select id="stake-round-select" title="Apostar importes redondos retrasa que las casas limiten tu cuenta">
+        <option value="0">Exactos al céntimo</option>
+        <option value="1">Redondeados a 1 €</option>
+        <option value="5">Redondeados a 5 € (recomendado)</option>
+        <option value="10">Redondeados a 10 €</option>
+      </select>
+      <div class="table-wrap">
+        <table id="stake-breakdown-table">
+          <thead>
+            <tr>
+              <th>Resultado</th>
+              <th>Casa</th>
+              <th>Cuota</th>
+              <th>Importe a meter</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="stake-summary" id="stake-summary"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="stake-cancel-btn">Cancelar</button>
+      <button class="btn-primary" id="stake-confirm-btn">Confirmar y marcar como colocada</button>
+    </div>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>

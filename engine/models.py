@@ -7,6 +7,12 @@ class Outcome:
     name: str
     bookmaker: str
     odds: float
+    # De qué proveedor salió esta cuota ("altenar", "cuotasahora"...) y cuándo
+    # se leyó. Los rellena engine.scan justo tras el fetch, los providers no
+    # tienen que ocuparse. Sirven para distinguir cuotas directas de la casa de
+    # las de un comparador (que pueden ir desfasadas): ver engine/quality.py.
+    source: str = ""
+    fetched_at: datetime | None = None
 
 
 @dataclass
@@ -16,6 +22,10 @@ class Market:
     market_type: str
     outcomes: list[Outcome]
     fetched_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    # Hora de inicio del partido (UTC) cuando el proveedor la conoce (hoy:
+    # Altenar y Kambi); None = desconocida. Sirve para no cruzar partidos
+    # distintos entre casas y para desconfiar de comparadores cerca del inicio.
+    start_time: datetime | None = None
 
 
 @dataclass
@@ -43,3 +53,11 @@ class MarketComparison:
     total_stake: float
     guaranteed_profit: float | None
     detected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    # Avisos de calidad (ver engine/quality.py) y fiabilidad global ("alta",
+    # "media" o "baja"; "" si aún no se ha evaluado).
+    flags: list[str] = field(default_factory=list)
+    reliability: str = ""
+    # Reparto con importes "naturales" (múltiplos de 5 € por defecto) que sigue
+    # garantizando beneficio; None si no existe uno válido.
+    rounded_stakes: dict[str, float] | None = None
+    rounded_profit: float | None = None

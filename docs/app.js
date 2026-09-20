@@ -15,10 +15,135 @@ const DGOJ_LICENSED_BOOKMAKERS = new Set([
   "sportium", "betfair", "winamax", "kirolbet",
   "1xbet", "888sport", "bet365", "betway", "bwin", "codere", "luckia",
   "paf", "retabet", "speedybet", "versus", "williamhill",
+  // Vía la plataforma Altenar (providers/altenar.py). Jokerbet: VERAMATIC
+  // ONLINE, S.A., comprobado en ordenacionjuego.es el 2026-09-20. Pastón:
+  // EUROAPUESTAS ONLINE, comprobado el 2026-09-16.
+  "jokerbet", "paston",
+  // Vía la plataforma Kambi (providers/kambi.py). LeoVegas: LEOESP, S.A. /
+  // Leovegas Gaming PLC, comprobado en ordenacionjuego.es el 2026-09-20.
+  "leovegas",
 ]);
 
 function isLicensed(bookmaker) {
   return DGOJ_LICENSED_BOOKMAKERS.has(bookmaker.trim().toLowerCase());
+}
+
+// URLs oficiales de cada casa, para el panel de acceso rápido.
+const BOOKMAKER_URLS = {
+  sportium: "https://www.sportium.es",
+  betfair: "https://www.betfair.es",
+  winamax: "https://www.winamax.es",
+  kirolbet: "https://www.kirolbet.es",
+  "1xbet": "https://1xbet.es",
+  "888sport": "https://www.888sport.es",
+  bet365: "https://www.bet365.es",
+  betway: "https://www.betway.es",
+  bwin: "https://www.bwin.es",
+  codere: "https://www.codere.es",
+  luckia: "https://www.luckia.es",
+  paf: "https://www.paf.es",
+  retabet: "https://www.retabet.es",
+  speedybet: "https://www.speedybet.es",
+  versus: "https://www.versus.es",
+  williamhill: "https://www.williamhill.es",
+  jokerbet: "https://www.jokerbet.es",
+  paston: "https://www.paston.es",
+  leovegas: "https://www.leovegas.es",
+};
+
+const PLACED_BETS_KEY = "surebets_placed_bets_v1";
+const FILTERS_KEY = "surebets_active_filters_v1";
+
+// Mismos textos que engine/quality.py (FLAG_DESCRIPTIONS).
+const FLAG_DESCRIPTIONS = {
+  una_sola_casa: "todas las patas son de la misma casa (error de datos)",
+  mercado_incompleto: "faltan resultados del mercado (error de datos)",
+  margen_absurdo: "margen imposible de creer (error de datos)",
+  margen_alto: "margen inusualmente alto: comprueba las cuotas en las casas",
+  solo_comparador: "todas las cuotas vienen de comparadores (pueden ir desfasadas)",
+  cerca_inicio: "empieza pronto y alguna cuota viene de un comparador",
+  cuotas_desfasadas: "las cuotas se leyeron con mucha diferencia de tiempo",
+};
+const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo"]);
+const RELIABILITY_RANK = { alta: 3, media: 2, baja: 1 };
+
+function loadActiveFilters() {
+  try {
+    return JSON.parse(localStorage.getItem(FILTERS_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function saveActiveFilters(filters) {
+  try {
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  } catch {
+    /* almacenamiento no disponible: los filtros solo duran esta sesión */
+  }
+}
+
+function loadPlacedBets() {
+  try {
+    return JSON.parse(localStorage.getItem(PLACED_BETS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function savePlacedBets(bets) {
+  localStorage.setItem(PLACED_BETS_KEY, JSON.stringify(bets));
+}
+
+function marketId(m) {
+  return `${m.event}||${m.sport}||${m.market_type}||${m.bookmakers}`;
+}
+
+// Reparto que iguala el pago en cualquier resultado: cada importe es
+// proporcional a la probabilidad implícita (1/cuota) de su resultado.
+// El beneficio garantizado es el pago constante menos lo invertido.
+function computeStakeBreakdown(odds, totalStake, step = 0) {
+  const totalProb = odds.reduce((s, o) => s + 1 / o.odds, 0);
+  const exact = odds.map((o) => (totalStake * (1 / o.odds)) / totalProb);
+  const build = (amounts, profit) => ({
+    stakes: odds.map((o, i) => ({ name: o.name, bookmaker: o.bookmaker, odds: o.odds, stake: amounts[i] })),
+    profit,
+    totalProb,
+    total: Math.round(amounts.reduce((a, b) => a + b, 0) * 100) / 100,
+  });
+  if (step > 0 && totalProb < 1) {
+    // Importes "naturales" (múltiplos de `step`): a las casas les cuesta más
+    // marcar como bot a quien apuesta 240 € en vez de 237,76 €. Se prueba el
+    // múltiplo inferior y superior de cada pata y se queda la combinación de
+    // mayor rentabilidad que sigue garantizando beneficio en cualquier resultado
+    // (misma lógica que engine/arbitrage.py::round_stakes).
+    for (const s of step > 1 ? [step, 1] : [step]) {
+      const options = exact.map((x) => [
+        ...new Set([Math.max(s, Math.floor(x / s) * s), Math.max(s, Math.ceil(x / s) * s)]),
+      ]);
+      let best = null;
+      const walk = (i, acc) => {
+        if (i === options.length) {
+          const total = acc.reduce((a, b) => a + b, 0);
+          const payout = Math.min(...acc.map((a, k) => a * odds[k].odds));
+          const profit = payout - total;
+          if (profit <= 0) return;
+          const roi = profit / total;
+          if (!best || roi > best.roi || (roi === best.roi && total < best.total)) best = { acc, roi, total, profit };
+          return;
+        }
+        options[i].forEach((v) => walk(i + 1, [...acc, v]));
+      };
+      walk(0, []);
+      if (best) return build(best.acc, Math.round(best.profit * 100) / 100);
+    }
+  }
+  const amounts = exact.map((x) => Math.round(x * 100) / 100);
+  return build(amounts, Math.round((totalStake / totalProb - totalStake) * 100) / 100);
+}
+
+function isBlocked(m) {
+  return (m.flags || []).some((f) => BLOCKING_FLAGS.has(f));
 }
 
 function bookmakerSpan(name) {
@@ -33,7 +158,19 @@ let state = {
   sortKey: "margin",
   sortDir: "desc",
   expandedGroups: new Set(),
+  placedBets: loadPlacedBets(),
+  marketsById: new Map(),
+  activeStakeMarket: null,
+  savedSport: "",
+  roundStep: "5",
 };
+
+try {
+  const savedStep = localStorage.getItem("surebets_round_step_v1");
+  if (savedStep !== null) state.roundStep = savedStep;
+} catch {
+  /* sin almacenamiento */
+}
 
 function pct(n) {
   return `${(n * 100).toFixed(2)}%`;
@@ -53,6 +190,40 @@ function timeAgo(iso) {
   const hours = Math.round(mins / 60);
   if (hours < 24) return `hace ${hours} h`;
   return `hace ${Math.round(hours / 24)} d`;
+}
+
+function hoursUntil(iso) {
+  if (!iso) return null;
+  return (new Date(iso).getTime() - Date.now()) / 3600000;
+}
+
+function kickoffCell(iso) {
+  if (!iso) return '<span class="muted" title="Ninguna fuente directa informa de la hora de inicio">—</span>';
+  const h = hoursUntil(iso);
+  const date = new Date(iso);
+  const text = date.toLocaleString("es-ES", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  let when;
+  if (h <= 0) when = "ya empezado";
+  else if (h < 1) when = `en ${Math.max(1, Math.round(h * 60))} min`;
+  else when = `en ${h.toFixed(1)} h`;
+  return `<span class="${h > 0 && h < 3 ? "kickoff-soon" : ""}" title="${text}">${text}<br><small class="muted">${when}</small></span>`;
+}
+
+function reliabilityBadge(m) {
+  if (!m.reliability) return "—";
+  const flags = (m.flags || []).map((f) => FLAG_DESCRIPTIONS[f] || f);
+  const title = flags.length ? flags.join(" · ") : "Todas las cuotas vienen directas de la casa";
+  const blocked = (m.flags || []).some((f) => BLOCKING_FLAGS.has(f));
+  const list = flags.length
+    ? `<span class="flag-list ${blocked ? "blocked" : ""}">${flags.map((t) => `⚠ ${t}`).join("<br>")}</span>`
+    : "";
+  return `<span class="pill pill-${m.reliability}" title="${title}">${m.reliability}</span>${list}`;
 }
 
 function oddsSummary(odds) {
@@ -81,14 +252,28 @@ function groupMatches(tableId, rows) {
     let anySurebet = false;
     let lastSeenAt = null;
     let totalProfit = 0;
+    let startTime = null;
+    let surebetSince = null;
+    let blockedCount = 0;
     for (const m of g.markets) {
       m.bookmakers.split(",").forEach((b) => bookmakerSet.add(b.trim()));
+      if (!lastSeenAt || new Date(m.last_seen_at) > new Date(lastSeenAt)) lastSeenAt = m.last_seen_at;
+      // Los mercados descartados por error de datos (margen absurdo, mercado
+      // incompleto...) no cuentan para el mejor margen ni el inicio del partido.
+      if (isBlocked(m)) {
+        blockedCount++;
+        continue;
+      }
+      if (m.start_time && (!startTime || m.start_time < startTime)) startTime = m.start_time;
+      if (m.surebet_since && (!surebetSince || m.surebet_since < surebetSince)) surebetSince = m.surebet_since;
       if (m.margin > bestMargin) bestMargin = m.margin;
       if (m.is_surebet) anySurebet = true;
       if (m.guaranteed_profit) totalProfit += m.guaranteed_profit;
-      if (!lastSeenAt || new Date(m.last_seen_at) > new Date(lastSeenAt)) lastSeenAt = m.last_seen_at;
     }
-    g.markets.sort((a, b) => b.margin - a.margin);
+    // Válidos primero (por margen descendente); los descartados, al final.
+    g.markets.sort((a, b) => isBlocked(a) - isBlocked(b) || b.margin - a.margin);
+    const allBlocked = blockedCount === g.markets.length;
+    if (allBlocked) bestMargin = -Infinity;
     return {
       ...g,
       bookmakers: [...bookmakerSet],
@@ -96,17 +281,22 @@ function groupMatches(tableId, rows) {
       anySurebet,
       lastSeenAt,
       totalProfit,
+      startTime,
+      surebetSince,
+      allBlocked,
     };
   });
 }
 
 function marginClass(row) {
+  if (isBlocked(row)) return "margin-negative";
   if (row.is_surebet) return "margin-positive";
   if (row.margin > 0) return "margin-amber";
   return "margin-negative";
 }
 
 function rowClass(row) {
+  if (isBlocked(row)) return "row-neutral";
   if (row.is_surebet) return "row-surebet";
   if (row.margin > 0) return "row-amber";
   return "row-neutral";
@@ -114,16 +304,22 @@ function rowClass(row) {
 
 function renderStats(data) {
   const activeSurebets = data.comparisons.filter((c) => c.is_surebet);
-  const bestMargin = data.comparisons.length
-    ? Math.max(...data.comparisons.map((c) => c.margin))
-    : null;
+  const valid = data.comparisons.filter((c) => !(c.flags || []).some((f) => BLOCKING_FLAGS.has(f)));
+  const bestValid = valid.length ? Math.max(...valid.map((c) => c.margin)) : null;
+  const realProfit = state.placedBets.reduce((s, b) => s + (b.profit || 0), 0);
+  const realInvested = state.placedBets.reduce((s, b) => s + (b.total_stake || 0), 0);
 
+  const trusted = activeSurebets.filter((c) => (RELIABILITY_RANK[c.reliability] || 0) >= 2);
+  const discarded = data.comparisons.filter((c) => (c.flags || []).some((f) => BLOCKING_FLAGS.has(f)));
   const cards = [
     { label: "Surebets activas", value: activeSurebets.length, highlight: activeSurebets.length > 0 },
+    { label: "Fiabilidad media o alta", value: trusted.length, highlight: trusted.length > 0 },
+    { label: "Descartadas (error de datos)", value: discarded.length },
     { label: "Comparaciones activas", value: data.comparisons.length },
-    { label: "Mejor margen ahora", value: bestMargin !== null ? pct(bestMargin) : "—" },
+    { label: "Mejor margen (válido)", value: bestValid !== null ? pct(bestValid) : "—" },
     { label: `Detectadas (${data.stats.period_days}d)`, value: data.stats.count },
-    { label: `Beneficio potencial (${data.stats.period_days}d)`, value: money(data.stats.total_potential_profit) },
+    { label: "Invertido (apuestas colocadas)", value: money(realInvested) },
+    { label: "Beneficio real (apuestas colocadas)", value: money(realProfit), highlight: state.placedBets.length > 0 },
   ];
 
   document.getElementById("stats-grid").innerHTML = cards
@@ -137,6 +333,16 @@ function renderStats(data) {
     .join("");
 }
 
+function stakeActionButton(m) {
+  const id = marketId(m);
+  state.marketsById.set(id, m);
+  return `<button class="btn-place" data-market-id="${id}">Calcular y marcar</button>`;
+}
+
+function ageCell(iso) {
+  return iso ? timeAgo(iso).replace("hace ", "") : "—";
+}
+
 function activeGroupRowsHtml(g) {
   const single = g.markets.length === 1;
   const expanded = !single && state.expandedGroups.has(g.key);
@@ -144,13 +350,15 @@ function activeGroupRowsHtml(g) {
   const summary = `
     <tr class="row-surebet group-row" data-group-key="${g.key}">
       <td class="event-cell"><span class="chevron">${chevron}</span> ${g.event}</td>
+      <td>${kickoffCell(g.startTime)}</td>
       <td>${g.sport}</td>
       <td>${single ? g.markets[0].market_type : `${g.markets.length} mercados`}</td>
       <td>${g.bookmakers.map(bookmakerSpan).join(", ")}</td>
       <td class="odds-cell">${single ? oddsSummary(g.markets[0].odds) : "Ver detalle ▸"}</td>
       <td class="margin-value margin-positive">${pct(g.bestMargin)}</td>
-      <td>${money(g.totalProfit)}</td>
-      <td>${timeAgo(g.lastSeenAt)}</td>
+      <td>${reliabilityBadge(g.markets[0])}</td>
+      <td>${single ? stakeActionButton(g.markets[0]) : "—"}</td>
+      <td>${ageCell(g.surebetSince)}</td>
     </tr>`;
   if (!expanded || single) return summary;
   const detailRows = g.markets
@@ -159,21 +367,84 @@ function activeGroupRowsHtml(g) {
       <tr class="row-surebet detail-row">
         <td class="event-cell detail-indent">↳</td>
         <td></td>
+        <td></td>
         <td>${m.market_type}</td>
         <td>${bookmakersCell(m.bookmakers)}</td>
         <td class="odds-cell">${oddsSummary(m.odds)}</td>
         <td class="margin-value margin-positive">${pct(m.margin)}</td>
-        <td>${money(m.guaranteed_profit)}</td>
-        <td>${timeAgo(m.last_seen_at)}</td>
+        <td>${reliabilityBadge(m)}</td>
+        <td>${stakeActionButton(m)}</td>
+        <td>${ageCell(m.surebet_since)}</td>
       </tr>`
     )
     .join("");
   return summary + detailRows;
 }
 
+function readActiveFilters() {
+  const num = (id) => {
+    const v = parseFloat(document.getElementById(id).value);
+    return Number.isFinite(v) ? v : null;
+  };
+  return {
+    sport: document.getElementById("a-filter-sport").value,
+    reliability: document.getElementById("a-filter-reliability").value,
+    start: document.getElementById("a-filter-start").value,
+    min: num("a-filter-min"),
+    max: num("a-filter-max"),
+    sort: document.getElementById("a-sort").value,
+  };
+}
+
+function restoreActiveFilters() {
+  const saved = loadActiveFilters();
+  const set = (id, v) => {
+    if (v !== undefined && v !== null) document.getElementById(id).value = v;
+  };
+  set("a-filter-reliability", saved.reliability);
+  set("a-filter-start", saved.start);
+  set("a-filter-min", saved.min);
+  set("a-filter-max", saved.max);
+  set("a-sort", saved.sort);
+  state.savedSport = saved.sport || "";
+}
+
+function passesActiveFilters(c, f) {
+  if (f.sport && c.sport !== f.sport) return false;
+  if (f.reliability !== "any" && (RELIABILITY_RANK[c.reliability] || 0) < RELIABILITY_RANK[f.reliability]) return false;
+  if (f.start !== "any") {
+    const h = hoursUntil(c.start_time);
+    if (h === null || h <= 0 || h > parseFloat(f.start)) return false;
+  }
+  if (f.min !== null && c.margin * 100 < f.min) return false;
+  if (f.max !== null && c.margin * 100 > f.max) return false;
+  return true;
+}
+
+function sortActiveGroups(groups, sort) {
+  const far = Number.MAX_SAFE_INTEGER;
+  const byStart = (g) => (g.startTime ? new Date(g.startTime).getTime() : far);
+  const byAge = (g) => (g.surebetSince ? new Date(g.surebetSince).getTime() : far);
+  if (sort === "start") return groups.sort((a, b) => byStart(a) - byStart(b) || b.bestMargin - a.bestMargin);
+  if (sort === "age") return groups.sort((a, b) => byAge(a) - byAge(b) || b.bestMargin - a.bestMargin);
+  return groups.sort((a, b) => b.bestMargin - a.bestMargin);
+}
+
 function renderActiveTable(data) {
-  const active = data.comparisons.filter((c) => c.is_surebet);
-  const groups = groupMatches("active", active).sort((a, b) => b.bestMargin - a.bestMargin);
+  state.marketsById.clear();
+  const allActive = data.comparisons.filter((c) => c.is_surebet);
+
+  const sportSel = document.getElementById("a-filter-sport");
+  const sports = [...new Set(allActive.map((c) => c.sport))].sort();
+  const current = sportSel.value || state.savedSport || "";
+  sportSel.innerHTML =
+    '<option value="">Todos los deportes</option>' + sports.map((v) => `<option value="${v}">${v}</option>`).join("");
+  if (sports.includes(current)) sportSel.value = current;
+
+  const filters = readActiveFilters();
+  saveActiveFilters(filters);
+  const active = allActive.filter((c) => passesActiveFilters(c, filters));
+  const groups = sortActiveGroups(groupMatches("active", active), filters.sort);
 
   document.getElementById("active-count").textContent = groups.length;
   const tbody = document.querySelector("#active-table tbody");
@@ -212,8 +483,13 @@ function applyFilters(comparisons) {
   const sport = document.getElementById("filter-sport").value;
   const market = document.getElementById("filter-market").value;
   const surebetOnly = document.getElementById("filter-surebet-only").checked;
+  const start = document.getElementById("filter-start").value;
 
   return comparisons.filter((c) => {
+    if (start !== "any") {
+      const h = hoursUntil(c.start_time);
+      if (h === null || h <= 0 || h > parseFloat(start)) return false;
+    }
     if (search && !c.event.toLowerCase().includes(search)) return false;
     if (sport && c.sport !== sport) return false;
     if (market && c.market_type !== market) return false;
@@ -223,18 +499,28 @@ function applyFilters(comparisons) {
 }
 
 function groupStatusPill(g) {
+  const top = g.markets[0];
+  if (g.allBlocked) {
+    const why = top.flags
+      .filter((f) => BLOCKING_FLAGS.has(f))
+      .map((f) => FLAG_DESCRIPTIONS[f])
+      .join(" · ");
+    return `<span class="pill pill-baja" title="${why}">Descartada</span>`;
+  }
   return g.anySurebet
     ? '<span class="pill pill-surebet">Surebet</span>'
     : '<span class="pill pill-none">Sin arbitraje</span>';
 }
 
 function groupMarginClass(g) {
+  if (g.allBlocked) return "margin-negative";
   if (g.anySurebet) return "margin-positive";
   if (g.bestMargin > 0) return "margin-amber";
   return "margin-negative";
 }
 
 function groupRowClass(g) {
+  if (g.allBlocked) return "row-neutral";
   if (g.anySurebet) return "row-surebet";
   if (g.bestMargin > 0) return "row-amber";
   return "row-neutral";
@@ -247,11 +533,12 @@ function allGroupRowsHtml(g) {
   const summary = `
     <tr class="${groupRowClass(g)} group-row" data-group-key="${g.key}">
       <td class="event-cell"><span class="chevron">${chevron}</span> ${g.event}</td>
+      <td>${kickoffCell(g.startTime)}</td>
       <td>${g.sport}</td>
       <td>${single ? g.markets[0].market_type : `${g.markets.length} mercados`}</td>
       <td>${g.bookmakers.map(bookmakerSpan).join(", ")}</td>
       <td class="odds-cell">${single ? oddsSummary(g.markets[0].odds) : "Ver detalle ▸"}</td>
-      <td class="margin-value ${groupMarginClass(g)}">${pct(g.bestMargin)}</td>
+      <td class="margin-value ${groupMarginClass(g)}">${g.allBlocked ? "—" : pct(g.bestMargin)}</td>
       <td>${groupStatusPill(g)}</td>
       <td>${timeAgo(g.lastSeenAt)}</td>
     </tr>`;
@@ -262,14 +549,17 @@ function allGroupRowsHtml(g) {
       <tr class="${rowClass(m)} detail-row">
         <td class="event-cell detail-indent">↳</td>
         <td></td>
+        <td></td>
         <td>${m.market_type}</td>
         <td>${bookmakersCell(m.bookmakers)}</td>
         <td class="odds-cell">${oddsSummary(m.odds)}</td>
         <td class="margin-value ${marginClass(m)}">${pct(m.margin)}</td>
         <td>${
-          m.is_surebet
-            ? '<span class="pill pill-surebet">Surebet</span>'
-            : '<span class="pill pill-none">Sin arbitraje</span>'
+          isBlocked(m)
+            ? `<span class="pill pill-baja" title="${(m.flags || []).filter((f) => BLOCKING_FLAGS.has(f)).map((f) => FLAG_DESCRIPTIONS[f]).join(" · ")}">Descartada</span>`
+            : m.is_surebet
+              ? '<span class="pill pill-surebet">Surebet</span>'
+              : '<span class="pill pill-none">Sin arbitraje</span>'
         }</td>
         <td>${timeAgo(m.last_seen_at)}</td>
       </tr>`
@@ -284,11 +574,13 @@ function sortGroups(groups) {
   const keyed = {
     event: (g) => g.event,
     sport: (g) => g.sport,
+    start: (g) => (g.startTime ? new Date(g.startTime).getTime() : Number.MAX_SAFE_INTEGER),
     margin: (g) => g.bestMargin,
     last_seen_at: (g) => new Date(g.lastSeenAt).getTime(),
   };
   const getValue = keyed[sortKey] || keyed.margin;
   return [...groups].sort((a, b) => {
+    if (a.allBlocked !== b.allBlocked) return a.allBlocked ? 1 : -1;
     const av = getValue(a);
     const bv = getValue(b);
     if (typeof av === "string") return av.localeCompare(bv) * dir;
@@ -344,10 +636,139 @@ function renderHistoryTable(data) {
     .join("");
 }
 
+function renderPlacedBets() {
+  const bets = [...state.placedBets].sort((a, b) => new Date(b.placed_at) - new Date(a.placed_at));
+  document.getElementById("placed-count").textContent = bets.length;
+  const tbody = document.querySelector("#placed-table tbody");
+  const empty = document.getElementById("placed-empty");
+
+  if (!bets.length) {
+    tbody.innerHTML = "";
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  tbody.innerHTML = bets
+    .map(
+      (b) => `
+      <tr>
+        <td>${timeAgo(b.placed_at)}</td>
+        <td class="event-cell">${b.event}</td>
+        <td>${b.market_type}</td>
+        <td class="odds-cell">${b.stakes
+          .map((s) => `${s.name}: ${bookmakerSpan(s.bookmaker)} ${money(s.stake)}`)
+          .join(" · ")}</td>
+        <td>${money(b.total_stake)}</td>
+        <td class="margin-value margin-positive">${money(b.profit)}</td>
+        <td><button class="btn-delete" data-bet-id="${b.id}" title="Quitar del registro">✕</button></td>
+      </tr>`
+    )
+    .join("");
+}
+
+function renderBookmakersPanel() {
+  const container = document.getElementById("bookmaker-links");
+  if (!container) return;
+  const names = [...DGOJ_LICENSED_BOOKMAKERS].sort();
+  container.innerHTML = names
+    .map((key) => {
+      const url = BOOKMAKER_URLS[key];
+      const label = key.charAt(0).toUpperCase() + key.slice(1);
+      return url
+        ? `<a class="bookmaker-link" href="${url}" target="_blank" rel="noopener">${label} ↗</a>`
+        : `<span class="bookmaker-link bookmaker-link-disabled">${label}</span>`;
+    })
+    .join("");
+}
+
+function openStakeModal(marketId2) {
+  const market = state.marketsById.get(marketId2);
+  if (!market) return;
+  state.activeStakeMarket = market;
+  document.getElementById("stake-modal-title").textContent = `${market.event} — ${market.market_type}`;
+  document.getElementById("stake-total-input").value = "";
+  document.getElementById("stake-round-select").value = state.roundStep;
+  document.querySelector("#stake-breakdown-table tbody").innerHTML = "";
+  document.getElementById("stake-summary").innerHTML = "";
+  document.getElementById("stake-modal").hidden = false;
+  document.getElementById("stake-total-input").focus();
+}
+
+function closeStakeModal() {
+  document.getElementById("stake-modal").hidden = true;
+  state.activeStakeMarket = null;
+}
+
+function recalcStakeModal() {
+  const market = state.activeStakeMarket;
+  if (!market) return;
+  const totalStake = parseFloat(document.getElementById("stake-total-input").value);
+  const tbody = document.querySelector("#stake-breakdown-table tbody");
+  const summary = document.getElementById("stake-summary");
+  if (!totalStake || totalStake <= 0) {
+    tbody.innerHTML = "";
+    summary.innerHTML = "";
+    return;
+  }
+  const step = parseFloat(document.getElementById("stake-round-select").value) || 0;
+  const { stakes, profit, total } = computeStakeBreakdown(market.odds, totalStake, step);
+  tbody.innerHTML = stakes
+    .map(
+      (s) => `
+      <tr>
+        <td>${s.name}</td>
+        <td>${bookmakerSpan(s.bookmaker)}</td>
+        <td>@${s.odds.toFixed(2)}</td>
+        <td><strong>${money(s.stake)}</strong></td>
+      </tr>`
+    )
+    .join("");
+  const extra = step > 0 && Math.abs(total - totalStake) >= 0.01 ? ` (invirtiendo ${money(total)} en total)` : "";
+  summary.innerHTML = `Beneficio garantizado, gane quien gane: <strong class="margin-positive">${money(profit)}</strong>${extra}`;
+}
+
+function confirmStakeModal() {
+  const market = state.activeStakeMarket;
+  const totalStake = parseFloat(document.getElementById("stake-total-input").value);
+  if (!market || !totalStake || totalStake <= 0) return;
+  const step = parseFloat(document.getElementById("stake-round-select").value) || 0;
+  const { stakes, profit, total } = computeStakeBreakdown(market.odds, totalStake, step);
+  state.roundStep = String(step);
+  try {
+    localStorage.setItem("surebets_round_step_v1", state.roundStep);
+  } catch {
+    /* sin almacenamiento: solo se recuerda en esta sesión */
+  }
+  state.placedBets.push({
+    id: `${marketId(market)}||${Date.now()}`,
+    event: market.event,
+    sport: market.sport,
+    market_type: market.market_type,
+    bookmakers: market.bookmakers,
+    total_stake: total,
+    stakes,
+    profit,
+    placed_at: new Date().toISOString(),
+  });
+  savePlacedBets(state.placedBets);
+  closeStakeModal();
+  renderPlacedBets();
+  if (window.__surebetsData) renderStats(window.__surebetsData);
+}
+
+function deletePlacedBet(betId) {
+  state.placedBets = state.placedBets.filter((b) => b.id !== betId);
+  savePlacedBets(state.placedBets);
+  renderPlacedBets();
+  if (window.__surebetsData) renderStats(window.__surebetsData);
+}
+
 function render(data) {
   state.comparisons = data.comparisons;
   renderStats(data);
   renderActiveTable(data);
+  renderPlacedBets();
   renderAllTable(data);
   renderHistoryTable(data);
 
@@ -380,7 +801,14 @@ function toggleGroupRow(e, rerender) {
 
 function wireControls() {
   document.getElementById("refresh-btn").addEventListener("click", load);
-  ["filter-search", "filter-sport", "filter-market", "filter-surebet-only"].forEach((id) => {
+  restoreActiveFilters();
+  ["a-filter-sport", "a-filter-reliability", "a-filter-start", "a-filter-min", "a-filter-max", "a-sort"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", () => {
+      if (window.__surebetsData) renderActiveTable(window.__surebetsData);
+    });
+  });
+  document.getElementById("stake-round-select").addEventListener("input", recalcStakeModal);
+  ["filter-search", "filter-sport", "filter-market", "filter-start", "filter-surebet-only"].forEach((id) => {
     document.getElementById(id).addEventListener("input", () => {
       if (window.__surebetsData) renderAllTable(window.__surebetsData);
     });
@@ -393,14 +821,37 @@ function wireControls() {
         state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
       } else {
         state.sortKey = key;
-        state.sortDir = "desc";
+        // Por inicio, lo natural es ver primero el partido que empieza antes.
+        state.sortDir = key === "start" ? "asc" : "desc";
       }
       if (window.__surebetsData) renderAllTable(window.__surebetsData);
     });
   });
 
-  document.querySelector("#active-table tbody").addEventListener("click", (e) => toggleGroupRow(e, renderActiveTable));
+  document.querySelector("#active-table tbody").addEventListener("click", (e) => {
+    const placeBtn = e.target.closest(".btn-place");
+    if (placeBtn) {
+      openStakeModal(placeBtn.dataset.marketId);
+      return;
+    }
+    toggleGroupRow(e, renderActiveTable);
+  });
   document.querySelector("#all-table tbody").addEventListener("click", (e) => toggleGroupRow(e, renderAllTable));
+
+  document.querySelector("#placed-table tbody").addEventListener("click", (e) => {
+    const delBtn = e.target.closest(".btn-delete");
+    if (delBtn) deletePlacedBet(delBtn.dataset.betId);
+  });
+
+  document.getElementById("stake-total-input").addEventListener("input", recalcStakeModal);
+  document.getElementById("stake-modal-close").addEventListener("click", closeStakeModal);
+  document.getElementById("stake-cancel-btn").addEventListener("click", closeStakeModal);
+  document.getElementById("stake-confirm-btn").addEventListener("click", confirmStakeModal);
+  document.getElementById("stake-modal").addEventListener("click", (e) => {
+    if (e.target.id === "stake-modal") closeStakeModal();
+  });
+
+  renderBookmakersPanel();
 }
 
 wireControls();

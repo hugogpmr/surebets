@@ -1,3 +1,6 @@
+import itertools
+import math
+
 from .models import Market, MarketComparison, SurebetOpportunity
 
 
@@ -26,6 +29,62 @@ def calculate_stakes(market: Market, total_stake: float) -> dict[str, float]:
     return stakes
 
 
+def _best_rounding(
+    market: Market, exact: dict[str, float], step: float
+) -> tuple[dict[str, float], float] | None:
+    """Prueba, para cada pata, el múltiplo de `step` inmediatamente inferior y
+    superior a su importe exacto, y devuelve la combinación con mejor
+    rentabilidad (beneficio / total invertido) que siga garantizando beneficio
+    en cualquier resultado. None si ninguna combinación lo garantiza.
+    """
+    keys = list(exact)
+    options = []
+    for key in keys:
+        low = math.floor(exact[key] / step) * step
+        high = math.ceil(exact[key] / step) * step
+        # Nunca por debajo de un paso: una apuesta de 0 € no existe.
+        options.append(sorted({max(step, low), max(step, high)}))
+
+    best: tuple[float, float, dict[str, float], float] | None = None
+    for combo in itertools.product(*options):
+        total = sum(combo)
+        payout = min(stake * outcome.odds for stake, outcome in zip(combo, market.outcomes))
+        profit = payout - total
+        if profit <= 0:
+            continue
+        # Mayor rentabilidad; a igualdad, menos dinero invertido.
+        candidate = (profit / total, -total, dict(zip(keys, combo)), profit)
+        if best is None or candidate[:2] > best[:2]:
+            best = candidate
+    if best is None:
+        return None
+    return best[2], round(best[3], 2)
+
+
+def round_stakes(
+    market: Market, total_stake: float, step: float = 5.0
+) -> tuple[dict[str, float], float] | None:
+    """Reparto con importes "naturales" (múltiplos de `step`, p.ej. 5 €) en vez
+    de céntimos exactos como 237,76 €: a las casas les cuesta más marcar como
+    bot a quien apuesta importes redondos, y limitan las cuentas más tarde
+    (RebelBetting recomienda lo mismo). Redondear cambia el margen real, así que
+    el beneficio se recalcula con los importes ya redondeados: es el peor caso
+    entre todos los resultados posibles, no una estimación.
+
+    Si con `step` no queda beneficio garantizado (surebet muy fina), se prueba
+    con pasos de 1 €; si tampoco, devuelve None y quien llame usa el reparto
+    exacto. `step <= 0` desactiva el redondeo.
+    """
+    if step <= 0:
+        return None
+    exact = calculate_stakes(market, total_stake)
+    for candidate_step in (step, 1.0) if step > 1.0 else (step,):
+        result = _best_rounding(market, exact, candidate_step)
+        if result is not None:
+            return result
+    return None
+
+
 def format_stakes(stakes: dict[str, float]) -> str:
     """Formatea el reparto de stakes (clave `"casa:resultado"`) en líneas
     legibles para un aviso, p.ej. "   Sportium: 120.50€ a 1".
@@ -38,16 +97,22 @@ def format_stakes(stakes: dict[str, float]) -> str:
 
 
 def compare_market(
-    market: Market, total_stake: float, min_margin: float = 0.0
+    market: Market, total_stake: float, min_margin: float = 0.0, round_step: float = 0.0
 ) -> MarketComparison:
     """Igual que evaluate_market, pero siempre devuelve un resultado (nunca
     None): sirve para registrar toda comparación de cuotas, sea o no una
     surebet, de cara al panel web que muestra el estado completo.
     """
-    m = margin(market)
+    total_prob = total_implied_probability(market)
+    m = 1 - total_prob
     surebet = m > min_margin
     stakes = calculate_stakes(market, total_stake) if surebet else None
-    profit = round(total_stake * m, 2) if surebet else None
+    # El pago es total_stake/total_prob en cualquier resultado (ver
+    # calculate_stakes), así que el beneficio es ese pago menos lo
+    # invertido: total_stake*m/total_prob, no total_stake*m (eso
+    # infravalora el beneficio cuanto más grande es el margen).
+    profit = round(total_stake * m / total_prob, 2) if surebet else None
+    rounded = round_stakes(market, total_stake, round_step) if surebet else None
     return MarketComparison(
         market=market,
         margin=m,
@@ -55,6 +120,8 @@ def compare_market(
         stakes=stakes,
         total_stake=total_stake,
         guaranteed_profit=profit,
+        rounded_stakes=rounded[0] if rounded else None,
+        rounded_profit=rounded[1] if rounded else None,
     )
 
 

@@ -210,6 +210,143 @@ td.detail-indent { color: var(--muted); font-weight: 400; padding-left: 22px; }
 
 .hint { color: var(--muted); font-size: 0.78rem; margin: 10px 0 0; }
 
+.btn-place {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-place:hover { filter: brightness(1.1); }
+
+.btn-delete {
+  background: none;
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-delete:hover { border-color: var(--red); color: var(--red); }
+
+.bookmaker-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bookmaker-link {
+  display: inline-block;
+  background: var(--gray-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.bookmaker-link:hover { border-color: var(--accent); color: var(--accent); }
+.bookmaker-link-disabled { opacity: 0.5; cursor: default; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.modal-header h3 { margin: 0; font-size: 1rem; }
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.modal-label { font-size: 0.8rem; color: var(--muted); }
+
+#stake-total-input {
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.stake-summary { font-size: 0.9rem; }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover { filter: brightness(1.1); }
+
+.btn-secondary {
+  background: none;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
 footer {
   max-width: 1200px;
   margin: 0 auto;
@@ -221,4 +358,38 @@ footer {
 
 @media (max-width: 640px) {
   .topbar-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* --- Fiabilidad, avisos de calidad y filtros de la tabla de surebets activas --- */
+.filters input[type="number"] {
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-size: 0.85rem;
+  width: 78px;
+}
+
+.range-label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+
+.pill-alta { background: var(--green); color: #06210f; }
+.pill-media { background: var(--amber); color: #2a1e00; }
+.pill-baja { background: var(--red); color: #fff; }
+.pill[title] { cursor: help; }
+
+.flag-list { display: block; margin-top: 3px; font-size: 0.72rem; color: var(--amber); white-space: normal; max-width: 260px; }
+.flag-list.blocked { color: var(--red); }
+
+.kickoff-soon { color: var(--amber); font-weight: 600; }
+
+#stake-round-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
 }
