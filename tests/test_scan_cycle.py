@@ -95,14 +95,13 @@ def test_default_confirm_cycles_keeps_old_behaviour(db):
     assert len(run(surebet_providers(), db, {})) == 1
 
 
-def test_alert_shows_kickoff_sources_and_odds(db):
+def test_alert_shows_kickoff_sources_and_rounded_stakes(db):
     start = datetime.now(timezone.utc) + timedelta(hours=5)
     (text,) = run(surebet_providers(start), db, {}, round_step=5.0)
     assert "Empieza" in text
     assert "betway←altenar" in text and "paf←kambi" in text
-    # El aviso da la cuota de cada casa, sin importes ni beneficio.
-    assert "a cuota" in text
-    assert "€" not in text and "Beneficio" not in text
+    stakes = [line for line in text.splitlines() if "€ a " in line]
+    assert stakes and all(float(line.split(":")[1].split("€")[0]) % 5 == 0 for line in stakes)
 
 
 def test_comparator_only_surebet_is_flagged_in_alert_and_snapshot(db):
@@ -110,7 +109,7 @@ def test_comparator_only_surebet_is_flagged_in_alert_and_snapshot(db):
         FakeProvider("cuotasahora", [ou("bet365", 2.10, 1.80), ou("bwin", 1.80, 2.05)]),
     ]
     (text,) = run(providers, db, {})
-    assert "fiabilidad" not in text and "comparadores" in text
+    assert "fiabilidad baja" in text and "comparadores" in text
     snapshot = export_snapshot(db)
     row = snapshot["comparisons"][0]
     assert row["is_surebet"] and row["reliability"] == "baja" and "solo_comparador" in row["flags"]
