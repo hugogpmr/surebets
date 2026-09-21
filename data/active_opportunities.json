@@ -1,52 +1,57 @@
 {
   "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||bet365,versus": {
     "margin": 0.021965317919075078,
-    "cycles": 34,
+    "cycles": 35,
     "notified": true
   },
   "Lugano vs. Estrella Roja||futbol||1X2||betway,codere,paf": {
     "margin": 0.014202172096908994,
-    "cycles": 26,
+    "cycles": 27,
     "notified": true
   },
   "Partizan vs. Olimpia Milano||baloncesto||OU_171.5||bwin,paf": {
     "margin": 0.016354016354016343,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Miami Heat vs. Minnesota Timberwolves||baloncesto||AH_-3.5||bet365,versus": {
     "margin": 0.031995346131471814,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Los Angeles Rams vs. New York Giants||americano||AH_-8.5||bet365,paf": {
     "margin": 0.04858299595141691,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Pittsburgh Steelers vs. Cincinnati Bengals||americano||AH_+2.5||bet365,paf": {
     "margin": 0.02189433603046176,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Miami Dolphins vs. Kansas City Chiefs||americano||AH_+8.5||1xbet,bet365": {
     "margin": 0.03396191446972152,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Arsenal vs. Lille||futbol||OU_3.25||bet365,versus": {
     "margin": 0.04707884288145203,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Atl. Madrid vs. Manchester United||futbol||OU_3||bet365,retabet": {
     "margin": 0.04655966947401868,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "CA Nueva Chicago vs. Patronato Paraná||futbol||OU_AWAY_0.5||jokerbet,paf": {
     "margin": 0.014575565347924924,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
+  },
+  "Barracas Central vs. Independiente Rivadavia||futbol||CORNERS_OU_HOME_3.5||jokerbet,paf": {
+    "margin": 0.018769303872653853,
+    "cycles": 1,
+    "notified": false
   }
 }
