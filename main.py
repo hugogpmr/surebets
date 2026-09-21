@@ -18,6 +18,10 @@ from providers.winamax import WinamaxProvider
 from storage.db import init_db
 
 logging.basicConfig(level=logging.INFO)
+# httpx registra en INFO cada petición con su URL completa; la de Telegram lleva el
+# token del bot (api.telegram.org/bot<TOKEN>/...) y acabaría en logs/*.log.
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 logger = logging.getLogger("surebets")
 
 # providers/kirolbet.py está implementado pero bloqueado por Akamai (ver README
