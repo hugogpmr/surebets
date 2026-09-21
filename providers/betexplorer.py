@@ -153,18 +153,33 @@ class BetExplorerProvider(OddsProvider):
             await browser.close()
         return markets
 
-    async def _dismiss_gates(self, page) -> None:
+    async def _dismiss_gates(self, page, timeout: int = 3000) -> None:
         for selector in ("#ageYes", "#onetrust-reject-all-handler", "text=Reject All"):
             try:
-                await page.click(selector, timeout=3000)
+                await page.click(selector, timeout=timeout)
             except Exception:
                 pass
 
     async def _collect_match_urls(self, page, league_url: str) -> list[str]:
-        await page.goto(league_url, timeout=20000)
-        await page.wait_for_timeout(1200)
-        await self._dismiss_gates(page)
-        await page.wait_for_timeout(800)
+        """Listado de partidos de una liga; si sale vacío se repite una vez con
+        más paciencia (puerta de edad o carga lenta), igual que en CuotasAhora."""
+        urls: list[str] = []
+        for attempt in range(2):
+            try:
+                urls = await self._collect_match_urls_once(page, league_url, patient=attempt > 0)
+            except Exception:
+                if attempt:
+                    raise
+                logger.warning("BetExplorer: fallo cargando el listado %s, se reintenta", league_url, exc_info=True)
+            if urls:
+                break
+        return urls
+
+    async def _collect_match_urls_once(self, page, league_url: str, patient: bool = False) -> list[str]:
+        await page.goto(league_url, timeout=30000 if patient else 20000)
+        await page.wait_for_timeout(3000 if patient else 1200)
+        await self._dismiss_gates(page, timeout=8000 if patient else 3000)
+        await page.wait_for_timeout(1500 if patient else 800)
         hrefs = await page.eval_on_selector_all("a[href]", "els => els.map(e => e.getAttribute('href'))")
 
         league_path = urllib.parse.urlparse(league_url).path.rstrip("/")
@@ -192,7 +207,13 @@ class BetExplorerProvider(OddsProvider):
     async def _fetch_match(self, page, match_url: str, sport: str) -> list[Market]:
         try:
             await page.goto(match_url, timeout=20000)
-            await page.wait_for_selector("table", timeout=15000)
+            # Se espera a una FILA de tabla, no a "table": la página trae al
+            # principio dos <table class="table-main"> vacíos (tamaño 0, sin
+            # filas) y el selector por defecto espera a que la primera tabla
+            # sea *visible*, así que agotaba el tiempo en todos los partidos
+            # aunque las tablas reales ya estuvieran cargadas (0 mercados
+            # desde que el sitio añadió esos marcadores, verificado 2026-09-20).
+            await page.wait_for_selector("table tbody tr", state="attached", timeout=15000)
             await page.wait_for_timeout(1200)
 
             # Partido pendiente de empezar: el elemento de marcador

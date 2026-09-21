@@ -11,6 +11,7 @@ import httpx
 from engine.models import Market, Outcome
 from providers.altenar import DEFAULT_HORIZON_HOURS, _fmt_line
 from providers.base import OddsProvider
+from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,15 @@ COMMON_PARAMS = {
 OPERATORS: dict[str, str] = {
     "pafes": "paf",
     "leoes": "leovegas",
+    # Añadidas el 2026-09-21; los códigos salen del tráfico real de cada web
+    # (Speedybet: settings-api.kambicdn.com/pafspeedybetes__startup.json) o de
+    # probar el nombre en la API pública. Licencias en el registro de la DGOJ:
+    # Yosports = RANK DIGITAL CEUTA, S.A.; Botemanía = GAMESYS SPAIN, S.A.;
+    # Speedybet = PAF GAMES, S.A. (mismo grupo que Paf: mismo equipo de traders,
+    # así que sus precios serán casi idénticos a los de Paf).
+    "yosportses": "yosports",
+    "botemaniaes": "botemania",
+    "pafspeedybetes": "speedybet",
 }
 
 # Kambi devuelve cuotas y líneas en milésimas (1910 = 1.91, 2500 = 2.5).
@@ -54,6 +64,9 @@ _MOST_BASES = {"Most Corners": "CORNERS_1X2", "Most Cards": "CARDS_1X2"}
 _THREE_WAY = {"OT_ONE": "1", "OT_CROSS": "X", "OT_TWO": "2"}
 _TWO_WAY_12 = {"OT_ONE": "1", "OT_TWO": "2"}
 _YES_NO = {"OT_YES": "Yes", "OT_NO": "No"}
+# Doble oportunidad (verificado en vivo el 2026-09-21): local o empate / local o visitante /
+# empate o visitante.
+_DOUBLE_CHANCE = {"OT_ONE_OR_CROSS": "1X", "OT_ONE_OR_TWO": "12", "OT_CROSS_OR_TWO": "X2"}
 
 
 def _half_suffix(half: str | None) -> str:
@@ -66,6 +79,25 @@ def _price(milli) -> float | None:
         return None
     value = math.floor(milli / _MILLI * 100 + 0.5) / 100
     return value if value > 1.0 else None
+
+
+def _outcome(name: str, bookmaker: str, offer: dict, raw: dict) -> Outcome:
+    """Selección con los metadatos que Kambi sí expone: cash out (la oferta y la
+    selección deben tenerlo activo; se ha visto ENABLED en la oferta y DISABLED
+    en alguna de sus selecciones) y la hora del último cambio de cuota."""
+    changed = raw.get("changedDate")
+    try:
+        odds_changed_at = datetime.fromisoformat(changed.replace("Z", "+00:00")) if changed else None
+    except ValueError:
+        odds_changed_at = None
+    statuses = (offer.get("cashOutStatus"), raw.get("cashOutStatus"))
+    return Outcome(
+        name=name,
+        bookmaker=bookmaker,
+        odds=_price(raw["odds"]),
+        cash_out=all(s == "ENABLED" for s in statuses) if any(statuses) else None,
+        odds_changed_at=odds_changed_at,
+    )
 
 
 def _open_outcomes(offer: dict) -> list[dict] | None:
@@ -90,7 +122,7 @@ def _fixed_market(event, sport, bookmaker, prefix, offer, mapping) -> Market | N
         event=event,
         sport=sport,
         market_type=prefix,
-        outcomes=[Outcome(name=label, bookmaker=bookmaker, odds=_price(o["odds"])) for label, o in zip(labels, outcomes)],
+        outcomes=[_outcome(label, bookmaker, offer, o) for label, o in zip(labels, outcomes)],
     )
 
 
@@ -109,8 +141,8 @@ def _total_market(event, sport, bookmaker, prefix, offer) -> Market | None:
         sport=sport,
         market_type=f"{prefix}_{_fmt_line(line / _MILLI)}",
         outcomes=[
-            Outcome(name="Over", bookmaker=bookmaker, odds=_price(by_type["OT_OVER"]["odds"])),
-            Outcome(name="Under", bookmaker=bookmaker, odds=_price(by_type["OT_UNDER"]["odds"])),
+            _outcome("Over", bookmaker, offer, by_type["OT_OVER"]),
+            _outcome("Under", bookmaker, offer, by_type["OT_UNDER"]),
         ],
     )
 
@@ -119,16 +151,16 @@ def _handicap_market(event, sport, bookmaker, prefix, offer, home, away) -> Mark
     outcomes = _open_outcomes(offer)
     if outcomes is None or len(outcomes) != 2:
         return None
-    sides: dict[str, tuple[float, float]] = {}
+    sides: dict[str, tuple[float, Outcome]] = {}
     for outcome in outcomes:
         line = outcome.get("line")
         if line is None:
             return None
         participant = outcome.get("participant")
         if participant == home:
-            sides["1"] = (line / _MILLI, _price(outcome["odds"]))
+            sides["1"] = (line / _MILLI, _outcome("1", bookmaker, offer, outcome))
         elif participant == away:
-            sides["2"] = (-line / _MILLI, _price(outcome["odds"]))
+            sides["2"] = (-line / _MILLI, _outcome("2", bookmaker, offer, outcome))
     # Ambos lados deben describir la misma línea expresada desde el local.
     if set(sides) != {"1", "2"} or sides["1"][0] != sides["2"][0]:
         return None
@@ -136,10 +168,7 @@ def _handicap_market(event, sport, bookmaker, prefix, offer, home, away) -> Mark
         event=event,
         sport=sport,
         market_type=f"{prefix}_{_fmt_line(sides['1'][0], signed=True)}",
-        outcomes=[
-            Outcome(name="1", bookmaker=bookmaker, odds=sides["1"][1]),
-            Outcome(name="2", bookmaker=bookmaker, odds=sides["2"][1]),
-        ],
+        outcomes=[sides["1"][1], sides["2"][1]],
     )
 
 
@@ -172,6 +201,9 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
                 market = _fixed_market(event_name, sport, bookmaker, f"DNB{suffix}", offer, _TWO_WAY_12)
             elif base in _MOST_BASES:
                 market = _fixed_market(event_name, sport, bookmaker, f"{_MOST_BASES[base]}{suffix}", offer, _THREE_WAY)
+        elif offer_type == "Double Chance":
+            if base == "Double Chance":  # no "... and Both Teams To Score", etc.
+                market = _fixed_market(event_name, sport, bookmaker, f"DC{suffix}", offer, _DOUBLE_CHANCE)
         elif offer_type == "Yes/No":
             if base == "Both Teams To Score":
                 market = _fixed_market(event_name, sport, bookmaker, f"BTTS{suffix}", offer, _YES_NO)
@@ -235,7 +267,11 @@ class KambiProvider(OddsProvider):
         operators: dict[str, str] | None = None,
         horizon_hours: int | None = None,
         max_workers: int = 2,
+        exclude_esports: bool | None = None,
+        exclude_women: bool | None = None,
     ):
+        self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
+        self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.operators = operators or OPERATORS
         self.horizon_hours = horizon_hours or int(os.environ.get("KAMBI_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
         self.max_workers = max_workers
@@ -271,6 +307,14 @@ class KambiProvider(OddsProvider):
         for item in data.get("events", []):
             event = item.get("event", {})
             if event.get("state") != "NOT_STARTED" or not event.get("homeName") or not event.get("awayName"):
+                continue
+            # La ruta del evento ("|Esports Football|" > "Cyber Live Arena", "Liga
+            # MX Femenil (W)"...) y los nombres de equipo distinguen el fútbol
+            # virtual y el femenino, que no queremos.
+            labels = [event.get("group"), event["homeName"], event["awayName"]]
+            for node in event.get("path") or []:
+                labels += [node.get("name"), node.get("englishName")]
+            if is_excluded(labels, self.exclude_esports, self.exclude_women):
                 continue
             start = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
             if now < start <= limit:

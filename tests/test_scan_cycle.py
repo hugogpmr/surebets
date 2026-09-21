@@ -220,3 +220,29 @@ def test_normal_margin_never_triggers_a_second_read(db):
     a, b = direct_pair(2.1, 2.05)
     run([a, b], db, {}, confirm_cycles=1)
     assert a.calls == 1 and b.calls == 1
+
+
+def test_mirrored_comparator_table_is_not_reported_as_a_surebet(db):
+    # Caso real del estado del 2026-09-17: el comparador ensenaba en la pestana BTTS
+    # las columnas 1 y X del 1X2 (2.55 y 3.85), lo que parece una surebet del 35 %.
+    one_x_two = Market(
+        "Willem II vs. Sittard", "futbol", "1X2",
+        [Outcome("1", "bet365", 2.55), Outcome("X", "versus", 3.85), Outcome("2", "paf", 2.63)],
+    )
+    btts = Market(
+        "Willem II vs. Sittard", "futbol", "BTTS", [Outcome("Yes", "bet365", 2.55), Outcome("No", "versus", 3.85)]
+    )
+    sent = run([FakeProvider("cuotasahora", [one_x_two, btts])], db, {}, confirm_cycles=1, verify_cycles=1, max_margin=0.9)
+    assert sent == []
+    rows = {r["market_type"]: r for r in export_snapshot(db)["comparisons"]}
+    assert "lectura_duplicada" in rows["BTTS"]["flags"] and not rows["BTTS"]["is_surebet"]
+    assert "lectura_duplicada" not in rows["1X2"]["flags"]
+
+
+def test_same_surebet_from_direct_sources_is_never_treated_as_a_mirror(db):
+    # Altenar y Kambi devuelven cada mercado por separado: no aplica la defensa
+    one = Market("A vs. B", "futbol", "1X2", [Outcome("1", "betway", 2.1), Outcome("X", "paf", 3.4), Outcome("2", "paf", 3.6)])
+    ou = Market("A vs. B", "futbol", "OU_2.5", [Outcome("Over", "betway", 2.1), Outcome("Under", "paf", 3.4)])
+    sent = run([FakeProvider("kambi", [one, ou])], db, {}, confirm_cycles=1)
+    rows = {r["market_type"]: r for r in export_snapshot(db)["comparisons"]}
+    assert "lectura_duplicada" not in rows["OU_2.5"]["flags"]

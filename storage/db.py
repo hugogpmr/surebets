@@ -140,6 +140,8 @@ def save_comparisons(path: str, comparisons: list[MarketComparison]) -> None:
                     "odds": o.odds,
                     "source": o.source,
                     "fetched_at": o.fetched_at.isoformat() if o.fetched_at else None,
+                    "cash_out": o.cash_out,
+                    "odds_changed_at": o.odds_changed_at.isoformat() if o.odds_changed_at else None,
                 }
                 for o in market.outcomes
             ]

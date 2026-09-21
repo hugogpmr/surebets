@@ -13,6 +13,12 @@ class Outcome:
     # las de un comparador (que pueden ir desfasadas): ver engine/quality.py.
     source: str = ""
     fetched_at: datetime | None = None
+    # Solo Kambi lo informa (`cashOutStatus`): True/False si la selección admite
+    # cash out (la salida de emergencia si la otra pata falla), None = la fuente
+    # no lo dice. `odds_changed_at` = cuándo movió la casa esta cuota por última
+    # vez (`changedDate`): una cuota antigua tiene más riesgo de haber cambiado ya.
+    cash_out: bool | None = None
+    odds_changed_at: datetime | None = None
 
 
 @dataclass

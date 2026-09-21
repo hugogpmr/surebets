@@ -1,4 +1,5 @@
 import asyncio
+import os
 import logging
 import re
 import urllib.parse
@@ -128,6 +129,8 @@ SPORT_URL_SEGMENT = {
 # mensualmente, así que puede quedar desfasada — revisar de nuevo en
 # ordenacionjuego.es antes de operar con dinero real si ha pasado tiempo.
 #
+# (bwin sí se mantiene: aunque ahora también se lee en directo, engine/matching.py da
+# prioridad a la lectura directa de una casa sobre la del comparador.)
 # Sportium/Betfair/Winamax se excluyen aquí a propósito aunque aparezcan en
 # la tabla: ya los scrapeamos en directo (providers/sportium.py, betfair.py,
 # winamax.py) y mezclar ambas fuentes para la misma casa arriesga comparar
@@ -421,8 +424,14 @@ class CuotasAhoraProvider(OddsProvider):
 
     name = "cuotasahora"
 
-    def __init__(self, league_urls: dict[str, str] | None = None):
+    def __init__(self, league_urls: dict[str, str] | None = None, max_matches: int | None = None):
         self.league_urls = league_urls or DEFAULT_LEAGUE_URLS
+        # Tope de partidos leídos por competición (los primeros del listado, que
+        # son los más próximos); 0 = sin tope. Cada partido cuesta ~30 s de
+        # navegador y hay competiciones con más de 100 en el listado (NFL, tenis).
+        self.max_matches = (
+            max_matches if max_matches is not None else int(os.environ.get("CUOTASAHORA_MAX_MATCHES", "0"))
+        )
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         return asyncio.run(self._fetch_markets_async(sports))
@@ -451,23 +460,45 @@ class CuotasAhoraProvider(OddsProvider):
                         url,
                         await page.title(),
                     )
+                if self.max_matches:
+                    match_urls = match_urls[: self.max_matches]
                 for match_url in match_urls:
                     markets.extend(await self._fetch_match(page, match_url, sport))
             await browser.close()
         return markets
 
-    async def _dismiss_gates(self, page) -> None:
+    async def _dismiss_gates(self, page, timeout: int = 3000) -> None:
         for selector in ("text=Soy mayor de 18", "#onetrust-reject-all-handler"):
             try:
-                await page.click(selector, timeout=3000)
+                await page.click(selector, timeout=timeout)
             except Exception:
                 pass
 
     async def _collect_match_urls(self, page, league_url: str, sport_path: str = "football") -> list[str]:
-        await page.goto(league_url, timeout=20000)
-        await page.wait_for_timeout(1200)
-        await self._dismiss_gates(page)
-        await page.wait_for_timeout(800)
+        """Listado de partidos de una liga. Si sale vacío se repite una vez con
+        más paciencia: en el ciclo lento real se vieron ligas con 0 partidos
+        porque la página seguía en la puerta de edad ("CuotasAhora - Verificación
+        de edad") o sin cargar (título vacío) y el clic de 3 s no llegó a tiempo;
+        tal cual se guardaba como lectura vacía y esa liga no se refrescaba."""
+        urls: list[str] = []
+        for attempt in range(2):
+            try:
+                urls = await self._collect_match_urls_once(page, league_url, sport_path, patient=attempt > 0)
+            except Exception:
+                if attempt:
+                    raise
+                logger.warning("CuotasAhora: fallo cargando el listado %s, se reintenta", league_url, exc_info=True)
+            if urls:
+                break
+        return urls
+
+    async def _collect_match_urls_once(
+        self, page, league_url: str, sport_path: str, patient: bool = False
+    ) -> list[str]:
+        await page.goto(league_url, timeout=30000 if patient else 20000)
+        await page.wait_for_timeout(3000 if patient else 1200)
+        await self._dismiss_gates(page, timeout=8000 if patient else 3000)
+        await page.wait_for_timeout(1500 if patient else 800)
         hrefs = await page.eval_on_selector_all(
             f'a[href*="/{sport_path}/h2h/"]', "els => els.map(e => e.getAttribute('href'))"
         )

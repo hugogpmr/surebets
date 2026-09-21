@@ -14,62 +14,51 @@ DEFAULT_COMPETITION_URLS = {
 # semántico de cada clase en vez del hash completo, comprobando cada token
 # de classList por separado (una cuota tiene dos clases a la vez, p.ej.
 # "c84e...-label c84e...-labelTwoLines", así que no vale un simple $=).
-_EXTRACT_MATCHES_JS = """() => {
-    const rows = document.querySelectorAll('[class*="-fixture"][class*="viewCoupon"]');
+#
+# Anclaje de cada partido: desde el 2026-09-21 cada partido del listado es un
+# bloque `[class*="-couponContainer"]` que contiene los 2 nombres de equipo
+# (`-teamNameLabel`) y sus botones de cuota (`-betButtonContainer`). Antes era
+# un `[class*="-fixture"][class*="viewCoupon"]` con los botones 4 niveles más
+# arriba; esa versión ya no existe en la web (0 mercados, escaneos "FALLÓ") y
+# se conserva solo como respaldo por si Betfair vuelve a cambiar el DOM.
+_EXTRACT_JS_TEMPLATE = """(minOdds) => {
+    const oddOf = (b) => {
+        for (const span of b.querySelectorAll('span')) {
+            if (Array.from(span.classList).some(c => c.endsWith('-label'))) return span.textContent.trim();
+        }
+        return null;
+    };
+    const read = (teamsScope, buttonsScope) => {
+        const teams = Array.from(teamsScope.querySelectorAll('[class*="-teamNameLabel"]'))
+            .map(e => e.textContent.trim());
+        const odds = Array.from(buttonsScope.querySelectorAll('[class*="-betButtonContainer"]')).map(oddOf);
+        // Número EXACTO de botones: en la vista 1X2 hay 3 por partido y en Más/Menos 2. Si el
+        // cambio de mercado aún no se ha aplicado al leer, no coincide y la lectura queda vacía
+        // (con `>=` se leían los botones 1 y X como "Más de"/"Menos de": cuotas falsas).
+        if (teams.length === 2 && odds.length === minOdds && odds.every(o => o !== null)) {
+            return { teams, odds };
+        }
+        return null;
+    };
     const results = [];
-    for (const row of rows) {
+    for (const block of document.querySelectorAll('[class*="-couponContainer"]')) {
+        const found = read(block, block);
+        if (found) results.push(found);
+    }
+    if (results.length) return results;
+    for (const row of document.querySelectorAll('[class*="-fixture"][class*="viewCoupon"]')) {
         let scope = row;
         for (let i = 0; i < 4 && scope; i++) scope = scope.parentElement;
-        const teams = Array.from(row.querySelectorAll('[class*="-teamNameLabel"]'))
-            .map(e => e.textContent.trim());
-        const buttons = scope ? scope.querySelectorAll('[class*="-betButtonContainer"]') : [];
-        const odds = [];
-        for (const b of buttons) {
-            let value = null;
-            for (const span of b.querySelectorAll('span')) {
-                if (Array.from(span.classList).some(c => c.endsWith('-label'))) {
-                    value = span.textContent.trim();
-                    break;
-                }
-            }
-            odds.push(value);
-        }
-        if (teams.length === 2 && odds.length >= 3 && odds.slice(0, 3).every(o => o !== null)) {
-            results.push({ teams, odds: odds.slice(0, 3) });
-        }
+        const found = scope ? read(row, scope) : null;
+        if (found) results.push(found);
     }
     return results;
 }"""
 
-# Mismo patrón que _EXTRACT_MATCHES_JS, pero con el mercado "Más/Menos de 2,5
-# Goles" ya seleccionado (ver _fetch_over_under): solo 2 botones por partido
-# (Más de / Menos de), en ese orden.
-_EXTRACT_OU_MATCHES_JS = """() => {
-    const rows = document.querySelectorAll('[class*="-fixture"][class*="viewCoupon"]');
-    const results = [];
-    for (const row of rows) {
-        let scope = row;
-        for (let i = 0; i < 4 && scope; i++) scope = scope.parentElement;
-        const teams = Array.from(row.querySelectorAll('[class*="-teamNameLabel"]'))
-            .map(e => e.textContent.trim());
-        const buttons = scope ? scope.querySelectorAll('[class*="-betButtonContainer"]') : [];
-        const odds = [];
-        for (const b of buttons) {
-            let value = null;
-            for (const span of b.querySelectorAll('span')) {
-                if (Array.from(span.classList).some(c => c.endsWith('-label'))) {
-                    value = span.textContent.trim();
-                    break;
-                }
-            }
-            odds.push(value);
-        }
-        if (teams.length === 2 && odds.length >= 2 && odds.slice(0, 2).every(o => o !== null)) {
-            results.push({ teams, odds: odds.slice(0, 2) });
-        }
-    }
-    return results;
-}"""
+# 1X2: 3 botones por partido (1, X, 2). Más/Menos de 2,5 (ver _fetch_over_under,
+# con el mercado ya seleccionado): 2 botones (Más de / Menos de), en ese orden.
+_EXTRACT_MATCHES_JS = _EXTRACT_JS_TEMPLATE
+_EXTRACT_OU_MATCHES_JS = _EXTRACT_JS_TEMPLATE
 
 
 class BetfairProvider(OddsProvider):
@@ -109,10 +98,10 @@ class BetfairProvider(OddsProvider):
                 url = self.competition_urls.get(sport)
                 if not url:
                     continue
-                await page.goto(url, timeout=20000)
-                await page.wait_for_selector('[class*="-betButtonContainer"]', timeout=20000)
-                await page.wait_for_timeout(1500)
-                raw_matches = await page.evaluate(_EXTRACT_MATCHES_JS)
+                await page.goto(url, timeout=45000, wait_until="domcontentloaded")
+                await page.wait_for_selector('[class*="-betButtonContainer"]', state="attached", timeout=30000)
+                await page.wait_for_timeout(2500)
+                raw_matches = await page.evaluate(_EXTRACT_MATCHES_JS, 3)
                 markets.extend(self._parse_matches(raw_matches, sport))
 
                 markets.extend(await self._fetch_over_under(page, sport))
@@ -131,8 +120,8 @@ class BetfairProvider(OddsProvider):
                 pass
             await page.click('button[class*="-marketSwitcher"]', timeout=5000)
             await page.click('label[for="ppb:marketType:OVER_UNDER_25"]', timeout=5000)
-            await page.wait_for_timeout(1500)
-            raw_matches = await page.evaluate(_EXTRACT_OU_MATCHES_JS)
+            await page.wait_for_timeout(2500)
+            raw_matches = await page.evaluate(_EXTRACT_OU_MATCHES_JS, 2)
         except Exception:
             return []
         return self._parse_over_under_matches(raw_matches, sport)

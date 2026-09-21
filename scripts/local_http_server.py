@@ -20,4 +20,8 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
-    HTTPServer(("127.0.0.1", port), NoCacheHandler).serve_forever()
+    # Segundo argumento opcional: host de escucha. "127.0.0.1" (por defecto) solo
+    # deja entrar a este PC; "0.0.0.0" abre el panel a los demas dispositivos de
+    # la red local (el movil por WiFi) o de Tailscale.
+    host = sys.argv[2] if len(sys.argv) > 2 else "127.0.0.1"
+    HTTPServer((host, port), NoCacheHandler).serve_forever()

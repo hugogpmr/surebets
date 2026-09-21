@@ -13,8 +13,18 @@ from providers.base import OddsProvider
 from storage.db import comparison_key, save_comparisons, save_opportunity
 
 from .arbitrage import compare_market, format_stakes
-from .matching import best_odds_per_outcome, group_by_event
-from .quality import BLOCKING_FLAGS, FLAG_DESCRIPTIONS, MAX_MARGIN, VERIFY_MARGIN, WARN_MARGIN, assess
+from .matching import best_odds_per_outcome, event_key, group_by_event
+from .quality import (
+    BLOCKING_FLAGS,
+    FLAG_DESCRIPTIONS,
+    MAX_MARGIN,
+    VERIFY_MARGIN,
+    WARN_MARGIN,
+    _canonical_type,
+    assess,
+    find_mirrored,
+    has_comparator_leg,
+)
 
 # Margen mínimo de cambio para considerar que una oportunidad ya notificada
 # "cambió" y merece un nuevo aviso (en puntos porcentuales, no fracción).
@@ -142,17 +152,39 @@ def _build_comparisons(
     max_margin: float,
 ) -> list:
     comparisons = []
+    references: dict[tuple, list] = {}
     for grouped in group_by_event(raw_markets):
         market = best_odds_per_outcome(grouped)
         comparison = compare_market(market, bankroll, min_margin, round_step)
         comparisons.append(comparison)
+        # Todos los pares (casa, cuota) leídos en cada mercado, para detectar
+        # tablas de un comparador leídas dos veces con otra etiqueta.
+        references.setdefault((market.sport, event_key(market.event)), []).append(
+            (_canonical_type(market.market_type), frozenset((o.bookmaker, o.odds) for o in grouped.outcomes))
+        )
         if comparison.margin > 0:
             comparison.flags, comparison.reliability = assess(
                 market, comparison.margin, now, warn_margin, max_margin, verify_margin
             )
-            if comparison.is_surebet and any(f in BLOCKING_FLAGS for f in comparison.flags):
-                _invalidate(comparison)
+
+    # Solo las candidatas con alguna pata de comparador pueden ser una lectura
+    # duplicada (las APIs de Altenar/Kambi devuelven cada mercado por separado).
+    to_check = [
+        (i, (c.market, (c.market.sport, event_key(c.market.event))))
+        for i, c in enumerate(comparisons)
+        if c.margin > 0 and has_comparator_leg(c.market)
+    ]
+    mirrored = find_mirrored([item for _, item in to_check], references)
+    for position in mirrored:
+        comparison = comparisons[to_check[position][0]]
+        comparison.flags.append("lectura_duplicada")
+        comparison.reliability = "baja"
+
+    for comparison in comparisons:
+        if comparison.is_surebet and any(f in BLOCKING_FLAGS for f in comparison.flags):
+            _invalidate(comparison)
     return comparisons
+
 
 
 async def _verify_high_margins(
@@ -236,10 +268,12 @@ async def run_scan_cycle(
     max_margin: float = MAX_MARGIN,
     verify_margin: float = VERIFY_MARGIN,
     verify_cycles: int = 3,
-) -> None:
+) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
-    ejecuciones si hace falta.
+    ejecuciones si hace falta. Devuelve el estado de cada fuente
+    ({"sources": {nombre: {"ok", "markets", "events"}}}): una fuente con 0
+    mercados o `ok=False` es señal de que algo va mal.
 
     Una surebet solo se avisa (y se guarda en el histórico) cuando lleva
     `confirm_cycles` escaneos seguidos apareciendo: es lo que filtra las cuotas
@@ -249,11 +283,24 @@ async def run_scan_cycle(
     si no se pueden verificar así, necesitan `verify_cycles` escaneos seguidos.
     """
     raw_by_provider: dict[str, list] = {}
-    for provider in providers:
-        fetched = await _fetch(provider, sports, logger)
+    # Las fuentes se leen A LA VEZ (cada una en su hilo, con su propio navegador si lo
+    # necesita): en serie, sumar bwin y Winamax a Altenar/Kambi/Sportium/Betfair
+    # alargaba el ciclo por encima de lo que aguanta un escaneo cada pocos minutos.
+    fetched_all = await asyncio.gather(*(_fetch(provider, sports, logger) for provider in providers))
+    for provider, fetched in zip(providers, fetched_all):
         if fetched is not None:
             raw_by_provider[provider.name] = fetched
     raw_markets = [m for p in providers for m in raw_by_provider.get(p.name, [])]
+    sources = {
+        p.name: {
+            "ok": p.name in raw_by_provider,
+            "markets": len(raw_by_provider.get(p.name, [])),
+            "events": len({(m.sport, m.event) for m in raw_by_provider.get(p.name, [])}),
+        }
+        for p in providers
+    }
+    for name, info in sources.items():
+        logger.info("Fuente %s: %d mercados de %d partidos%s", name, info["markets"], info["events"], "" if info["ok"] else " (FALLÓ)")
 
     now = datetime.now(timezone.utc)
     args = (bankroll, min_margin, round_step, now, warn_margin, verify_margin, max_margin)
@@ -322,3 +369,5 @@ async def run_scan_cycle(
     for key in list(active_state):
         if key not in seen_keys:
             del active_state[key]
+
+    return {"sources": sources}

@@ -10,6 +10,7 @@ import httpx
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,11 @@ INTEGRATIONS: dict[str, str] = {
     "jokerbet": "jokerbet",
     "paston": "paston",
     "betway": "betway",
+    # Añadidas el 2026-09-21 (la integración responde con partidos en la API
+    # pública: 920 y 721 eventos ese día). Licencias en el registro de la DGOJ:
+    # Betinia = IBERIX GAMING, S.A.U.; DAZN Bet = DZBT DEPORTES, S.A.
+    "betinia": "betinia",
+    "daznbet": "daznbet",
 }
 
 FOOTBALL_SPORT_ID = 66
@@ -61,8 +67,15 @@ _YES_NO = "yes_no"
 _ODD_EVEN = "odd_even"
 _TOTAL = "total"
 _HANDICAP = "handicap"
+_DOUBLE_CHANCE = "double_chance"
 
 FOOTBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    # Doble oportunidad (1X / 12 / X2): tres resultados que se solapan entre sí pero
+    # forman un mercado completo (una de las tres siempre gana). Cruza con los
+    # comparadores, Winamax y bwin ("DC", "DC_HT", "DC_2H").
+    10: ("DC", _DOUBLE_CHANCE),
+    63: ("DC_HT", _DOUBLE_CHANCE),
+    85: ("DC_2H", _DOUBLE_CHANCE),
     # 1X2 y variantes
     1: ("1X2", _THREE_WAY),
     60: ("1X2_HT", _THREE_WAY),
@@ -181,6 +194,11 @@ _EXPECTED_OUTCOMES = {
     _YES_NO: {"Yes", "No"},
     _ODD_EVEN: {"Odd", "Even"},
 }
+# Cada selección de la doble oportunidad lleva un `typeId` propio y estable de Altenar
+# (verificado en vivo el 2026-09-21 en Betway): 9 = local o empate, 10 = local o
+# visitante, 11 = empate o visitante. Se usa en vez del texto, que cada casa escribe
+# distinto ("1 o empate", "Valencia o empate"...).
+_DC_ODD_TYPES = {9: "1X", 10: "12", 11: "X2"}
 _YES_NO_LABELS = {"sí": "Yes", "si": "Yes", "yes": "Yes", "no": "No"}
 _ODD_EVEN_LABELS = {"impar": "Odd", "par": "Even", "odd": "Odd", "even": "Even"}
 
@@ -284,6 +302,11 @@ def parse_event_markets(
         if spec is None:
             continue
         prefix, kind = spec
+        if kind == _DOUBLE_CHANCE:
+            dc_market = _parse_double_chance(event_name, sport, bookmaker, prefix, market, odds_by_id)
+            if dc_market is not None:
+                markets.append(dc_market)
+            continue
         available = []
         for odd_id in _flat_odd_ids(market):
             odd = odds_by_id.get(odd_id)
@@ -305,6 +328,27 @@ def parse_event_markets(
         elif kind == _HANDICAP:
             markets.extend(_parse_handicaps(event_name, sport, bookmaker, prefix, available))
     return markets
+
+
+def _parse_double_chance(event, sport, bookmaker, prefix, market, odds_by_id) -> Market | None:
+    pairs = []
+    for odd_id in _flat_odd_ids(market):
+        odd = odds_by_id.get(odd_id)
+        if odd is None or odd.get("oddStatus") != 0:
+            continue
+        price = _display_price(float(odd["price"]))
+        pairs.append((_DC_ODD_TYPES.get(odd.get("typeId")), price))
+    labels = [label for label, _ in pairs]
+    # Si falta o sobra un resultado (uno suspendido, un tipo desconocido) el mercado
+    # no es completo: se descarta entero.
+    if None in labels or set(labels) != {"1X", "12", "X2"} or len(labels) != 3 or any(p <= 1.0 for _, p in pairs):
+        return None
+    return Market(
+        event=event,
+        sport=sport,
+        market_type=prefix,
+        outcomes=[Outcome(name=label, bookmaker=bookmaker, odds=price) for label, price in pairs],
+    )
 
 
 def _label_for(kind: str, name: str, team: str | None) -> str | None:
@@ -420,8 +464,12 @@ class AltenarProvider(OddsProvider):
         self,
         integrations: dict[str, str] | None = None,
         horizon_hours: int | None = None,
-        max_workers: int = 4,
+        max_workers: int = 3,
+        exclude_esports: bool | None = None,
+        exclude_women: bool | None = None,
     ):
+        self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
+        self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.integrations = integrations or INTEGRATIONS
         self.horizon_hours = horizon_hours or int(os.environ.get("ALTENAR_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
         self.max_workers = max_workers
@@ -434,19 +482,26 @@ class AltenarProvider(OddsProvider):
 
     def _get_json(self, client, endpoint: str, integration: str, **params) -> dict:
         last_error: Exception | None = None
-        for attempt in range(3):
+        for attempt in range(5):
             try:
                 response = client.get(
                     API_BASE + endpoint,
                     params={**COMMON_PARAMS, "integration": integration, **params},
                 )
+                if response.status_code == 429:
+                    # límite de peticiones (visto con 5 casas y 4 hilos, 2026-09-21:
+                    # sin este reintento se perdían enteras las casas que tocaba
+                    # leer cuando saltaba el límite, p.ej. DAZN Bet): espera creciente
+                    last_error = RuntimeError("HTTP 429")
+                    time.sleep(2.0 * (attempt + 1))
+                    continue
                 response.raise_for_status()
                 return response.json()
             except httpx.TransportError as exc:
                 # cortes puntuales de conexión: se reintenta con espera creciente
                 last_error = exc
                 time.sleep(1.5 * (attempt + 1))
-        raise RuntimeError(f"Altenar: red inestable en {endpoint}/{integration}") from last_error
+        raise RuntimeError(f"Altenar: red inestable o límite de peticiones en {endpoint}/{integration}") from last_error
 
     def _list_events(self, client, integration: str) -> dict[int, dict]:
         data = self._get_json(
@@ -469,11 +524,18 @@ class AltenarProvider(OddsProvider):
         )
         now = datetime.now(timezone.utc)
         limit = now + timedelta(hours=self.horizon_hours)
+        # Nombres de competición y categoría ("E-battles" / "ESportsBattle...",
+        # "Mujeres Super League"...): con ellos se descarta fútbol virtual y femenino.
+        champs = {c.get("id"): c.get("name") for c in data.get("champs", [])}
+        categories = {c.get("id"): c.get("name") for c in data.get("categories", [])}
         events = {}
         for event in data.get("events", []):
             # status 0 = pre-partido (no en juego); este sistema es solo
             # pre-partido a propósito.
             if event.get("status") != 0 or " vs. " not in event.get("name", ""):
+                continue
+            labels = [champs.get(event.get("champId")), categories.get(event.get("catId")), event["name"]]
+            if is_excluded(labels, self.exclude_esports, self.exclude_women):
                 continue
             start = datetime.fromisoformat(event["startDate"].replace("Z", "+00:00"))
             if not (now < start <= limit):

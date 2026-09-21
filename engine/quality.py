@@ -17,12 +17,13 @@ engine/scan.py los comprueba con una segunda lectura de las fuentes directas
 en el mismo escaneo (o, si solo hay comparadores, exige más ciclos seguidos).
 """
 
+import re
 from datetime import datetime, timedelta, timezone
 
 from .models import Market, Outcome
 
 # Fuentes que leen la propia casa (API o web de la casa): precio de referencia.
-DIRECT_SOURCES = frozenset({"altenar", "kambi", "sportium", "betfair", "winamax", "kirolbet"})
+DIRECT_SOURCES = frozenset({"altenar", "kambi", "sportium", "betfair", "winamax", "bwin", "bet777", "kirolbet"})
 # Comparadores: agregan casas ajenas y pueden ir desfasados (verificado hasta
 # ~7 % en 1X2 en la hora previa al partido, ver README).
 COMPARATOR_SOURCES = frozenset({"cuotasahora", "betexplorer"})
@@ -44,11 +45,12 @@ NEAR_KICKOFF = timedelta(hours=2)
 MAX_LEG_SKEW = timedelta(minutes=10)
 
 # Flags que descartan la surebet (error de datos, no oportunidad).
-BLOCKING_FLAGS = frozenset({"una_sola_casa", "mercado_incompleto", "margen_absurdo"})
+BLOCKING_FLAGS = frozenset({"una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada"})
 
 FLAG_DESCRIPTIONS = {
     "una_sola_casa": "todas las patas son de la misma casa (error de datos)",
     "mercado_incompleto": "faltan resultados del mercado (error de datos)",
+    "lectura_duplicada": "cuotas idénticas a las de otro mercado del mismo partido (tabla del comparador leída dos veces)",
     "margen_absurdo": "margen por encima del máximo creíble (error de datos)",
     "margen_alto": "margen inusualmente alto: comprueba las cuotas en las casas",
     "margen_a_verificar": "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
@@ -73,6 +75,61 @@ def min_outcomes(market_type: str) -> int:
     if "_FIRST" in market_type or "_LAST" in market_type:
         return 3
     return 2
+
+
+# AH 0 y "Empate no apuesta" son el mismo mercado con dos nombres: que tengan las
+# mismas cuotas es lo esperado, no una lectura duplicada.
+_AH_ZERO = re.compile(r"^AH((?:_HT|_2H)?)_[+-]?0(?:\.0)?$")
+
+
+def _canonical_type(market_type: str) -> str:
+    match = _AH_ZERO.match(market_type)
+    return f"DNB{match.group(1)}" if match else market_type
+
+
+def has_comparator_leg(market: Market) -> bool:
+    return any(o.source in COMPARATOR_SOURCES for o in market.outcomes)
+
+
+def find_mirrored(candidates: list[tuple[Market, str]], references: dict[tuple, list[tuple[str, frozenset]]]) -> set[int]:
+    """Índices de `candidates` cuyas patas (casa, cuota) aparecen TODAS, idénticas,
+    en otro mercado del mismo partido: señal de que el comparador enseñaba la
+    tabla de otra pestaña (1X2) cuando se leyó ésta.
+
+    Verificado en el estado real del 2026-09-17: el 24 % de las comparaciones
+    compartían casas y cuotas exactas con otro mercado del mismo partido (BTTS,
+    BTTS_HT, OU_0 y DC con las cuotas 1/X del 1X2) y la mitad de las 28
+    "surebets" eran eso. Es un fallo sistemático, así que repetir la lectura
+    varios ciclos no lo detecta: por eso se mira la estructura, no el margen.
+
+    `candidates` = (mercado final con la mejor cuota por resultado, tipo).
+    `references` = por (deporte, partido), lista de (tipo canónico, conjunto de
+    todos los pares (casa, cuota) leídos en ese mercado). El 1X2 nunca se marca:
+    es la tabla que se lee sin cambiar de pestaña, la original.
+    """
+    mirrored: set[int] = set()
+    for index, (market, key) in enumerate(candidates):
+        canon = _canonical_type(market.market_type)
+        if canon == "1X2":
+            continue
+        legs = frozenset((o.bookmaker, o.odds) for o in market.outcomes)
+        # Candidata MIXTA (patas directas y de comparador): las directas nunca están en la
+        # tabla de otro mercado, así que se mira solo lo que dice el comparador. Si sus
+        # patas coinciden con las que esa misma casa tiene en el 1X2 (la tabla que se lee
+        # sin cambiar de pestaña) es la misma lectura: p.ej. una "X al descanso" de 3.6 que
+        # es en realidad la X del partido completo, cruzada con cuotas directas al descanso.
+        comparator_legs = frozenset((o.bookmaker, o.odds) for o in market.outcomes if o.source in COMPARATOR_SOURCES)
+        if comparator_legs and comparator_legs != legs and canon != "1X2":
+            if any(other_canon == "1X2" and comparator_legs <= other_pairs for other_canon, other_pairs in references.get(key, ())):
+                mirrored.add(index)
+                continue
+        if len(legs) < 2:
+            continue
+        for other_canon, other_pairs in references.get(key, ()):
+            if other_canon != canon and legs <= other_pairs:
+                mirrored.add(index)
+                break
+    return mirrored
 
 
 def _leg_sources(outcomes: list[Outcome]) -> set[str]:

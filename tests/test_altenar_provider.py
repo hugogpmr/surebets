@@ -251,3 +251,112 @@ def test_explicit_competitor_ids_override_details_order():
     swapped = parse_event_markets(TEAM_NAME_STYLE, "A vs. B", "futbol", "paston", competitor_ids=(AWAY, HOME))
     types = _by_type(swapped)
     assert [(o.name, o.odds) for o in types["DNB"].outcomes] == [("2", 1.83), ("1", 1.83)]
+
+
+def test_get_json_retries_when_altenar_rate_limits_requests(monkeypatch):
+    # Con 5 casas y varios hilos Altenar responde 429 de vez en cuando; antes se
+    # perdía entera la casa/partido de esa petición (p.ej. DAZN Bet).
+    import time
+
+    from providers.altenar import AltenarProvider
+
+    monkeypatch.setattr(time, "sleep", lambda s: None)
+
+    class Response:
+        def __init__(self, status, payload=None):
+            self.status_code = status
+            self._payload = payload
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                raise RuntimeError(f"HTTP {self.status_code}")
+
+        def json(self):
+            return self._payload
+
+    class Client:
+        def __init__(self, responses):
+            self.responses = list(responses)
+            self.calls = 0
+
+        def get(self, url, params=None):
+            self.calls += 1
+            return self.responses.pop(0)
+
+    provider = AltenarProvider()
+    client = Client([Response(429), Response(429), Response(200, {"events": []})])
+    assert provider._get_json(client, "GetEvents", "daznbet") == {"events": []}
+    assert client.calls == 3
+
+    always_limited = Client([Response(429)] * 5)
+    try:
+        provider._get_json(always_limited, "GetEvents", "daznbet")
+    except RuntimeError as exc:
+        assert "límite de peticiones" in str(exc)
+    else:
+        raise AssertionError("debió fallar tras agotar los reintentos")
+
+
+def test_esports_and_womens_football_are_excluded_by_champ_and_category_names():
+    start = (datetime.now(timezone.utc) + timedelta(hours=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def ev(event_id, name, champ_id, cat_id):
+        return {"id": event_id, "name": name, "status": 0, "startDate": start, "champId": champ_id, "catId": cat_id}
+
+    data = {
+        "champs": [
+            {"id": 1, "name": "LaLiga"},
+            {"id": 2, "name": "ESportsBattle. Portugal Primera (2x4 mins)"},
+            {"id": 3, "name": "Liga MX, Femenino"},
+            {"id": 4, "name": "FIFA ASEAN Cup"},
+        ],
+        "categories": [{"id": 10, "name": "España"}, {"id": 11, "name": "E-battles"}, {"id": 12, "name": "México"}, {"id": 13, "name": "Asia"}],
+        "events": [
+            ev(1, "Valencia vs. Sevilla", 1, 10),
+            ev(2, "Porto (kozak) vs. Benfica (drksd3)", 2, 11),
+            ev(3, "Chivas vs. Tigres", 3, 12),
+            ev(4, "Vietnam vs. Tailandia", 4, 13),  # torneo real: "FIFA" por sí solo no es e-soccer
+        ],
+    }
+
+    def listed(**kwargs):
+        provider = AltenarProvider(integrations={"c": "c"}, horizon_hours=48, **kwargs)
+        provider._get_json = lambda client, endpoint, integration, **params: data
+        return set(provider._list_events(None, "c"))
+
+    assert listed() == {1, 4}
+    assert listed(exclude_women=False) == {1, 3, 4}
+    assert listed(exclude_esports=False) == {1, 2, 4}
+
+
+def _dc_odd(odd_id, name, price, type_id, status=0):
+    odd = _odd(odd_id, name, price, status=status)
+    odd["typeId"] = type_id
+    return odd
+
+
+def _dc_details(*odds, market_type=10):
+    return {
+        "odds": list(odds),
+        "competitors": [{"id": HOME, "name": "Local"}, {"id": AWAY, "name": "Visitante"}],
+        "markets": [_market(500, market_type, [o["id"] for o in odds])],
+    }
+
+
+def test_double_chance_is_identified_by_odd_type_not_by_text_and_covers_halves():
+    # Betway: "1 o empate"; Jokerbet/Pastón usan el nombre del equipo: el typeId es el mismo
+    for names in (("1 o empate", "1 o  2", "Empate o 2"), ("Valencia o empate", "Valencia o Real Sociedad", "Empate o Real Sociedad")):
+        details = _dc_details(_dc_odd(1, names[0], 1.1765, 9), _dc_odd(2, names[1], 1.2308, 10), _dc_odd(3, names[2], 2.0, 11))
+        (market,) = parse_event_markets(details, "Local vs. Visitante", "futbol", "betway")
+        assert market.market_type == "DC"
+        assert [(o.name, o.odds) for o in market.outcomes] == [("1X", 1.18), ("12", 1.23), ("X2", 2.0)]
+    for type_id, expected in ((63, "DC_HT"), (85, "DC_2H")):
+        details = _dc_details(_dc_odd(1, "a", 1.5, 9), _dc_odd(2, "b", 1.4, 10), _dc_odd(3, "c", 2.5, 11), market_type=type_id)
+        assert [m.market_type for m in parse_event_markets(details, "L vs. V", "futbol", "x")] == [expected]
+
+
+def test_double_chance_with_a_suspended_or_unknown_selection_is_dropped():
+    suspended = _dc_details(_dc_odd(1, "a", 1.5, 9), _dc_odd(2, "b", 1.4, 10), _dc_odd(3, "c", 2.5, 11, status=1))
+    unknown = _dc_details(_dc_odd(1, "a", 1.5, 9), _dc_odd(2, "b", 1.4, 10), _dc_odd(3, "c", 2.5, 99))
+    assert parse_event_markets(suspended, "L vs. V", "futbol", "x") == []
+    assert parse_event_markets(unknown, "L vs. V", "futbol", "x") == []

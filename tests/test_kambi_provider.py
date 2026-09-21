@@ -218,3 +218,83 @@ def test_get_json_retries_transient_connection_errors_and_rate_limits(monkeypatc
 
     assert KambiProvider()._get_json(_Client(), "pafes", "x.json") == {"ok": True}
     assert len(calls) == 3
+
+
+def test_cash_out_and_odds_change_time_are_read_from_offer_and_outcome():
+    def outcome(kind, odds, cash_out, changed, participant=None):
+        raw = _outcome(kind, odds, participant=participant)
+        raw.update(cashOutStatus=cash_out, changedDate=changed)
+        return raw
+
+    offer = _offer(
+        "Full Time",
+        "Match",
+        [
+            outcome("OT_ONE", 2800, "ENABLED", "2026-09-20T21:16:57Z", HOME),
+            outcome("OT_CROSS", 3250, "DISABLED", "2026-09-20T21:20:00Z"),  # la oferta lo tiene, la selección no
+            outcome("OT_TWO", 2550, "ENABLED", None, AWAY),
+        ],
+    )
+    offer["cashOutStatus"] = "ENABLED"
+    [market] = parse_event_offers({"betOffers": [offer]}, "Valencia vs. Real Sociedad", "futbol", "paf", HOME, AWAY)
+
+    one, cross, two = market.outcomes
+    assert one.cash_out is True
+    assert one.odds_changed_at == datetime(2026, 9, 20, 21, 16, 57, tzinfo=timezone.utc)
+    assert cross.cash_out is False
+    assert two.odds_changed_at is None
+
+
+def test_cash_out_is_unknown_when_the_source_does_not_say():
+    types, _ = _parse()  # las ofertas de prueba no traen cashOutStatus
+
+    assert all(o.cash_out is None and o.odds_changed_at is None for m in types.values() for o in m.outcomes)
+
+
+def _kambi_event_with_path(event_id, home, away, *path_names):
+    event = _event(event_id, home, away)
+    event["path"] = [{"name": n, "englishName": n} for n in path_names]
+    return event
+
+
+def test_esports_and_womens_football_are_excluded_by_default_and_can_be_re_enabled():
+    events = [
+        _kambi_event_with_path(1, "Valencia", "Sevilla", "Football", "Spain", "La Liga"),
+        _kambi_event_with_path(2, "Celta Vigo (Voron)", "Levante (k0tik)", "Football", "|Esports Football|", "Cyber Live Arena (2x5 min)"),
+        _kambi_event_with_path(3, "Chivas", "Tigres", "Football", "Mexico", "Liga MX Femenil (W)"),
+        _kambi_event_with_path(4, "FC Porto (W)", "S.C. Braga (F)", "Football", "Portugal", "Campeonato Nacional"),
+    ]
+
+    def listed(**kwargs):
+        provider = KambiProvider(operators={"op": "casa"}, **kwargs)
+        provider._get_json = lambda client, operator, path, **params: {"events": [{"event": e} for e in events]}
+        return set(provider._list_events(None, "op"))
+
+    assert listed() == {1}
+    assert listed(exclude_women=False) == {1, 3, 4}
+    assert listed(exclude_esports=False) == {1, 2}
+
+
+def test_double_chance_full_time_and_halves_but_not_combined_markets():
+    def dc(label, one_or_cross=1110, one_or_two=1220, cross_or_two=1910):
+        return _offer(label, "Double Chance", [
+            _outcome("OT_ONE_OR_CROSS", one_or_cross), _outcome("OT_ONE_OR_TWO", one_or_two), _outcome("OT_CROSS_OR_TWO", cross_or_two)])
+
+    details = {"betOffers": [
+        dc("Double Chance"),
+        dc("Double Chance - 1st Half", 1300, 1500, 2100),
+        dc("Double Chance and Both Teams To Score"),  # otro mercado: no se emite
+        _offer("Double Chance", "Double Chance", [_outcome("OT_ONE_OR_CROSS", 1500)]),  # incompleto
+    ]}
+    markets = parse_event_offers(details, "Valencia vs. Real Sociedad", "futbol", "paf", HOME, AWAY)
+    by_type = {m.market_type: m for m in markets}
+
+    assert _prices(by_type["DC"]) == [("1X", 1.11), ("12", 1.22), ("X2", 1.91)]
+    assert _prices(by_type["DC_HT"]) == [("1X", 1.3), ("12", 1.5), ("X2", 2.1)]
+    assert sum(1 for m in markets if m.market_type.startswith("DC")) == 2
+
+
+def test_double_chance_with_a_suspended_selection_is_dropped():
+    offer = _offer("Double Chance", "Double Chance", [
+        _outcome("OT_ONE_OR_CROSS", 1110), _outcome("OT_ONE_OR_TWO", 1220), _outcome("OT_CROSS_OR_TWO", None, status="SUSPENDED")])
+    assert parse_event_offers({"betOffers": [offer]}, "A vs. B", "futbol", "paf", HOME, AWAY) == []

@@ -393,3 +393,11 @@ footer {
   margin-bottom: 12px;
   font-size: 0.9rem;
 }
+
+/* Notas por pata en la calculadora de reparto (cash out, antigüedad de cuota, máximo) */
+.stake-notes { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.stake-note { font-size: 0.68rem; padding: 1px 6px; border-radius: 8px; background: var(--gray-bg); color: var(--muted); }
+.stake-note.ok { color: var(--green); }
+.stake-note.warn { color: var(--amber); }
+.stake-warning { margin-top: 6px; color: var(--amber); font-size: 0.85rem; }
+.stake-hint { margin-top: 6px; color: var(--muted); font-size: 0.78rem; }

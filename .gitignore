@@ -8,3 +8,4 @@ venv/
 surebets.tar.gz
 .pytest_cache/
 logs/
+/cache/

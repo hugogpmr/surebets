@@ -1,0 +1,10 @@
+{
+  "_ayuda": "Máximo por apuesta (en €) que TÚ observas en cada casa. La calculadora de reparto del panel lo usa para reducir el total invertido si alguna pata lo supera, manteniendo el mismo margen. Campos: casa (como aparece en el panel, en minúsculas), max_stake (€), deporte y mercado (opcionales; mercado casa por prefijo, p. ej. CORNERS o CARDS). Gana la entrada más específica. Cómo medirlo: añade la selección al boleto, escribe un importe enorme (p. ej. 99999) y NO pulses Apostar; la casa suele responder con el máximo. Sin entrada = límite desconocido: el panel te lo recuerda.",
+  "limites": [
+    {
+      "casa": "paf",
+      "max_stake": 1000,
+      "nota": "T&C oficiales de Paf (3.4.2): máximo 1.000 € por apuesta salvo excepciones por mercado; pueden aceptar menos importe del pedido. Mide los mercados nicho a mano."
+    }
+  ]
+}

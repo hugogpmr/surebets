@@ -53,6 +53,20 @@ Dos opciones documentadas paso a paso en [deploy/README_DEPLOY.md](deploy/README
 GitHub Actions (gratis, sin tarjeta, solo avisos push) o una VM propia con systemd (Hetzner de pago,
 u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/stats`.
 
+## Panel web en tu PC (y verlo desde el móvil)
+
+El panel es la carpeta `docs/` (HTML+JS estático que lee `docs/data.json`, que regenera el escaneo local).
+
+```powershell
+scripts\start_local_web.ps1          # solo en este PC:  http://localhost:8000
+scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URLs)
+```
+
+- **Misma WiFi**: abre `http://<IP-del-PC>:8000/` en el móvil. Requiere una sola vez, como administrador,
+  la regla de firewall que el propio script te imprime. Si usas ProtonVPN, activa "permitir LAN" en su configuración.
+- **Desde cualquier sitio**: instala [Tailscale](https://tailscale.com) (gratis) en el PC y el móvil, con la misma cuenta,
+  y abre la URL `100.x.x.x:8000` que imprime el script. Es una red privada: no queda nada expuesto a internet.
+
 ## Tests
 
 ```bash
@@ -74,7 +88,8 @@ u Oracle Cloud Always Free) con el bot completo incluyendo `/hoy`, `/ahora` y `/
 |---|---|---|
 | **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2 y over/under (Goles Totales) en vivo verificados. |
 | **Betfair** | ✅ Funciona (`providers/betfair.py`) | Playwright headless normal. 1X2 y over/under 2,5 goles en vivo verificados sobre el listado completo de LaLiga. |
-| **Winamax** | ✅ Funciona (`providers/winamax.py`) | Playwright headless normal. Cuotas en coma decimal española, convertidas a float. Solo 1X2: el over/under no está en la página de listado, solo en la ficha de cada partido (requeriría una petición extra por partido). |
+| **Winamax** | ✅ Funciona (`providers/winamax.py`) | Por el socket de su propia web (socket.io), abierto desde un navegador: 23 competiciones y ~100 mercados por partido (1X2, DNB, doble oportunidad, ambos marcan, Más/Menos con muchas líneas y por equipo, hándicap asiático, Par/Impar, primer/último gol, todo también por mitades). Sin córners ni tarjetas pre-partido (comprobado sobre 388 tipos de mercado). Una petición HTTP suelta recibe 403; la web completa no siempre conecta su cliente, por eso se habla el socket directamente. |
+| **bwin** (nuevo 2026-09-21) | ✅ Funciona (`providers/bwin.py`) | API JSON de su propio front (`cds-api`), leída desde el navegador con la página cargada (HTTP suelto = 403). Fuente **directa** con cientos de mercados por partido, incluidos córners, tarjetas, hándicap asiático y mercados por mitad. Su "Resultado VA (+2)" (pago anticipado) NO se trata como 1X2. |
 | **CuotasAhora.com** (comparador) | ✅ Funciona (`providers/cuotasahora.py`) | Playwright headless. No es una casa, es un comparador (versión española de OddsPortal) que agrega 1X2 de ~14 casas por partido en una sola tabla HTML. Ver detalle abajo — es la vía por la que se desbloquean, indirectamente, bet365/bwin/Codere/Luckia/William Hill. |
 | **BetExplorer.com** (comparador, nuevo 2026-09-17) | ✅ Funciona (`providers/betexplorer.py`) | Playwright headless. Segundo comparador, empresa distinta a CuotasAhora/OddsPortal. Mismas casas DGOJ, tablas HTML semánticas (más simples de leer que CuotasAhora). Ver detalle abajo. |
 | **Jokerbet, Pastón, Betway** (plataforma Altenar, nuevo 2026-09-20) | ✅ Funciona (`providers/altenar.py`) | API JSON pública de su widget, sin navegador. Córners, tarjetas, hándicaps y mercados por mitad pre-partido, que los comparadores no tienen. Ver detalle abajo. |
@@ -117,6 +132,45 @@ con el panel de navegador en vez de insistir con el script Playwright automatiza
 - La similitud de texto genérica para nombres de equipo cortos daba falsos positivos (p.ej. "Barcelona" y "Celta" resultaron tener suficiente parecido de letras como para confundirse cuando ambos jugaban contra el mismo rival).
 
 La solución fue una tabla de alias curada a mano para los 20 equipos de LaLiga (`engine/team_aliases.py`), en vez de depender solo de similitud de texto genérica. Sin estas dos correcciones, el sistema habría mostrado "surebets" del 30-40% que en realidad eran errores de comparación, no oportunidades reales — habría sido activamente engañoso.
+
+### Cambios del 2026-09-21 (Betfair, caché de comparadores, filtros y cruce de equipos)
+
+- **Betfair**: la web dejó de marcar cada partido con `-fixture`+`viewCoupon` (0 mercados, "FALLÓ" en todos los
+  escaneos). Ahora cada partido es un bloque `-couponContainer` con 2 equipos y sus botones de cuota; el extractor
+  usa ese ancla y conserva el antiguo como respaldo. Verificado en vivo: 18 mercados (1X2 y Más/Menos 2,5 de 9 partidos).
+- **Caché de comparadores** (`engine/cache.py`): la rotación ya no es uniforme. Cada competición tiene un intervalo de
+  refresco según su prioridad (las 6 primeras del listado 2 h, el resto del fútbol 5 h, otros deportes 8 h) y se lee
+  primero la más atrasada; antes BetExplorer no llegaba a leerse nunca porque 32 competiciones de CuotasAhora "sin
+  leer" iban delante. Una lectura vacía (puerta de edad, limitación del sitio) se reintenta a los 20 min, 40, 80...
+  Además CuotasAhora y BetExplorer repiten una vez, con más paciencia, un listado de liga que sale vacío.
+- **Filtros** (`providers/filters.py`): Altenar y Kambi descartan el fútbol virtual/e-soccer (en Kambi era el ~58 % de
+  los partidos) y el fútbol femenino, usando la categoría/competición/ruta que da la propia casa. Se desactivan con
+  `EXCLUDE_ESPORTS=0` / `EXCLUDE_WOMENS_FOOTBALL=0` en `.env`.
+- **Cruce de equipos** (`engine/team_aliases.py`, `engine/matching.py`): con partidos reales de Altenar y Kambi a la misma
+  hora, solo cruzaban 17 de 37 ("Chievo"/"Chievo Verona", "Dep. Capiata"/"Deportivo Capiata", "Corea del Sur
+  Sub-23"/"South Korea Sub-23"...). Ahora hay alias curados para las ligas grandes y un cruce por palabras
+  significativas para el resto. Las reglas "sueltas" (versiones abreviadas) solo valen con hora de inicio conocida en
+  ambos partidos y a menos de 30 min; los comparadores (sin hora) siguen con cruce estricto. Nunca se juntan nombres
+  con marcas distintas (femenino, sub-23, filial, "(Nairo)" de e-soccer). Limitación conocida: la similitud de texto
+  heredada sigue juntando algunos pares parecidos ("America"/"América-MG"), que solo se dan con el mismo rival y hora.
+
+**Doble oportunidad** (`DC`, `DC_HT`, `DC_2H`; resultados `1X`/`12`/`X2`): Altenar y Kambi la emiten desde el 2026-09-21, así que cruza con
+Winamax, bwin y los comparadores. Altenar identifica cada resultado por el `typeId` de la selección (9/10/11) y no por su texto; Kambi por su
+tipo (`OT_ONE_OR_CROSS`...). Jokerbet no ofrece este mercado; las combinadas ("doble oportunidad y ambos marcan"...) no se emiten.
+
+### Intento de scraping directo de más casas (2026-09-21)
+
+Comprobado con un Playwright headless normal (sin técnicas de evasión, que este proyecto no usa):
+
+| Casa | Resultado |
+|---|---|
+| bet365 | ❌ Cloudflare 403 ("Sorry, you have been blocked"). Además reparte las cuotas por un websocket cifrado. Solo llega vía comparadores. |
+| Luckia, 1xBet | ❌ Desafío de Cloudflare ("Just a moment..."). |
+| Retabet | ❌ "Error de seguridad" (403). |
+| William Hill | ❌ Bloquea centros de datos/VPN. |
+| Codere | ❓ Ninguno de sus dominios (codere.es, apuestas.codere.es...) resuelve DNS desde este equipo. Pendiente de probar desde otra red. |
+| 888sport, Versus | ⚠️ Cargan, pero no exponen un JSON de cuotas evidente (888sport usa la plataforma "unified client" de safe-iplay; Versus un widget propio). Sin explorar. |
+| bwin, Winamax | ✅ Integradas (arriba). |
 
 ### Mercados soportados
 
@@ -426,6 +480,60 @@ consume el front de cada casa). Operadores que responden: `pafes` (Paf) y `leoes
 el cuello de botella: **110 s por ciclo**. Se indexó por (deporte, mercado) y se memoizaron las funciones
 puras de comparación de nombres: **4,5 s**, mismos resultados (tests en verde).
 
+### Cinco casas más sobre Altenar y Kambi (2026-09-21)
+
+Se cruzó la lista oficial de la DGOJ (78 operadores, ordenacionjuego.es) con la plataforma que usa cada casa. Se
+añadieron las que respondían con partidos en la API pública de su plataforma, sin más código que su nombre en
+`INTEGRATIONS` (`providers/altenar.py`) u `OPERATORS` (`providers/kambi.py`):
+
+| Casa | Plataforma | Código | Partidos ese día | Licencia (registro DGOJ) |
+|---|---|---|---|---|
+| Betinia | Altenar | `betinia` | 920 | IBERIX GAMING, S.A.U. |
+| DAZN Bet | Altenar | `daznbet` | 721 | DZBT DEPORTES, S.A. |
+| Yosports | Kambi | `yosportses` | 276 | RANK DIGITAL CEUTA, S.A. |
+| Botemanía | Kambi | `botemaniaes` | 161 | GAMESYS SPAIN, S.A. |
+| Speedybet (ahora también directa) | Kambi | `pafspeedybetes` | 156 | PAF GAMES, S.A. |
+
+- El código de Speedybet salió del tráfico de su web (`settings-api.kambicdn.com/pafspeedybetes__startup.json`); los
+  demás, de probar el nombre en la API. Adivinar códigos de Kambi choca con su límite de peticiones (429): mejor
+  mirar el tráfico real de la web de cada casa.
+- Con 5 casas Altenar empezó a limitar peticiones (429) y se perdían partidos enteros de alguna casa (DAZN Bet
+  desaparecía): `_get_json` ahora reintenta el 429 con espera creciente y se bajó a 3 hilos (28 s por ciclo, 0
+  fallos; con 4 hilos eran 83 s y 8 fallos).
+- **Ojo**: casas de la misma plataforma tienen precios casi idénticos (Speedybet y Paf, del mismo grupo, dan
+  exactamente los mismos ~6.130 mercados). Aportan capacidad para repartir dinero y límites, pero pocas surebets
+  entre sí; lo que más aporta es una plataforma distinta.
+- **Descartadas en la revisión**: Casino Gran Madrid (Altenar, integración `casinogranmadrid`, pero la API responde
+  401: exige un token de sesión), Kirolbet/Interwetten/Casino Barcelona/Efbet/Aupabet (403), Betsson (antifraude),
+  Suertia/OlyBet (Access Denied). Los comparadores no muestran ninguna casa extra: solo las que ya usamos más
+  Sportium y Winamax (que se leen directas).
+
+#### Bet777 (`providers/bet777.py`, implementada 2026-09-21)
+
+Plataforma propia "Sportify" (dejó SBTech en dic. 2023), con cuotas de **FeedConstruct/SoftConstruct**: una tercera
+fuente de precios distinta de Altenar y Kambi, la que más aporta al cruce. Licencia: DIGITAL DISTRIBUTION
+MANAGEMENT IBÉRICA, S.A. (bet777.es). Se lee **sin navegador ni autenticación**, con `httpx`, por la misma API que
+usa su web (`api.sportify.bet`, parámetro `bookmaker=bet777es`):
+
+- Listado: `GET /echo/v1/events?sport=football&lang=en` -> competiciones -> eventos con `id` (`1-30936492`),
+  `teams`, `starts_at` (UTC), `is_live`, `is_suspended`. Solo pre-partido dentro de `BET777_HORIZON_HOURS` (48),
+  sin fútbol virtual ni femenino (`providers/filters.py`; el femenino se reconoce por "Women" en la competición).
+- Detalle: `GET /echo/v1/markets?event_id=<id>&lang=en` -> ~214 mercados (56 KB, 0,3 s). Los mercados se reconocen
+  por `name_untranslated` (inglés) y los resultados por `kind`, y se emiten con los mismos prefijos que Altenar,
+  Kambi y los comparadores (`1X2`, `1X2_HT`, `1X2_2H`, `DNB`, `BTTS`, `BTTS_HT`, `OE`, `OU_<línea>`, `OU_HOME_<línea>`,
+  `OU_AWAY_<línea>`, `AH_<línea>`, con variantes `_HT`/`_2H`). Cada mercado trae todas sus líneas juntas
+  (`Over (2.5)` / `Under (2.5)`): se emparejan por línea, las de cuarto se escriben `2/2.5` (igual que el resto) y
+  solo se emiten parejas completas y sin suspender. Cuota = la que muestra la web (2 decimales); `cash_out` sale
+  del mercado.
+- **Sin córners, tarjetas, tiros ni faltas** (probado en LaLiga y Premier: los grupos del feed son Popular, Goals,
+  Asian Handicap, Goal Scorer, Halves y Combination): compite en goles, hándicap asiático y mitades. Quedan fuera
+  doble oportunidad, marcador correcto, bandas, combinadas y hándicap de 3 vías.
+- Gotchas encontrados en vivo: algunos partidos devuelven `markets` como objeto con claves `"0","1",...` en vez de
+  lista (se normaliza); el orden de local/visitante coincide con `teams` (0 partidos con `teams_reversed` de 50).
+- Un ciclo: ~40 partidos y ~2.400 mercados en unos 10 s; cruza con Betway, Paf, bwin y Jokerbet. `fast_recheck =
+  True` (API barata: participa en la verificación de márgenes muy altos) y figura en `DIRECT_SOURCES`.
+- La API no está documentada y puede cambiar sin aviso.
+
 ### Control de calidad de las surebets (`engine/quality.py`, nuevo 2026-09-20)
 
 Inspirado en cómo se defienden los servicios profesionales (BetBurger: filtro de edad/retraso y rango de
@@ -445,6 +553,12 @@ avisar, cada candidata pasa por estos controles:
   BTTS con una sola pata: suma de probabilidades <1 sin ser arbitraje real), `una_sola_casa` y `margen_absurdo`
   (> `MAX_MARGIN`, 25 %). El estado guardado antes de este cambio tenía "surebets" del 16-61 % que eran justo esto
   (sobre todo mercados incompletos, que ahora se descartan por su propio motivo sea cual sea el margen).
+- **Lectura duplicada (`lectura_duplicada`, descartada)**: si todas las patas (casa, cuota) de una surebet con
+  alguna pata de comparador aparecen idénticas en OTRO mercado del mismo partido, el comparador enseñaba la tabla
+  de otra pestaña (1X2) al leerla. En el estado del 2026-09-17 el 24 % de las comparaciones compartían casas y cuotas
+  exactas con otro mercado (BTTS, BTTS_HT, OU_0 y DC con las cuotas 1/X del 1X2) y 22 de las 28 "surebets" eran eso.
+  Como el fallo es sistemático, repetir la lectura varios ciclos no lo detecta; por eso se comprueba la estructura,
+  no el margen. El 1X2 nunca se marca (es la tabla original) y AH 0 ≡ DNB no cuenta como duplicado.
 - **Márgenes muy altos (15-25 %) se verifican, no se descartan** (`VERIFY_MARGIN`..`MAX_MARGIN`): pueden ser reales.
   Se marcan `margen_a_verificar` y, en el mismo escaneo, `engine/scan.py::_verify_high_margins` vuelve a leer las
   fuentes directas y baratas (`fast_recheck`: Altenar y Kambi, sin navegador; ~70 s, solo si hay candidatas). Si todas
@@ -472,6 +586,37 @@ en `.env.example`.
 
 **Decisión de producto**: no se implementa value betting (apostar a cuotas por encima del precio justo); el
 sistema es solo de surebets.
+
+### Escaneo en dos ritmos: rápido (directas) y lento (comparadores) (2026-09-20)
+
+Un ciclo completo con las 38 competiciones de CuotasAhora tarda **horas** (~30 s de navegador por partido, ~600
+partidos; medido: solo LaLiga = 8 min). Con la tarea programada cada 5 min y sin solaparse, en la práctica el sistema
+publicaba una vez cada varias horas, y las fuentes rápidas (Altenar, Kambi: las de córners y tarjetas) se leían las
+últimas, tras los comparadores. Por eso se separó en dos tareas (`scripts/scan_once_action.py --mode ...`):
+
+| Modo | Tarea programada | Qué lee | Cada cuánto | Qué hace |
+|---|---|---|---|---|
+| `fast` | `SurebetsLocalScan` (`scripts/local_scan.ps1`) | Sportium, Betfair, Winamax, Altenar, Kambi (~1-2 min) + **caché** de los comparadores | 5 min | detecta surebets, avisa, guarda en la base de datos y `docs/data.json`, commitea |
+| `slow` | `SurebetsSlowScan` (`scripts/local_slow_scan.ps1`) | CuotasAhora y BetExplorer | 30 min, presupuesto de 20 min | rota por competiciones (la que lleva más tiempo sin leerse primero) y **actualiza la caché**; no avisa, no toca git ni la base de datos |
+| `full` | GitHub Actions / manual | todo en un ciclo | — | comportamiento antiguo |
+
+- **La caché** (`engine/cache.py`, `cache/comparator_cache.json`, fuera de git) guarda por (proveedor, competición) los
+  mercados leídos, con la hora original de cada cuota. El ciclo rápido la usa a través de `CachedProvider`, así que
+  el motor ve la **antigüedad real** de las cuotas de comparador: una surebet que mezcla una cuota directa de ahora
+  con una de comparador de hace horas sale marcada `cuotas_desfasadas` (fiabilidad baja). Es honesto: son precios
+  que pudieron cambiar. Una lectura vacía de una competición no borra lo que ya había (suele ser carga puntual del
+  sitio). Lo cacheado con más de `COMPARATOR_MAX_AGE_HOURS` (8) deja de usarse.
+- **Rotación**: el ciclo lento lee como mucho `SLOW_MAX_MATCHES` (12) partidos por competición (los más próximos) y
+  se detiene al agotar `SLOW_BUDGET_MINUTES` (20; se comprueba entre competiciones). A ~30 s por partido, una vuelta
+  completa a las 38 competiciones lleva unas horas: los comparadores son la fuente más lenta y menos fiable, y las
+  APIs directas se leen a ritmo de minutos.
+- **Estado de las fuentes**: cada ciclo rápido deja en `docs/data.json` → `settings.sources` los mercados y
+  partidos leídos de cada fuente (y, para los comparadores, cuántas competiciones tiene la caché y cuánto de vieja es
+  la lectura más antigua). `scripts\status_scan.ps1` lo imprime y marca `SIN DATOS` las fuentes con 0 mercados.
+- **Tareas**: `scripts\install_scan_tasks.ps1` crea `SurebetsSlowScan` (deshabilitada, copiando el usuario y los ajustes
+  de la rápida); `scripts\start_scan.ps1` enciende y dispara las dos (la lenta primero, para llenar la caché) y
+  `scripts\stop_scan.ps1` las apaga y mata también el Python y los Chromium que hubiera en marcha.
+- Variables (`.env.example`): `SLOW_BUDGET_MINUTES`, `SLOW_MAX_MATCHES`, `COMPARATOR_MAX_AGE_HOURS`.
 
 ## Aviso legal
 

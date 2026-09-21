@@ -1,18 +1,30 @@
-# Enciende el escaneo local: habilita la tarea programada "SurebetsLocalScan"
-# (ver scripts/local_scan.ps1) y dispara un ciclo ya mismo en vez de esperar a
-# los 5 min del siguiente disparo automatico.
+# Enciende el escaneo local: habilita las dos tareas programadas y dispara un
+# ciclo de cada una ya mismo en vez de esperar al siguiente disparo automatico.
+#   - SurebetsLocalScan: ciclo RAPIDO (APIs directas + cache de comparadores), cada 5 min
+#   - SurebetsSlowScan:  ciclo LENTO (lee los comparadores y llena la cache), cada 30 min
+# La tarea lenta se crea con scripts\install_scan_tasks.ps1 (una sola vez).
 
-$TaskName = "SurebetsLocalScan"
+$Fast = "SurebetsLocalScan"
+$Slow = "SurebetsSlowScan"
 
-$task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-if (-not $task) {
-    Write-Host "No existe la tarea '$TaskName' en el Programador de tareas."
+$fastTask = Get-ScheduledTask -TaskName $Fast -ErrorAction SilentlyContinue
+if (-not $fastTask) {
+    Write-Host "No existe la tarea '$Fast' en el Programador de tareas."
     exit 1
 }
+if (-not (Get-ScheduledTask -TaskName $Slow -ErrorAction SilentlyContinue)) {
+    Write-Host "Falta la tarea del ciclo lento: ejecutando scripts\install_scan_tasks.ps1"
+    & (Join-Path $PSScriptRoot "install_scan_tasks.ps1")
+}
 
-Enable-ScheduledTask -TaskName $TaskName | Out-Null
-Start-ScheduledTask -TaskName $TaskName
+# El lento primero: llena la cache que va a leer el rapido.
+Enable-ScheduledTask -TaskName $Slow | Out-Null
+Start-ScheduledTask -TaskName $Slow
+Enable-ScheduledTask -TaskName $Fast | Out-Null
+Start-ScheduledTask -TaskName $Fast
 
-$info = Get-ScheduledTaskInfo -TaskName $TaskName
-Write-Host "Escaneo local activado (tarea '$TaskName' habilitada, ciclo disparado ahora)."
-Write-Host "Proximo disparo automatico: $($info.NextRunTime)"
+Write-Host "Escaneo local activado:"
+foreach ($name in @($Fast, $Slow)) {
+    $info = Get-ScheduledTaskInfo -TaskName $name
+    Write-Host ("  {0,-18} proximo disparo automatico: {1}" -f $name, $info.NextRunTime)
+}

@@ -80,7 +80,9 @@ $env:DB_PATH = Join-Path $ProjectRoot "data\surebets.db"
 $python = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
 $scanScript = Join-Path $ProjectRoot "scripts\scan_once_action.py"
 
-$scanExitCode = Invoke-Logged -FilePath $python -ArgumentString "`"$scanScript`""
+# Modo rapido: solo las APIs directas (~1-2 min) + los comparadores desde la cache
+# que mantiene el ciclo lento (scripts/local_slow_scan.ps1). Ver engine/cache.py.
+$scanExitCode = Invoke-Logged -FilePath $python -ArgumentString "`"$scanScript`" --mode fast"
 
 if ($scanExitCode -ne 0) {
     Write-Log "El escaneo fallo con codigo $scanExitCode"

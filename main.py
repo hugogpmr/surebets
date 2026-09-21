@@ -10,6 +10,7 @@ from providers.altenar import AltenarProvider
 from providers.base import OddsProvider
 from providers.betexplorer import BetExplorerProvider
 from providers.betfair import BetfairProvider
+from providers.bwin import BwinProvider
 from providers.cuotasahora import CuotasAhoraProvider
 from providers.kambi import KambiProvider
 from providers.sportium import SportiumProvider
@@ -26,6 +27,7 @@ PROVIDERS: list[OddsProvider] = [
     SportiumProvider(),
     BetfairProvider(),
     WinamaxProvider(),
+    BwinProvider(),
     CuotasAhoraProvider(),
     # Segundo comparador (empresa distinta a CuotasAhora/OddsPortal),
     # verificado en vivo 2026-09-17 - ver providers/betexplorer.py. Arranca

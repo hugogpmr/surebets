@@ -108,3 +108,66 @@ def test_market_missing_outcomes_is_blocked():
 def test_min_outcomes_by_market_family():
     assert min_outcomes("1X2") == min_outcomes("CORNERS_1X2_HT") == min_outcomes("EH_1") == 3
     assert min_outcomes("BTTS") == min_outcomes("OU_2.5") == min_outcomes("AH_-0.5") == min_outcomes("DNB") == 2
+
+
+def _refs(*markets):
+    from engine.matching import event_key
+    from engine.quality import _canonical_type
+
+    refs = {}
+    for m in markets:
+        refs.setdefault((m.sport, event_key(m.event)), []).append(
+            (_canonical_type(m.market_type), frozenset((o.bookmaker, o.odds) for o in m.outcomes))
+        )
+    return refs
+
+
+def _key(m):
+    from engine.matching import event_key
+
+    return (m.sport, event_key(m.event))
+
+
+def test_table_of_another_tab_read_twice_is_detected():
+    from engine.quality import find_mirrored
+
+    one_x_two = market(
+        [leg("1", "bet365", 2.55, "cuotasahora"), leg("X", "versus", 3.85, "cuotasahora"), leg("2", "paf", 2.63, "cuotasahora")],
+        "1X2",
+    )
+    # BTTS con las cuotas 1 y X del 1X2: la lectura de la pestaña BTTS ensenaba aun el 1X2
+    btts = market([leg("Yes", "bet365", 2.55, "cuotasahora"), leg("No", "versus", 3.85, "cuotasahora")], "BTTS")
+    refs = _refs(one_x_two, btts)
+    assert find_mirrored([(btts, _key(btts))], refs) == {0}
+    # el propio 1X2 (tabla original) nunca se marca
+    assert find_mirrored([(one_x_two, _key(one_x_two))], refs) == set()
+
+
+def test_genuinely_different_odds_are_not_flagged():
+    from engine.quality import find_mirrored
+
+    one_x_two = market([leg("1", "bet365", 2.55, "cuotasahora"), leg("X", "versus", 3.85, "cuotasahora"), leg("2", "paf", 2.63, "cuotasahora")], "1X2")
+    btts = market([leg("Yes", "bet365", 2.4, "cuotasahora"), leg("No", "versus", 3.85, "cuotasahora")], "BTTS")
+    assert find_mirrored([(btts, _key(btts))], _refs(one_x_two, btts)) == set()
+
+
+def test_asian_handicap_zero_and_draw_no_bet_are_the_same_market_not_a_mirror():
+    from engine.quality import find_mirrored
+
+    dnb = market([leg("1", "bet365", 2.5, "cuotasahora"), leg("2", "paf", 2.5, "cuotasahora")], "DNB")
+    ah0 = market([leg("1", "bet365", 2.5, "cuotasahora"), leg("2", "paf", 2.5, "cuotasahora")], "AH_0")
+    assert find_mirrored([(ah0, _key(ah0))], _refs(dnb, ah0)) == set()
+
+
+def test_mixed_candidate_whose_comparator_leg_is_the_full_time_price_is_detected():
+    from engine.quality import find_mirrored
+
+    # 1X2 del partido completo: el comparador tiene la X de bet365 a 3.6
+    full_time = market([leg("1", "bet365", 2.4, "cuotasahora"), leg("X", "bet365", 3.6, "cuotasahora"), leg("2", "bet365", 2.9, "cuotasahora")], "1X2")
+    # "1X2_HT": patas 1 y 2 directas de Winamax (al descanso) + una X de bet365 que en realidad es la del final
+    half_time = market([leg("1", "winamax", 2.5, "winamax"), leg("X", "bet365", 3.6, "cuotasahora"), leg("2", "winamax", 3.75, "winamax")], "1X2_HT")
+    assert find_mirrored([(half_time, _key(half_time))], _refs(full_time, half_time)) == {0}
+
+    # con una X genuinamente distinta no se marca
+    real_half_time = market([leg("1", "winamax", 2.5, "winamax"), leg("X", "bet365", 2.2, "cuotasahora"), leg("2", "winamax", 3.75, "winamax")], "1X2_HT")
+    assert find_mirrored([(real_half_time, _key(real_half_time))], _refs(full_time, real_half_time)) == set()

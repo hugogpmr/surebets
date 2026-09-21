@@ -19,9 +19,18 @@ const DGOJ_LICENSED_BOOKMAKERS = new Set([
   // ONLINE, S.A., comprobado en ordenacionjuego.es el 2026-09-20. Pastón:
   // EUROAPUESTAS ONLINE, comprobado el 2026-09-16.
   "jokerbet", "paston",
+  // Betinia (IBERIX GAMING, S.A.U.) y DAZN Bet (DZBT DEPORTES, S.A.): también
+  // Altenar; comprobadas en el registro de ordenacionjuego.es el 2026-09-21.
+  "betinia", "daznbet",
   // Vía la plataforma Kambi (providers/kambi.py). LeoVegas: LEOESP, S.A. /
   // Leovegas Gaming PLC, comprobado en ordenacionjuego.es el 2026-09-20.
   "leovegas",
+  // Yosports (RANK DIGITAL CEUTA, S.A.) y Botemanía (GAMESYS SPAIN, S.A.):
+  // también Kambi; comprobadas en el registro de la DGOJ el 2026-09-21.
+  "yosports", "botemania",
+  // Bet777 (DIGITAL DISTRIBUTION MANAGEMENT IBÉRICA, S.A.), plataforma propia
+  // Sportify (providers/bet777.py); registro de la DGOJ, 2026-09-21.
+  "bet777",
 ]);
 
 function isLicensed(bookmaker) {
@@ -49,6 +58,11 @@ const BOOKMAKER_URLS = {
   jokerbet: "https://www.jokerbet.es",
   paston: "https://www.paston.es",
   leovegas: "https://www.leovegas.es",
+  betinia: "https://www.betinia.es",
+  daznbet: "https://daznbet.es",
+  yosports: "https://www.yosports.es",
+  botemania: "https://www.botemania.es",
+  bet777: "https://www.bet777.es",
 };
 
 const PLACED_BETS_KEY = "surebets_placed_bets_v1";
@@ -58,6 +72,7 @@ const FILTERS_KEY = "surebets_active_filters_v1";
 const FLAG_DESCRIPTIONS = {
   una_sola_casa: "todas las patas son de la misma casa (error de datos)",
   mercado_incompleto: "faltan resultados del mercado (error de datos)",
+  lectura_duplicada: "cuotas idénticas a las de otro mercado del mismo partido (tabla del comparador leída dos veces)",
   margen_absurdo: "margen por encima del máximo creíble (error de datos)",
   margen_alto: "margen inusualmente alto: comprueba las cuotas en las casas",
   margen_a_verificar: "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
@@ -66,7 +81,7 @@ const FLAG_DESCRIPTIONS = {
   cerca_inicio: "empieza pronto y alguna cuota viene de un comparador",
   cuotas_desfasadas: "las cuotas se leyeron con mucha diferencia de tiempo",
 };
-const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo"]);
+const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada"]);
 const RELIABILITY_RANK = { alta: 3, media: 2, baja: 1 };
 
 function loadActiveFilters() {
@@ -108,7 +123,14 @@ function computeStakeBreakdown(odds, totalStake, step = 0) {
   const totalProb = odds.reduce((s, o) => s + 1 / o.odds, 0);
   const exact = odds.map((o) => (totalStake * (1 / o.odds)) / totalProb);
   const build = (amounts, profit) => ({
-    stakes: odds.map((o, i) => ({ name: o.name, bookmaker: o.bookmaker, odds: o.odds, stake: amounts[i] })),
+    stakes: odds.map((o, i) => ({
+      name: o.name,
+      bookmaker: o.bookmaker,
+      odds: o.odds,
+      stake: amounts[i],
+      cash_out: o.cash_out ?? null,
+      odds_changed_at: o.odds_changed_at ?? null,
+    })),
     profit,
     totalProb,
     total: Math.round(amounts.reduce((a, b) => a + b, 0) * 100) / 100,
@@ -144,6 +166,68 @@ function computeStakeBreakdown(odds, totalStake, step = 0) {
   return build(amounts, Math.round((totalStake / totalProb - totalStake) * 100) / 100);
 }
 
+// Máximos por apuesta que el usuario anota en limites.json (las APIs públicas de
+// las casas no los exponen: dependen de la cuenta). Entre las entradas que casan
+// con casa/deporte/mercado gana la más específica y, a igualdad, la más baja.
+function findLimit(bookmaker, sport, marketType) {
+  let best = null;
+  for (const l of state.limits) {
+    if (l.casa !== bookmaker.trim().toLowerCase() || !(l.max_stake > 0)) continue;
+    if (l.deporte && l.deporte !== sport) continue;
+    if (l.mercado && !marketType.startsWith(l.mercado)) continue;
+    const specificity = (l.deporte ? 1 : 0) + (l.mercado ? 1 : 0);
+    if (!best || specificity > best.specificity || (specificity === best.specificity && l.max_stake < best.max_stake)) {
+      best = { max_stake: l.max_stake, specificity, nota: l.nota || "" };
+    }
+  }
+  return best;
+}
+
+// Igual que computeStakeBreakdown, pero si alguna pata supera el máximo de su
+// casa reduce el TOTAL invertido (todas las patas a la vez, para mantener el
+// mismo margen) hasta que todas caben. Con redondeo, subir al múltiplo superior
+// puede volver a pasarse por poco, así que se repite reduciendo.
+function computeWithLimits(market, totalStake, step) {
+  const limitOf = (s) => findLimit(s.bookmaker, market.sport, market.market_type);
+  let total = totalStake;
+  let result = computeStakeBreakdown(market.odds, total, step);
+  for (let i = 0; i < 40; i++) {
+    const over = result.stakes.filter((s) => {
+      const l = limitOf(s);
+      return l && s.stake > l.max_stake;
+    });
+    if (!over.length) break;
+    const factor = Math.min(...over.map((s) => limitOf(s).max_stake / s.stake));
+    total = Math.floor(total * Math.min(factor, 0.999) * 100) / 100;
+    if (total <= 0) break;
+    result = computeStakeBreakdown(market.odds, total, step);
+  }
+  const stakes = result.stakes.map((s) => ({ ...s, limit: limitOf(s)?.max_stake ?? null }));
+  const exceeded = stakes.some((s) => s.limit !== null && s.stake > s.limit);
+  return {
+    ...result,
+    stakes,
+    requestedTotal: totalStake,
+    capped: result.total < totalStake - 0.005,
+    exceeded,
+    unknownLimits: [...new Set(stakes.filter((s) => s.limit === null).map((s) => s.bookmaker))],
+  };
+}
+
+function stakeNotes(s) {
+  const notes = [];
+  if (s.cash_out === true) notes.push(`<span class="stake-note ok" title="Kambi indica que esta selección admite cash out: hay salida de emergencia (con pérdida del margen) si la otra pata falla">cash out ✓</span>`);
+  else if (s.cash_out === false) notes.push(`<span class="stake-note warn" title="Sin cash out en esta selección: si la otra pata falla no hay salida">sin cash out</span>`);
+  if (s.odds_changed_at) {
+    const mins = (Date.now() - new Date(s.odds_changed_at).getTime()) / 60000;
+    // Una cuota que se movió hace poco está viva; una que no se mueve hace horas
+    // es normal en mercados nicho, pero el aviso ayuda a comprobarla antes de apostar.
+    notes.push(`<span class="stake-note${mins < 3 ? " warn" : ""}" title="Última vez que la casa movió esta cuota${mins < 3 ? " (muy reciente: puede seguir moviéndose)" : ""}">cuota movida ${timeAgo(s.odds_changed_at)}</span>`);
+  }
+  if (s.limit !== null && s.limit !== undefined) notes.push(`<span class="stake-note" title="Máximo anotado en limites.json">máx. ${money(s.limit)}</span>`);
+  return notes.length ? `<div class="stake-notes">${notes.join("")}</div>` : "";
+}
+
 function isBlocked(m) {
   return (m.flags || []).some((f) => BLOCKING_FLAGS.has(f));
 }
@@ -162,6 +246,7 @@ let state = {
   expandedGroups: new Set(),
   placedBets: loadPlacedBets(),
   marketsById: new Map(),
+  limits: [],
   activeStakeMarket: null,
   savedSport: "",
   roundStep: "5",
@@ -722,20 +807,30 @@ function recalcStakeModal() {
     return;
   }
   const step = parseFloat(document.getElementById("stake-round-select").value) || 0;
-  const { stakes, profit, total } = computeStakeBreakdown(market.odds, totalStake, step);
+  const { stakes, profit, total, capped, exceeded, unknownLimits } = computeWithLimits(market, totalStake, step);
   tbody.innerHTML = stakes
     .map(
       (s) => `
       <tr>
         <td>${s.name}</td>
-        <td>${bookmakerSpan(s.bookmaker)}</td>
+        <td>${bookmakerSpan(s.bookmaker)}${stakeNotes(s)}</td>
         <td>@${s.odds.toFixed(2)}</td>
         <td><strong>${money(s.stake)}</strong></td>
       </tr>`
     )
     .join("");
-  const extra = step > 0 && Math.abs(total - totalStake) >= 0.01 ? ` (invirtiendo ${money(total)} en total)` : "";
-  summary.innerHTML = `Beneficio garantizado, gane quien gane: <strong class="margin-positive">${money(profit)}</strong>${extra}`;
+  const extra = step > 0 && !capped && Math.abs(total - totalStake) >= 0.01 ? ` (invirtiendo ${money(total)} en total)` : "";
+  let html = `Beneficio garantizado, gane quien gane: <strong class="margin-positive">${money(profit)}</strong>${extra}`;
+  if (capped) {
+    html += `<div class="stake-warning">⚠ Límite de casa: el total se reduce de ${money(totalStake)} a ${money(total)} para que ninguna pata pase de su máximo (mismo margen, menos dinero).</div>`;
+  }
+  if (exceeded) {
+    html += `<div class="stake-warning">⚠ Aun así alguna pata supera su máximo anotado: el importe es demasiado pequeño para repartirlo.</div>`;
+  }
+  if (unknownLimits.length) {
+    html += `<div class="stake-hint">Sin máximo anotado para ${unknownLimits.join(", ")}: mide el límite en el boleto (importe enorme, sin confirmar) y anótalo en <code>docs/limites.json</code>. Si una casa acepta menos de lo pedido, recalcula y cubre la diferencia.</div>`;
+  }
+  summary.innerHTML = html;
 }
 
 function confirmStakeModal() {
@@ -743,7 +838,7 @@ function confirmStakeModal() {
   const totalStake = parseFloat(document.getElementById("stake-total-input").value);
   if (!market || !totalStake || totalStake <= 0) return;
   const step = parseFloat(document.getElementById("stake-round-select").value) || 0;
-  const { stakes, profit, total } = computeStakeBreakdown(market.odds, totalStake, step);
+  const { stakes, profit, total } = computeWithLimits(market, totalStake, step);
   state.roundStep = String(step);
   try {
     localStorage.setItem("surebets_round_step_v1", state.roundStep);
@@ -788,7 +883,18 @@ function render(data) {
     : "Sin datos todavía — esperando al primer escaneo";
 }
 
+async function loadLimits() {
+  try {
+    const res = await fetch(`limites.json?t=${Date.now()}`);
+    const data = await res.json();
+    state.limits = (data.limites || []).map((l) => ({ ...l, casa: String(l.casa || "").trim().toLowerCase() }));
+  } catch {
+    state.limits = []; // sin fichero o mal formado: el panel funciona igual, sin límites
+  }
+}
+
 async function load() {
+  await loadLimits();
   try {
     const res = await fetch(`${DATA_URL}?t=${Date.now()}`);
     const data = await res.json();

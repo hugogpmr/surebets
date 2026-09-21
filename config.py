@@ -28,3 +28,14 @@ WARN_MARGIN = float(os.getenv("WARN_MARGIN", "0.05"))
 VERIFY_MARGIN = float(os.getenv("VERIFY_MARGIN", "0.15"))
 MAX_MARGIN = float(os.getenv("MAX_MARGIN", "0.25"))
 VERIFY_CYCLES = int(os.getenv("VERIFY_CYCLES", "3"))
+
+# Escaneo en dos ritmos (ver engine/cache.py): el ciclo rápido lee las APIs
+# directas y suma los comparadores desde una caché en disco; el ciclo lento
+# (otra tarea programada) rota por competiciones de los comparadores durante
+# SLOW_BUDGET_MINUTES y actualiza esa caché. SLOW_MAX_MATCHES limita los partidos
+# leídos por competición (los más próximos; ~30 s de navegador cada uno).
+# Lo cacheado más viejo que COMPARATOR_MAX_AGE_HOURS deja de usarse.
+COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cache.json")
+SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "20"))
+SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "12"))
+COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
