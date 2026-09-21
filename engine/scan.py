@@ -20,10 +20,14 @@ from .quality import (
     MAX_MARGIN,
     VERIFY_MARGIN,
     WARN_MARGIN,
+    COHERENCE_MIN,
+    POST_FLAGS,
     _canonical_type,
     assess,
+    drop_incoherent_rows,
     find_mirrored,
     has_comparator_leg,
+    leg_flags,
 )
 
 # Margen mínimo de cambio para considerar que una oportunidad ya notificada
@@ -150,10 +154,18 @@ def _build_comparisons(
     warn_margin: float,
     verify_margin: float,
     max_margin: float,
+    stats: dict | None = None,
 ) -> list:
     comparisons = []
     references: dict[tuple, list] = {}
     for grouped in group_by_event(raw_markets):
+        # Filas de comparador imposibles (suma de probabilidades < 1: tabla de otra
+        # pestaña leída por error) fuera ANTES de calcular nada con ellas.
+        grouped, dropped = drop_incoherent_rows(grouped)
+        if stats is not None:
+            stats["dropped_rows"] = stats.get("dropped_rows", 0) + dropped
+        if not grouped.outcomes:
+            continue
         market = best_odds_per_outcome(grouped)
         comparison = compare_market(market, bankroll, min_margin, round_step)
         comparisons.append(comparison)
@@ -166,6 +178,13 @@ def _build_comparisons(
             comparison.flags, comparison.reliability = assess(
                 market, comparison.margin, now, warn_margin, max_margin, verify_margin
             )
+            # Cuotas atípicas frente a la mediana de las demás casas del mismo mercado
+            # (necesita todas las lecturas del grupo, no solo la mejor de cada resultado).
+            comparison.flags += leg_flags(grouped.outcomes, market.outcomes)
+            if "cuota_destacada" in comparison.flags and comparison.reliability == "alta":
+                comparison.reliability = "media"
+            if "cuota_atipica" in comparison.flags:
+                comparison.reliability = "baja"
 
     # Solo las candidatas con alguna pata de comparador pueden ser una lectura
     # duplicada (las APIs de Altenar/Kambi devuelven cada mercado por separado).
@@ -243,9 +262,13 @@ async def _verify_high_margins(
         legs = {o.source for o in comparison.market.outcomes}
         if involved and legs <= names and "margen_a_verificar" in comparison.flags:
             comparison.verification = "verificada"
+            extra = [f for f in comparison.flags if f in POST_FLAGS]  # los de grupo se conservan
             comparison.flags, comparison.reliability = assess(
                 comparison.market, comparison.margin, now, warn_margin, max_margin, verify_margin, verified=True
             )
+            comparison.flags += extra
+            if "cuota_destacada" in extra and comparison.reliability == "alta":
+                comparison.reliability = "media"
         else:
             comparison.verification = "pendiente"
     if refuted:
@@ -304,7 +327,14 @@ async def run_scan_cycle(
 
     now = datetime.now(timezone.utc)
     args = (bankroll, min_margin, round_step, now, warn_margin, verify_margin, max_margin)
-    comparisons = _build_comparisons(raw_markets, *args)
+    stats: dict = {}
+    comparisons = _build_comparisons(raw_markets, *args, stats)
+    if stats.get("dropped_rows"):
+        logger.info(
+            "Quitadas %d lecturas imposibles de comparadores (suma de probabilidades < %.2f: tabla de otra pestaña)",
+            stats["dropped_rows"],
+            COHERENCE_MIN,
+        )
     comparisons = await _verify_high_margins(comparisons, providers, raw_by_provider, sports, args, logger)
 
     discarded = sum(1 for c in comparisons if c.margin > 0 and any(f in BLOCKING_FLAGS for f in c.flags))
@@ -370,4 +400,4 @@ async def run_scan_cycle(
         if key not in seen_keys:
             del active_state[key]
 
-    return {"sources": sources}
+    return {"sources": sources, "dropped_rows": stats.get("dropped_rows", 0)}

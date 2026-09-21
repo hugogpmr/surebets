@@ -559,6 +559,22 @@ avisar, cada candidata pasa por estos controles:
   exactas con otro mercado (BTTS, BTTS_HT, OU_0 y DC con las cuotas 1/X del 1X2) y 22 de las 28 "surebets" eran eso.
   Como el fallo es sistemático, repetir la lectura varios ciclos no lo detecta; por eso se comprueba la estructura,
   no el margen. El 1X2 nunca se marca (es la tabla original) y AH 0 ≡ DNB no cuenta como duplicado.
+- **Filas de comparador imposibles** (`drop_incoherent_rows`, se quitan antes de calcular nada): una casa no puede
+  ofrecer todos los resultados de un mercado exhaustivo con probabilidades que sumen menos de 1 (su margen la deja
+  siempre por encima). Calibrado con 35.738 filas casa-mercado de todas las fuentes: mediana 1,088, percentil 1 en
+  1,047, **ninguna fuente directa por debajo de 0,99** y las 81 filas por debajo de 0,99 eran todas de CuotasAhora
+  (`BTTS_HT` y las líneas 0 de `OU`/`AH`, con la tabla de otra pestaña). Umbral `COHERENCE_MIN` = 0,97; solo se
+  juzgan filas completas y de comparador (una fila directa <1 sería un error real de la casa) y el doble oportunidad
+  queda fuera (sus resultados se solapan). Las 6 "surebets" de `BTTS_HT` del 17-24 % del 2026-09-21 eran esto: las
+  6 casas de la tabla sumaban 0,78. El log del ciclo dice cuántas lecturas se quitaron.
+- **Cuotas atípicas** (`leg_flags`): una pata cuya cuota es >= 1,25 veces la mediana de lo que pagan las OTRAS casas
+  por el mismo resultado y difiere en >= 8 puntos de probabilidad (con al menos 2 casas más como referencia). Sobre
+  2.500 patas reales la mediana del ratio es 1,03 y el percentil 99 es 1,25, así que salta ~0,2 %: sobre todo Betway
+  en tenis (una cuota de 16,0 frente a una mediana de 2,14) que fabricaba márgenes del 17-33 %. Si la pata viene de un
+  **comparador** la surebet se descarta (`cuota_atipica`: no se puede comprobar en el momento y los comparadores tienen
+  fallos de lectura documentados); si viene de una fuente **directa** se conserva con el aviso `cuota_destacada`
+  (fiabilidad como mucho media): es lo que la casa ofrece de verdad, así que puede ser un error suyo o una
+  oportunidad real, y lo decide quien mira la web de la casa.
 - **Márgenes muy altos (15-25 %) se verifican, no se descartan** (`VERIFY_MARGIN`..`MAX_MARGIN`): pueden ser reales.
   Se marcan `margen_a_verificar` y, en el mismo escaneo, `engine/scan.py::_verify_high_margins` vuelve a leer las
   fuentes directas y baratas (`fast_recheck`: Altenar y Kambi, sin navegador; ~70 s, solo si hay candidatas). Si todas

@@ -171,3 +171,88 @@ def test_mixed_candidate_whose_comparator_leg_is_the_full_time_price_is_detected
     # con una X genuinamente distinta no se marca
     real_half_time = market([leg("1", "winamax", 2.5, "winamax"), leg("X", "bet365", 2.2, "cuotasahora"), leg("2", "winamax", 3.75, "winamax")], "1X2_HT")
     assert find_mirrored([(real_half_time, _key(real_half_time))], _refs(full_time, real_half_time)) == set()
+
+
+# --- cuotas atípicas frente a la mediana de las demás casas -----------------------------------------------------
+
+
+def book(name, odds, bookmaker, source="cuotasahora"):
+    return Outcome(name=name, bookmaker=bookmaker, odds=odds, source=source, fetched_at=NOW)
+
+
+def test_a_leg_far_from_the_median_of_the_other_books_is_an_outlier():
+    from engine.quality import leg_outliers
+
+    # caso real: Betway pagando 16,0 al "2" cuando las otras 10 casas rondan 2,1
+    others = [book("2", odds, f"casa{i}") for i, odds in enumerate([2.05, 2.1, 2.14, 2.2, 2.1, 2.16])]
+    betway = book("2", 16.0, "betway")
+    assert leg_outliers(others + [betway], [betway]) == [betway]
+
+
+def test_normal_dispersion_and_long_shots_are_not_outliers():
+    from engine.quality import leg_outliers
+
+    close = [book("Over", o, f"casa{i}") for i, o in enumerate([1.9, 1.92, 1.95, 1.88])]
+    best = book("Over", 2.0, "otra")  # 5 % por encima: una surebet real se ve así
+    assert leg_outliers(close + [best], [best]) == []
+    # ratio 1,5 pero solo 3 puntos de probabilidad: resultado improbable, no un error
+    long_shots = [book("Under", o, f"casa{i}") for i, o in enumerate([10.0, 10.0, 9.5, 10.5])]
+    shot = book("Under", 15.0, "otra")
+    assert leg_outliers(long_shots + [shot], [shot]) == []
+
+
+def test_outliers_need_at_least_two_other_books_and_the_leg_is_not_its_own_reference():
+    from engine.quality import leg_outliers
+
+    one_other = [book("Yes", 1.3, "a")]
+    leg = book("Yes", 2.5, "c")
+    assert leg_outliers(one_other + [leg], [leg]) == []  # sin referencia suficiente no se juzga
+    two_others = one_other + [book("Yes", 1.32, "b")]
+    assert leg_outliers(two_others + [leg], [leg]) == [leg]
+
+
+def test_comparator_outliers_invalidate_but_direct_ones_only_warn():
+    from engine.quality import leg_flags
+
+    others = [book("No", o, f"casa{i}") for i, o in enumerate([1.3, 1.32, 1.31, 1.29])]
+    bad_comparator = book("No", 2.22, "retabet", "cuotasahora")
+    bad_direct = book("No", 2.22, "leovegas", "kambi")
+    assert leg_flags(others + [bad_comparator], [bad_comparator]) == ["cuota_atipica"]
+    assert leg_flags(others + [bad_direct], [bad_direct]) == ["cuota_destacada"]
+    assert leg_flags(others, [others[0]]) == []
+
+
+# --- filas de comparador imposibles (suma de probabilidades < 1) ------------------------------------------------
+
+
+def row(bookmaker, yes, no, source="cuotasahora"):
+    return [book("Yes", yes, bookmaker, source), book("No", no, bookmaker, source)]
+
+
+def test_rows_that_sum_below_one_are_dropped_and_the_rest_kept():
+    from engine.quality import drop_incoherent_rows
+
+    m = Market("A vs. B", "futbol", "BTTS_HT", row("bet365", 3.25, 2.2) + row("paf", 4.5, 1.2) + row("888sport", 4.2, 1.22))
+    cleaned, dropped = drop_incoherent_rows(m)
+    assert dropped == 1 and {o.bookmaker for o in cleaned.outcomes} == {"paf", "888sport"}
+    assert cleaned.start_time == m.start_time and cleaned.market_type == "BTTS_HT"
+
+
+def test_coherent_markets_direct_rows_and_double_chance_are_never_touched():
+    from engine.quality import drop_incoherent_rows
+
+    normal = Market("A vs. B", "futbol", "BTTS", row("bet365", 1.9, 1.95) + row("paf", 1.85, 2.0))
+    assert drop_incoherent_rows(normal) == (normal, 0)
+    # una fila DIRECTA por debajo de 1 sería un error real de la casa, no de lectura
+    direct = Market("A vs. B", "futbol", "BTTS", row("leovegas", 2.2, 2.2, "kambi") + row("paf", 1.85, 2.0))
+    assert drop_incoherent_rows(direct)[1] == 0
+    # doble oportunidad: los resultados se solapan y suman ~2, no es un mercado exhaustivo
+    dc = Market("A vs. B", "futbol", "DC", [book("1X", 1.3, "a"), book("12", 1.25, "a"), book("X2", 1.6, "a")])
+    assert drop_incoherent_rows(dc)[1] == 0
+
+
+def test_rows_that_do_not_give_every_outcome_are_not_judged():
+    from engine.quality import drop_incoherent_rows
+
+    m = Market("A vs. B", "futbol", "BTTS", [book("Yes", 3.0, "solo_yes")] + row("bet365", 1.9, 1.95))
+    assert drop_incoherent_rows(m)[1] == 0

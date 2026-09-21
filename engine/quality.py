@@ -18,6 +18,7 @@ en el mismo escaneo (o, si solo hay comparadores, exige más ciclos seguidos).
 """
 
 import re
+import statistics
 from datetime import datetime, timedelta, timezone
 
 from .models import Market, Outcome
@@ -45,12 +46,38 @@ NEAR_KICKOFF = timedelta(hours=2)
 MAX_LEG_SKEW = timedelta(minutes=10)
 
 # Flags que descartan la surebet (error de datos, no oportunidad).
-BLOCKING_FLAGS = frozenset({"una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada"})
+BLOCKING_FLAGS = frozenset(
+    {"una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada", "cuota_atipica"}
+)
+
+# Cuota atípica: una pata cuya cuota se aleja de la MEDIANA de lo que pagan las demás
+# casas por el mismo resultado. Calibrado el 2026-09-21 con 2.500 patas de la caché
+# de comparadores: la mediana del ratio cuota/mediana es 1,03 y el percentil 99 es
+# 1,25; con estos umbrales solo salta el 0,2 % de las patas y casi todas eran
+# lecturas erróneas (Betway en tenis a 16,0 frente a una mediana de 2,14; un Under a
+# 4,0 frente a 2,0), que fabricaban "surebets" del 17-33 %.
+OUTLIER_RATIO = 1.25  # la cuota es >= 1,25 veces la mediana del resto...
+OUTLIER_PROB_DIFF = 0.08  # ...y su probabilidad implícita difiere en >= 8 puntos
+# (esto último evita marcar cuotas altas de resultados improbables: 15,0 frente a 10,0
+# es un ratio de 1,5 pero solo 3 puntos de probabilidad)
+OUTLIER_MIN_OTHERS = 2  # con menos de 2 casas más no hay referencia (con 3 se colaban 3 casos de
+# Betway en tenis que con 2 se cogen; con 2 no hubo ningún falso positivo más en la muestra)
+
+# Coherencia de una fila casa-mercado: las probabilidades implícitas de TODOS los
+# resultados de un mercado exhaustivo, según UNA casa, suman siempre más de 1 (su
+# margen). Calibrado el 2026-09-21 con 35.738 filas de todas las fuentes: mediana
+# 1,088, percentil 1 en 1,047 y NINGUNA fuente directa por debajo de 0,99; las 81
+# filas por debajo de 0,99 eran todas de CuotasAhora (BTTS_HT, y las líneas 0 de
+# OU/AH) con la tabla de otra pestaña leída por error. Con 0,97 no hay falsos
+# positivos en esa muestra y sobra margen para redondeos.
+COHERENCE_MIN = 0.97
 
 FLAG_DESCRIPTIONS = {
     "una_sola_casa": "todas las patas son de la misma casa (error de datos)",
     "mercado_incompleto": "faltan resultados del mercado (error de datos)",
     "lectura_duplicada": "cuotas idénticas a las de otro mercado del mismo partido (tabla del comparador leída dos veces)",
+    "cuota_atipica": "una cuota de comparador muy por encima de lo que pagan las demás casas (lectura errónea probable)",
+    "cuota_destacada": "una cuota directa muy por encima de lo que pagan las demás casas: error de la casa o oportunidad real, comprueba en la web",
     "margen_absurdo": "margen por encima del máximo creíble (error de datos)",
     "margen_alto": "margen inusualmente alto: comprueba las cuotas en las casas",
     "margen_a_verificar": "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
@@ -130,6 +157,95 @@ def find_mirrored(candidates: list[tuple[Market, str]], references: dict[tuple, 
                 mirrored.add(index)
                 break
     return mirrored
+
+
+def leg_outliers(
+    all_outcomes: list[Outcome],
+    legs: list[Outcome],
+    ratio: float = OUTLIER_RATIO,
+    prob_diff: float = OUTLIER_PROB_DIFF,
+    min_others: int = OUTLIER_MIN_OTHERS,
+) -> list[Outcome]:
+    """Patas de `legs` (la mejor cuota de cada resultado) cuya cuota se sale de lo
+    normal frente al resto de casas del mismo mercado (`all_outcomes`, todas las
+    lecturas del grupo). Se compara con la mediana de las OTRAS casas para el mismo
+    resultado; con la lectura directa de una casa si la hay, y si no la más baja.
+    Necesita al menos `min_others` casas más: sin referencia no se juzga.
+    """
+    per_book: dict[tuple[str, str], tuple[float, bool]] = {}
+    for outcome in all_outcomes:
+        key = (outcome.bookmaker, outcome.name)
+        direct = outcome.source in DIRECT_SOURCES
+        current = per_book.get(key)
+        if current is None or (direct and not current[1]):
+            per_book[key] = (outcome.odds, direct)
+        elif direct == current[1] and outcome.odds < current[0]:
+            per_book[key] = (outcome.odds, direct)
+
+    found = []
+    for leg in legs:
+        others = [odds for (book, name), (odds, _) in per_book.items() if name == leg.name and book != leg.bookmaker]
+        if len(others) < min_others:
+            continue
+        median = statistics.median(others)
+        if leg.odds / median >= ratio and 1 / median - 1 / leg.odds >= prob_diff:
+            found.append(leg)
+    return found
+
+
+def leg_flags(all_outcomes: list[Outcome], legs: list[Outcome]) -> list[str]:
+    """`cuota_atipica` (invalida la surebet) si alguna pata anómala viene de un
+    comparador: no se puede comprobar aquí y los comparadores tienen fallos de
+    lectura documentados. `cuota_destacada` (solo aviso) si la pata anómala es de una
+    fuente directa: es lo que la casa ofrece de verdad, así que puede ser una
+    oportunidad real."""
+    outliers = leg_outliers(all_outcomes, legs)
+    if not outliers:
+        return []
+    if any(o.source in COMPARATOR_SOURCES for o in outliers):
+        return ["cuota_atipica"]
+    return ["cuota_destacada"]
+
+
+def drop_incoherent_rows(market: Market, min_sum: float = COHERENCE_MIN) -> tuple[Market, int]:
+    """Quita del mercado las filas de COMPARADOR (una casa) cuyos resultados suman
+    menos de `min_sum` en probabilidad implícita: una casa no ofrece eso, así que la
+    fila es una lectura errónea (tabla de otra pestaña). Solo se juzgan filas
+    completas (la casa da todos los resultados del mercado) y de comparador: una
+    fila directa por debajo de 1 sería un error real de la casa, no de lectura. El
+    doble oportunidad no se evalúa (sus resultados se solapan y suman ~2).
+    Devuelve (mercado limpio, nº de filas quitadas); si no hay nada que quitar
+    devuelve el mismo objeto."""
+    if _canonical_type(market.market_type).split("_")[0] == "DC":
+        return market, 0
+    names = {o.name for o in market.outcomes}
+    if len(names) < 2:
+        return market, 0
+    rows: dict[tuple[str, str], dict[str, float]] = {}
+    for outcome in market.outcomes:
+        if outcome.source not in COMPARATOR_SOURCES:
+            continue
+        row = rows.setdefault((outcome.bookmaker, outcome.source), {})
+        row[outcome.name] = min(outcome.odds, row.get(outcome.name, outcome.odds))
+    bad = {key for key, row in rows.items() if set(row) == names and sum(1 / v for v in row.values()) < min_sum}
+    if not bad:
+        return market, 0
+    kept = [o for o in market.outcomes if (o.bookmaker, o.source) not in bad]
+    return (
+        Market(
+            event=market.event,
+            sport=market.sport,
+            market_type=market.market_type,
+            outcomes=kept,
+            fetched_at=market.fetched_at,
+            start_time=market.start_time,
+        ),
+        len(bad),
+    )
+
+
+# Flags que se añaden DESPUÉS de assess() (miran el grupo entero, no solo la surebet).
+POST_FLAGS = frozenset({"lectura_duplicada", "cuota_atipica", "cuota_destacada"})
 
 
 def _leg_sources(outcomes: list[Outcome]) -> set[str]:

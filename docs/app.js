@@ -73,6 +73,8 @@ const FLAG_DESCRIPTIONS = {
   una_sola_casa: "todas las patas son de la misma casa (error de datos)",
   mercado_incompleto: "faltan resultados del mercado (error de datos)",
   lectura_duplicada: "cuotas idénticas a las de otro mercado del mismo partido (tabla del comparador leída dos veces)",
+  cuota_atipica: "una cuota de comparador muy por encima de lo que pagan las demás casas (lectura errónea probable)",
+  cuota_destacada: "una cuota directa muy por encima de lo que pagan las demás casas: error de la casa o oportunidad real, comprueba en la web",
   margen_absurdo: "margen por encima del máximo creíble (error de datos)",
   margen_alto: "margen inusualmente alto: comprueba las cuotas en las casas",
   margen_a_verificar: "margen muy alto: pendiente de verificar (comprueba las cuotas en las casas)",
@@ -81,7 +83,7 @@ const FLAG_DESCRIPTIONS = {
   cerca_inicio: "empieza pronto y alguna cuota viene de un comparador",
   cuotas_desfasadas: "las cuotas se leyeron con mucha diferencia de tiempo",
 };
-const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada"]);
+const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada", "cuota_atipica"]);
 const RELIABILITY_RANK = { alta: 3, media: 2, baja: 1 };
 
 function loadActiveFilters() {

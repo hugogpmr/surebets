@@ -95,13 +95,14 @@ def test_default_confirm_cycles_keeps_old_behaviour(db):
     assert len(run(surebet_providers(), db, {})) == 1
 
 
-def test_alert_shows_kickoff_sources_and_rounded_stakes(db):
+def test_alert_shows_kickoff_sources_and_odds(db):
     start = datetime.now(timezone.utc) + timedelta(hours=5)
     (text,) = run(surebet_providers(start), db, {}, round_step=5.0)
     assert "Empieza" in text
     assert "betway←altenar" in text and "paf←kambi" in text
-    stakes = [line for line in text.splitlines() if "€ a " in line]
-    assert stakes and all(float(line.split(":")[1].split("€")[0]) % 5 == 0 for line in stakes)
+    # El aviso da la cuota de cada casa, sin importes ni beneficio.
+    assert "a cuota" in text
+    assert "€" not in text and "Beneficio" not in text
 
 
 def test_comparator_only_surebet_is_flagged_in_alert_and_snapshot(db):
@@ -109,7 +110,7 @@ def test_comparator_only_surebet_is_flagged_in_alert_and_snapshot(db):
         FakeProvider("cuotasahora", [ou("bet365", 2.10, 1.80), ou("bwin", 1.80, 2.05)]),
     ]
     (text,) = run(providers, db, {})
-    assert "fiabilidad baja" in text and "comparadores" in text
+    assert "fiabilidad" not in text and "comparadores" in text
     snapshot = export_snapshot(db)
     row = snapshot["comparisons"][0]
     assert row["is_surebet"] and row["reliability"] == "baja" and "solo_comparador" in row["flags"]
@@ -246,3 +247,63 @@ def test_same_surebet_from_direct_sources_is_never_treated_as_a_mirror(db):
     sent = run([FakeProvider("kambi", [one, ou])], db, {}, confirm_cycles=1)
     rows = {r["market_type"]: r for r in export_snapshot(db)["comparisons"]}
     assert "lectura_duplicada" not in rows["OU_2.5"]["flags"]
+
+
+def btts_ht_group():
+    """Una sola pata atípica: bet365 'Yes' a 3.25 y retabet 'No' a 2.22 (el 'No' normal
+    ronda 1.3) da un margen del 24 %. La fila de retabet es coherente por sí sola
+    (1/1.6 + 1/2.22 > 1), así que la limpieza de filas imposibles no la quita y es la
+    comprobación de cuotas atípicas la que la descarta."""
+    rows = [("bet365", 3.25, 1.30), ("888sport", 3.0, 1.32), ("paf", 3.1, 1.31), ("versus", 2.95, 1.33), ("retabet", 1.6, 2.22)]
+    outcomes = []
+    for bookmaker, yes, no in rows:
+        outcomes += [Outcome("Yes", bookmaker, yes), Outcome("No", bookmaker, no)]
+    return Market("Preston vs. Millwall", "futbol", "BTTS_HT", outcomes)
+
+
+def test_comparator_leg_far_from_the_other_books_is_discarded_not_notified(db):
+    sent = run([FakeProvider("cuotasahora", [btts_ht_group()])], db, {}, confirm_cycles=1, verify_cycles=1)
+    assert sent == []
+    row = export_snapshot(db)["comparisons"][0]
+    assert not row["is_surebet"] and "cuota_atipica" in row["flags"] and row["reliability"] == "baja"
+
+
+def test_direct_leg_far_from_the_others_is_kept_with_a_warning(db):
+    overs = [Outcome("Over", "leovegas", 2.6), Outcome("Under", "leovegas", 1.3)]  # cuota directa muy alta
+    others = [Outcome(n, b, o) for b, ov, un in (("bet365", 1.9, 1.95), ("888sport", 1.88, 1.97), ("bwin", 1.92, 1.93))
+              for n, o in (("Over", ov), ("Under", un))]
+    under = [Outcome("Over", "paf", 1.8), Outcome("Under", "paf", 2.05)]
+    direct = Market("A vs. B", "futbol", "OU_2.5", overs + under)
+    comparators = Market("A vs. B", "futbol", "OU_2.5", others)
+    sent = run([FakeProvider("cuotasahora", [comparators]), FakeProvider("kambi", [direct])], db, {}, confirm_cycles=1, verify_cycles=1)
+    row = export_snapshot(db)["comparisons"][0]
+    assert row["is_surebet"] and "cuota_destacada" in row["flags"] and "cuota_atipica" not in row["flags"]
+    assert row["reliability"] in ("media", "baja")  # nunca "alta" con una cuota tan destacada
+    assert len(sent) == 1 and "muy por encima de lo que pagan las demás casas" in sent[0]
+
+
+def all_rows_impossible_group():
+    """Caso real del 2026-09-21 (Preston vs. Millwall, BTTS 1ª parte): las 6 casas del
+    comparador con Yes ~3.1 / No ~2.2 -> cada casa suma 0.78 de probabilidad, algo que
+    ninguna casa ofrece: la tabla entera era la de otra pestaña."""
+    rows = [("bet365", 3.25, 2.2), ("888sport", 3.1, 2.2), ("codere", 3.05, 2.15), ("paf", 3.05, 2.12), ("retabet", 3.23, 2.22)]
+    outcomes = []
+    for bookmaker, yes, no in rows:
+        outcomes += [Outcome("Yes", bookmaker, yes), Outcome("No", bookmaker, no)]
+    return Market("Preston vs. Millwall", "futbol", "BTTS_HT", outcomes)
+
+
+def test_a_comparator_table_whose_every_row_is_impossible_disappears(db):
+    sent = run([FakeProvider("cuotasahora", [all_rows_impossible_group()])], db, {}, confirm_cycles=1, verify_cycles=1)
+    assert sent == []
+    assert export_snapshot(db)["comparisons"] == []  # ni siquiera se muestra como comparación
+
+
+def test_only_the_impossible_rows_are_dropped_and_the_coherent_ones_still_compare(db):
+    good = [Outcome(n, b, o) for b, y, no in (("bet365", 2.1, 1.75), ("paf", 2.0, 1.9)) for n, o in (("Yes", y), ("No", no))]
+    bad = [Outcome("Yes", "retabet", 3.2), Outcome("No", "retabet", 2.2)]  # suma 0.77: lectura errónea
+    provider = FakeProvider("cuotasahora", [Market("A vs. B", "futbol", "BTTS", good + bad)])
+    sent = run([provider], db, {}, confirm_cycles=1, verify_cycles=1)
+    (row,) = export_snapshot(db)["comparisons"]
+    assert {o["bookmaker"] for o in row["odds"]} == {"bet365", "paf"}  # retabet ya no cuenta
+    assert not row["is_surebet"] and sent == []
