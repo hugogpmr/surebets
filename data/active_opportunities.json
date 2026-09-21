@@ -1,6 +1,16 @@
 {
   "Preston vs. Millwall||futbol||BTTS_HT||bet365,retabet": {
     "margin": 0.2418572418572419,
+    "cycles": 2,
+    "notified": false
+  },
+  "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||bet365,versus": {
+    "margin": 0.021965317919075078,
+    "cycles": 1,
+    "notified": false
+  },
+  "Seattle Sounders vs. Minnesota United||futbol||BTTS_HT||bet365,retabet": {
+    "margin": 0.2183206106870229,
     "cycles": 1,
     "notified": false
   }
