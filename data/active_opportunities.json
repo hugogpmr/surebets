@@ -1,37 +1,37 @@
 {
   "Preston vs. Millwall||futbol||BTTS_HT||bet365,retabet": {
     "margin": 0.2418572418572419,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||bet365,versus": {
     "margin": 0.021965317919075078,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Seattle Sounders vs. Minnesota United||futbol||BTTS_HT||bet365,retabet": {
     "margin": 0.2183206106870229,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Central Español vs. Torque||futbol||CORNERS_OU_HOME_3.5||jokerbet,paf": {
     "margin": 0.018604651162790642,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Bragantino vs. Mirassol||futbol||AH_0||bet365,retabet": {
     "margin": 0.14879745001448852,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Internacional vs. Corinthians||futbol||BTTS_HT||888sport,bet365": {
     "margin": 0.17658730158730163,
-    "cycles": 2,
-    "notified": false
+    "cycles": 3,
+    "notified": true
   },
   "Palmeiras vs. Bahia||futbol||BTTS_HT||bet365,paf": {
     "margin": 0.11228689006466785,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   }
 }
