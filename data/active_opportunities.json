@@ -1,26 +1,31 @@
 {
   "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||paf,versus": {
     "margin": 0.010442684174219119,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Independiente Medellin vs. Jaguares de Córdoba||futbol||CARDS_OU_5.5||bet777,betway": {
     "margin": 0.018759018759018753,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Marítimo vs. Oporto||futbol||1X2||888sport,bet365,versus": {
     "margin": 0.018599033816425137,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Marítimo vs. Oporto||futbol||AH_+0.5||888sport,bet365": {
     "margin": 0.04347826086956519,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
-  "Sierra Leona vs. Zimbabue||futbol||DNB||betway,paf": {
-    "margin": 0.011904761904761862,
+  "Sierra Leona vs. Zimbabue||futbol||1X2||betway,jokerbet,paf": {
+    "margin": 0.04356292170447851,
+    "cycles": 1,
+    "notified": false
+  },
+  "Sierra Leona vs. Zimbabue||futbol||DNB||betinia,paf": {
+    "margin": 0.08374384236453203,
     "cycles": 1,
     "notified": false
   }
