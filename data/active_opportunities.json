@@ -1,22 +1,27 @@
 {
   "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||paf,versus": {
     "margin": 0.010442684174219119,
-    "cycles": 11,
+    "cycles": 12,
     "notified": true
   },
   "Independiente Medellin vs. Jaguares de Córdoba||futbol||CARDS_OU_5.5||bet777,betway": {
     "margin": 0.018759018759018753,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Marítimo vs. Oporto||futbol||1X2||888sport,bet365,versus": {
     "margin": 0.018599033816425137,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Marítimo vs. Oporto||futbol||AH_+0.5||888sport,bet365": {
     "margin": 0.04347826086956519,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
+  },
+  "Criciuma EC SC vs. Operario PR||futbol||CORNERS_OU_AWAY_3.5||betinia,bwin": {
+    "margin": 0.0129749768303985,
+    "cycles": 1,
+    "notified": false
   }
 }
