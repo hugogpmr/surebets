@@ -1,26 +1,36 @@
 {
   "Países Bajos vs. Alemania||futbol||CARDS_OU_HT_0.5||betinia,bwin": {
     "margin": 0.03639371381306877,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_3.5||bwin,paston": {
     "margin": 0.024679639297579437,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_2.5||bwin,jokerbet": {
     "margin": 0.02564102564102566,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_HT_1.5||bwin,jokerbet": {
     "margin": 0.023809523809523836,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "FK Podkonice vs. Ruzomberok B||futbol||OU_2.5||betway,paf": {
     "margin": 0.015766841853798397,
+    "cycles": 2,
+    "notified": true
+  },
+  "Vancouver FC vs. Inter Toronto||futbol||1X2||betinia,paf,pokerstars": {
+    "margin": 0.014468864468864528,
+    "cycles": 1,
+    "notified": false
+  },
+  "Vancouver FC vs. Inter Toronto||futbol||DNB||betinia,bwin": {
+    "margin": 0.010011123470522798,
     "cycles": 1,
     "notified": false
   }
