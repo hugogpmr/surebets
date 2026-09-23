@@ -1,42 +1,42 @@
 {
   "Países Bajos vs. Alemania||futbol||CARDS_OU_HT_0.5||betinia,bwin": {
     "margin": 0.03639371381306877,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_3.5||bwin,paston": {
     "margin": 0.024679639297579437,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_2.5||bwin,jokerbet": {
     "margin": 0.02564102564102566,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_HT_1.5||bwin,jokerbet": {
     "margin": 0.023809523809523836,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "FK Podkonice vs. Ruzomberok B||futbol||OU_2.5||betway,paf": {
     "margin": 0.015766841853798397,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Hajduk Split vs. Ajax||futbol||AH_+0.5||bet365,paf": {
     "margin": 0.048128342245989275,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "Lugano vs. Estrella Roja||futbol||1X2||betway,codere,paf": {
     "margin": 0.014202172096908994,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   },
   "Mjallby vs. Inter Escaldes||futbol||AH_-2.5||retabet,versus": {
     "margin": 0.03292856361448415,
-    "cycles": 1,
-    "notified": false
+    "cycles": 2,
+    "notified": true
   }
 }
