@@ -1,31 +1,26 @@
 {
-  "Seattle Sounders vs. Real Salt Lake||futbol||AH_-1||paf,versus": {
-    "margin": 0.010442684174219119,
-    "cycles": 18,
-    "notified": true
-  },
-  "Independiente Medellin vs. Jaguares de Córdoba||futbol||CARDS_OU_5.5||bet777,betway": {
-    "margin": 0.018759018759018753,
-    "cycles": 14,
-    "notified": true
-  },
-  "Marítimo vs. Oporto||futbol||1X2||888sport,bet365,versus": {
-    "margin": 0.018599033816425137,
-    "cycles": 11,
-    "notified": true
-  },
-  "Marítimo vs. Oporto||futbol||AH_+0.5||888sport,bet365": {
-    "margin": 0.04347826086956519,
-    "cycles": 11,
-    "notified": true
-  },
-  "Sierra Leona vs. Zimbabue||futbol||1X2||betway,jokerbet,paf": {
-    "margin": 0.04356292170447851,
+  "Países Bajos vs. Alemania||futbol||CARDS_OU_HT_0.5||betinia,bwin": {
+    "margin": 0.03639371381306877,
     "cycles": 1,
     "notified": false
   },
-  "Sierra Leona vs. Zimbabue||futbol||DNB||betinia,paf": {
-    "margin": 0.08374384236453203,
+  "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_3.5||bwin,paston": {
+    "margin": 0.024679639297579437,
+    "cycles": 1,
+    "notified": false
+  },
+  "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_2.5||bwin,jokerbet": {
+    "margin": 0.02564102564102566,
+    "cycles": 1,
+    "notified": false
+  },
+  "Portugal vs. Gales||futbol||CORNERS_OU_AWAY_HT_1.5||bwin,jokerbet": {
+    "margin": 0.023809523809523836,
+    "cycles": 1,
+    "notified": false
+  },
+  "FK Podkonice vs. Ruzomberok B||futbol||OU_2.5||betway,paf": {
+    "margin": 0.015766841853798397,
     "cycles": 1,
     "notified": false
   }
