@@ -86,32 +86,35 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 
 | Casa | Estado | Detalle |
 |---|---|---|
-| **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2 y over/under (Goles Totales) en vivo verificados. |
-| **Betfair** | ✅ Funciona (`providers/betfair.py`) | Playwright headless normal. 1X2 y over/under 2,5 goles en vivo verificados sobre el listado completo de LaLiga. |
+| **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2, Más/Menos (Goles Totales, línea variable por partido), Doble Oportunidad, Ambos Marcan y Resultado al descanso en vivo verificados (2026-09-22). |
+| **Betfair** | ⚠️ Solo 1X2, a propósito (`providers/betfair.py`) | Playwright headless normal. 1X2 funciona. El Más/Menos de 2,5 (y los intentos de ampliar a Doble Oportunidad/Ambos Marcan/Córners) están implementados pero **desactivados**: el cambio de mercado dispara el challenge "Verificación de seguridad" de Cloudflare — verificado en vivo el 2026-09-22, persiste tras 5 min de espera, no se ha intentado evitarlo. Ver detalle abajo. |
 | **Winamax** | ✅ Funciona (`providers/winamax.py`) | Por el socket de su propia web (socket.io), abierto desde un navegador: 23 competiciones y ~100 mercados por partido (1X2, DNB, doble oportunidad, ambos marcan, Más/Menos con muchas líneas y por equipo, hándicap asiático, Par/Impar, primer/último gol, todo también por mitades). Sin córners ni tarjetas pre-partido (comprobado sobre 388 tipos de mercado). Una petición HTTP suelta recibe 403; la web completa no siempre conecta su cliente, por eso se habla el socket directamente. |
 | **bwin** (nuevo 2026-09-21) | ✅ Funciona (`providers/bwin.py`) | API JSON de su propio front (`cds-api`), leída desde el navegador con la página cargada (HTTP suelto = 403). Fuente **directa** con cientos de mercados por partido, incluidos córners, tarjetas, hándicap asiático y mercados por mitad. Su "Resultado VA (+2)" (pago anticipado) NO se trata como 1X2. |
 | **CuotasAhora.com** (comparador) | ✅ Funciona (`providers/cuotasahora.py`) | Playwright headless. No es una casa, es un comparador (versión española de OddsPortal) que agrega 1X2 de ~14 casas por partido en una sola tabla HTML. Ver detalle abajo — es la vía por la que se desbloquean, indirectamente, bet365/bwin/Codere/Luckia/William Hill. |
 | **BetExplorer.com** (comparador, nuevo 2026-09-17) | ✅ Funciona (`providers/betexplorer.py`) | Playwright headless. Segundo comparador, empresa distinta a CuotasAhora/OddsPortal. Mismas casas DGOJ, tablas HTML semánticas (más simples de leer que CuotasAhora). Ver detalle abajo. |
 | **Jokerbet, Pastón, Betway** (plataforma Altenar, nuevo 2026-09-20) | ✅ Funciona (`providers/altenar.py`) | API JSON pública de su widget, sin navegador. Córners, tarjetas, hándicaps y mercados por mitad pre-partido, que los comparadores no tienen. Ver detalle abajo. |
 | **Paf, LeoVegas** (plataforma Kambi, nuevo 2026-09-20) | ✅ Funciona (`providers/kambi.py`) | API pública de ofertas de Kambi, sin navegador. Fuente **directa** de la casa (no comparador): mismos mercados extra que Altenar (córners, tarjetas, faltas, hándicaps, por mitad) pero otra plataforma y otros precios, lo que permite arbitraje entre plataformas. Ver detalle abajo. |
-| **Interwetten, PokerStars** | ❌ Sin fuente | No aparecen en el catálogo de CuotasAhora ni de BetExplorer, ni usan Altenar/Kambi (PokerStars no expone ninguna de las dos en su web; Interwetten devuelve 403 y además Cloudflare bloquea el scraping directo). |
+| **PokerStars** (nuevo 2026-09-23) | ✅ Funciona (`providers/pokerstars.py`) | Playwright headless normal, DOM (`/sports/futbol/1/matches/`, atributos `data-testid` estables, no clases con hash). Solo 1X2 por ahora. Su API JSON propia (parece tecnología Betfair) está detrás de Akamai Bot Manager — un `fetch()` a mano dentro de la página ya da 403, mismo patrón que Kirolbet — por eso se lee el DOM en vez de hablarla directo. Plataforma propia, no Altenar/Kambi/Sportify. |
 | **Speedybet** | ⚠️ Solo vía comparadores | Su web dice usar Kambi (mismo grupo que Paf) pero no se encontró su código de operador (probados ~15 nombres, varios devolvieron 429 por límite de peticiones, no concluyente). Sigue entrando vía CuotasAhora/BetExplorer. |
-| **bet365, bwin, Codere, Luckia, William Hill** | ⚠️ Indirecto, vía CuotasAhora.com / BetExplorer.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través de ambos comparadores. |
+| **William Hill** (nuevo 2026-09-23) | ✅ Funciona (`providers/williamhill.py`) | API JSON pública de su plataforma OpenBet, sin navegador ni cookies (funciona igual con o sin sesión). El bloqueo de IP de datacenter/VPN ("Data Centre block") es solo de la web `sports.williamhill.es`, no de esta API — probado en vivo desde IP residencial (carga bien) y desde este sandbox (API responde 200 igual, la web sigue bloqueada). Solo 1X2: pedir el mercado por su nombre de la web ("Ganador del partido") da la promo "2 Up" (paga como ganador con 2 goles de ventaja), no cuotas normales — el 1X2 real vive bajo el grupo "Ganador del Partido - Cuotas mejoradas", mismo caso que el "Resultado VA (+2)" de bwin. |
+| **bet365, bwin, Codere, Luckia** | ⚠️ Indirecto, vía CuotasAhora.com / BetExplorer.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través de ambos comparadores. bet365 confirmado en vivo el 2026-09-23: sigue con Cloudflare incluso desde Playwright headless real y desde la IP residencial del usuario (no es solo IP de datacenter, como sí lo era William Hill). |
 | **888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es, 1xBet.es** | ✅ Vía CuotasAhora.com / BetExplorer.com | No probadas directamente, cubiertas de golpe a través de los comparadores. |
 | **Kirolbet** | ⚠️ Implementado pero bloqueado (`providers/kirolbet.py`) | Akamai Bot Manager. Ver detalle abajo. |
 | **Betsson** | ❌ Bloqueado | API antifraude propia. Ver detalle abajo. |
 | **Suertia (OlyBet)** | ❌ Bloqueado a nivel de red | "Access Denied" del proveedor. Ver detalle abajo. |
-| **Marca Apuestas** | ❌ Bloqueado | Cloudflare / 403 en API de cuotas. Ver detalle abajo. |
-| **Interwetten** | ❌ Bloqueado | Cloudflare "Just a moment...". Ver detalle abajo. |
-| **PokerStars Sports, Zebet, Botemanía** (Pastón ya funciona vía Altenar, ver arriba) | ❓ Sin confirmar para scraping directo, pero **ya con licencia DGOJ confirmada** (ver abajo) | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
+| **Marca Apuestas** (nuevo 2026-09-23) | ✅ Funciona (`providers/marcaapuestas.py`) | El bloqueo Cloudflare/403 antiguo ya no aplica: la casa cambió de frontend. Confirmado con Playwright headless real, sin trucos (status 200, sin ningún reto). Resultó ser **el mismo framework "ta-" que Sportium** (mismas clases CSS y mismos códigos internos de mercado BTSC/H1RS), así que el provider es casi una copia del de Sportium: 1X2, Más/Menos, Ambos Marcan y Resultado al descanso (sin Doble Oportunidad, que esta casa no tiene en su desplegable). Ver `estudio_tecnicas_otros_bots.md`. |
+| **Interwetten** | ⚠️ Implementado pero bloqueado (`providers/interwetten.py`) | DOM limpio y parseable (clases semánticas estables, sin CSS-modules), pero Cloudflare devuelve el challenge JS "Just a moment..." a cualquier Playwright headless, confirmado en dos entornos (sandbox de desarrollo y PC de producción del usuario, IP residencial) el 2026-09-22 — no es throttling de sandbox como cuotasahora.com, es un bloqueo real. El navegador interactivo sí carga la página, pero automatizar eso sería evasión de anti-bot: no se hace. |
+| **Zebet, Botemanía** (Pastón ya funciona vía Altenar, PokerStars ya funciona, ver arriba) | ❓ Sin confirmar para scraping directo, pero **ya con licencia DGOJ confirmada** (ver abajo) | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
+| **Betfair Exchange** (nuevo 2026-09-23, `providers/betfair_exchange.py`) | ⚠️ Implementado, **sin verificar en vivo** | API oficial gratuita (Delayed App Key), aparte del scraper DOM de la web de apuestas fijas (`providers/betfair.py`). A diferencia de todo lo demás de esta tabla, no se ha podido probar contra la API real: hace falta una app key + cuenta de Betfair que solo el usuario puede generar (developer.betfair.com). Se salta sola en el escaneo si `BETFAIR_APP_KEY`/`BETFAIR_USERNAME`/`BETFAIR_PASSWORD` no están en `.env`. Ver `estudio_tecnicas_otros_bots.md`. |
 
 ✅ **Licencias DGOJ verificadas (2026-09-16)**: se contrastaron a mano las 78 fichas del buscador oficial
 de operadores ([ordenacionjuego.es](https://www.ordenacionjuego.es/operadores-juego/operadores-licencia/operadores)).
 **Todas** las casas usadas por este sistema (directas + vía CuotasAhora, incluido 1xBet.es) tienen licencia
 vigente en España — la sospecha inicial de que 1xBet.es no la tuviera era incorrecta (licencia bajo WAGERFAIR,
 S.A.). De paso se confirmó que Paston, Botemanía, Zebet y PokerStars Sports también están licenciadas
-(EUROAPUESTAS ONLINE, GAMESYS SPAIN, ZEBETTING Y GAMING, TSG INTERACTIVE respectivamente), aunque su scraping
-directo sigue sin confirmar. El panel web ([docs/](docs/)) marca en rojo cualquier casa que no esté en esta
+(EUROAPUESTAS ONLINE, GAMESYS SPAIN, ZEBETTING Y GAMING, TSG INTERACTIVE respectivamente); de esas cuatro,
+Paston y PokerStars Sports ya tienen scraping directo implementado (Altenar y `providers/pokerstars.py`
+respectivamente), Botemanía y Zebet siguen sin confirmar. El panel web ([docs/](docs/)) marca en rojo cualquier casa que no esté en esta
 lista verificada — hoy no debería salir ninguna en rojo; si sale alguna, es una señal de fallo de scraping o
 de una casa nueva sin comprobar. Esta verificación es una foto de un momento dado (la DGOJ actualiza el
 registro mensualmente) — revisar de nuevo si ha pasado mucho tiempo.
@@ -167,8 +170,8 @@ Comprobado con un Playwright headless normal (sin técnicas de evasión, que est
 | bet365 | ❌ Cloudflare 403 ("Sorry, you have been blocked"). Además reparte las cuotas por un websocket cifrado. Solo llega vía comparadores. |
 | Luckia, 1xBet | ❌ Desafío de Cloudflare ("Just a moment..."). |
 | Retabet | ❌ "Error de seguridad" (403). |
-| William Hill | ❌ Bloquea centros de datos/VPN. |
-| Codere | ❓ Ninguno de sus dominios (codere.es, apuestas.codere.es...) resuelve DNS desde este equipo. Pendiente de probar desde otra red. |
+| William Hill | ~~❌ Bloquea centros de datos/VPN~~ **Resuelto 2026-09-23**: solo la web (`sports.williamhill.es`), su API JSON no bloquea nada. Ver `providers/williamhill.py`. |
+| Codere | ❌ Akamai Bot Manager en la plataforma real de apuestas (`m.apuestas.codere.es`, un subdominio aparte de `www.codere.es` que sí carga bien). "Access Denied" incluso reusando las cookies de sensor de Akamai de `www.codere.es`, probado desde la IP residencial del usuario — mismo nivel que Kirolbet. Solo llega vía comparadores. |
 | 888sport, Versus | ⚠️ Cargan, pero no exponen un JSON de cuotas evidente (888sport usa la plataforma "unified client" de safe-iplay; Versus un widget propio). Sin explorar. |
 | bwin, Winamax | ✅ Integradas (arriba). |
 
@@ -179,9 +182,12 @@ nombres: `market_type` es `"OU_<línea>"` (p.ej. `"OU_2.5"`) y los outcomes son 
 tiene la línea 2,5 como opción de menú fija, así que siempre es `OU_2.5`. Sportium sugiere una línea por
 partido (normalmente 2,5, pero no siempre — puede ser 3,5 o 4,5 en partidos muy desnivelados), así que su
 `market_type` varía por partido; al incluir la línea en el propio `market_type`, `group_by_event` nunca
-compara por error una línea con otra. Winamax se queda solo en 1X2: su over/under no está en la página de
-listado (donde vive todo lo demás), solo dentro de la ficha de cada partido, lo que exigiría una navegación
-extra por partido — no implementado por ahora.
+compara por error una línea con otra. **Winamax** (actualizado 2026-09-21, ver fila de la tabla arriba) va mucho
+más allá de 1X2: por el socket de la ficha de cada partido llegan también DNB, doble oportunidad, ambos
+equipos marcan, Par/Impar (partido y por equipo), primer/último gol, Más/Menos de (muchas líneas, partido y
+por equipo) y hándicap asiático, todo también por mitades — `providers/winamax.py::parse_match_state`, con
+tests en `tests/test_winamax_provider.py`. Sin córners ni tarjetas pre-partido (comprobado sobre 388 tipos de
+mercado).
 
 **CuotasAhora.com (`providers/cuotasahora.py`), además de 1X2, scrapea "Ambos equipos marcan"
 (`market_type="BTTS"`, outcomes `"Yes"`/`"No"`), "Doble oportunidad" (`market_type="DC"`, outcomes
@@ -525,13 +531,25 @@ usa su web (`api.sportify.bet`, parámetro `bookmaker=bet777es`):
   (`Over (2.5)` / `Under (2.5)`): se emparejan por línea, las de cuarto se escriben `2/2.5` (igual que el resto) y
   solo se emiten parejas completas y sin suspender. Cuota = la que muestra la web (2 decimales); `cash_out` sale
   del mercado.
-- **Sin córners, tarjetas, tiros ni faltas** (probado en LaLiga y Premier: los grupos del feed son Popular, Goals,
-  Asian Handicap, Goal Scorer, Halves y Combination): compite en goles, hándicap asiático y mitades. Quedan fuera
-  doble oportunidad, marcador correcto, bandas, combinadas y hándicap de 3 vías.
+- **Córners y tarjetas, añadido 2026-09-22**: la comprobación original en LaLiga/Premier League dijo que no había
+  (esas dos ligas en concreto no traen esos grupos), pero ligas de menor perfil sí — verificado en vivo con 15
+  competiciones (Serie B brasileña, Primera A colombiana, Copa Chile, Asian Games...), hasta 280 mercados por
+  partido. Nombre con forma `"Corners: [1st/2nd Half ]<sub>"` (la categoría va delante, a diferencia de los
+  mercados de goles), reconocida por `_METRIC_RE` en vez de por `_FULL_TIME`/`_HALF`. Se emiten con los mismos
+  prefijos que Altenar/Kambi para que crucen entre plataformas: `CORNERS_OU`/`CORNERS_OU_HOME`/`CORNERS_OU_AWAY`
+  (con `_HT`/`_2H`), `CORNERS_1X2`(`_HT`), `CORNERS_OE`, `CORNERS_FIRST`/`CORNERS_LAST` (2 resultados, sin
+  "ninguno" a diferencia de Altenar — mismo `kind` que Draw No Bet) y los mismos para `CARDS_`. Fuera: "Total Red
+  Cards" y "First/Last Yellow Card" (ninguna otra fuente los emite hoy, no podrían cruzar nunca) y los de
+  bandas/franjas/"race to" (no son de dos/tres resultados exhaustivos). Sin tiros ni faltas (no aparecieron en
+  ninguna de las 15 competiciones comprobadas). Verificado en vivo tras el cambio: 156 mercados de córners/tarjetas
+  en 12 de 43 partidos de un ciclo real (antes: 0).
+- Sin doble oportunidad, marcador correcto, bandas, combinadas ni hándicap de 3 vías (no son excluyentes y
+  exhaustivos, o de jugador).
 - Gotchas encontrados en vivo: algunos partidos devuelven `markets` como objeto con claves `"0","1",...` en vez de
   lista (se normaliza); el orden de local/visitante coincide con `teams` (0 partidos con `teams_reversed` de 50).
-- Un ciclo: ~40 partidos y ~2.400 mercados en unos 10 s; cruza con Betway, Paf, bwin y Jokerbet. `fast_recheck =
-  True` (API barata: participa en la verificación de márgenes muy altos) y figura en `DIRECT_SOURCES`.
+- Un ciclo: ~43 partidos y ~2.800 mercados en unos 10-15 s (antes de añadir córners/tarjetas: ~2.400); cruza con
+  Betway, Paf, bwin y Jokerbet. `fast_recheck = True` (API barata: participa en la verificación de márgenes muy
+  altos) y figura en `DIRECT_SOURCES`.
 - La API no está documentada y puede cambiar sin aviso.
 
 ### Control de calidad de las surebets (`engine/quality.py`, nuevo 2026-09-20)
@@ -634,7 +652,86 @@ publicaba una vez cada varias horas, y las fuentes rápidas (Altenar, Kambi: las
   `scripts\stop_scan.ps1` las apaga y mata también el Python y los Chromium que hubiera en marcha.
 - Variables (`.env.example`): `SLOW_BUDGET_MINUTES`, `SLOW_MAX_MATCHES`, `COMPARATOR_MAX_AGE_HOURS`.
 
-## Aviso legal
+### Igualar mercados entre casas: horizonte de Winamax demasiado corto (2026-09-22)
+
+**Contexto**: el usuario pidió retomar el trabajo de igualar la cantidad de mercados entre casas, para que
+crucen más y salgan más surebets. Al revisar `docs/data.json` → `settings.sources` de los últimos ciclos en
+producción, Winamax llevaba **varios ciclos seguidos dando 0 mercados de 0 partidos**, pese a que
+`providers/winamax.py::parse_match_state` ya soporta ~9 tipos de mercado (ver "Mercados soportados" arriba,
+cambio del 2026-09-21) — el problema no era de mercados soportados, sino que no se estaba leyendo ningún
+partido en absoluto.
+
+**Causa confirmada en vivo** (conectando al socket real, no teórica): `WinamaxProvider` filtraba los partidos
+por `WINAMAX_HORIZON_HOURS=36`, y en el momento de la comprobación el partido más próximo de LaLiga estaba a
+407 h vista (~17 días), Champions League a 501 h y Premier League a 424 h — un hueco de calendario (compás de
+selecciones nacionales) que afecta a la vez a las principales ligas europeas que cubre Winamax. Con un
+horizonte de 36 h, cualquier hueco de calendario más largo que eso deja la fuente completamente a cero, a
+diferencia de Sportium (sin horizonte, lee lo que muestre el listado) o Betfair/Altenar/Kambi/bwin/bet777 (48 h
+por defecto). Incluso ligas no afectadas por selecciones (Liga MX, a 78 h vista) quedaban fuera con 36 h.
+
+**Corrección aplicada**: `WINAMAX_HORIZON_HOURS` sube de 36 a **96** (`.env.example` y valor por defecto en
+`providers/winamax.py`) — el doble que el resto del ecosistema, para no dejar la fuente a cero por huecos de
+calendario cortos sin dejar de ser "pre-partido cercano". `WINAMAX_MAX_MATCHES` (12) ya limitaba el coste por
+competición independientemente del horizonte (`_select` ordena por fecha y corta), así que ampliar el horizonte
+no aumenta el tiempo de escaneo. Verificado en vivo tras el cambio: Liga MX pasó de 0 a 2 partidos leídos y 101
+mercados (OU, AH, OE, DC, DNB, 1X2, BTTS, primer/último gol) en una sola llamada. Ligas con hueco de calendario
+más largo que 96 h (LaLiga, Champions, Premier, en el momento de la comprobación) siguen en 0 hasta que su
+próxima jornada entre en el horizonte — es esperable, no un bug: nadie en el sistema escanea partidos a 17 días
+vista, ni tendría sentido (cuotas menos formadas, mayor riesgo de línea movida antes del partido). Suite
+completa (281 tests) en verde tras el cambio.
+
+**Nota para retomar esta tarea**: el resto de la "igualación de mercados" pedida (Sportium/Betfair con más
+mercados que 1X2+una línea de Más/Menos, Bet777 sin córners/tarjetas) queda pendiente — se priorizó primero
+comprobar por qué Winamax, la fuente que más se amplió el 2026-09-21, no estaba aportando nada en producción.
+
+### Sportium ampliado a 5 mercados; Betfair bloqueado por Cloudflare al cambiar de mercado (2026-09-22)
+
+**Sportium** (`providers/sportium.py`): la página de listado tiene un desplegable (`.ta-DropdownControl`) con 5
+opciones, verificado en vivo navegando manualmente — hasta ahora solo se usaban "Ganador" (1X2) y "Goles
+Totales" (Más/Menos). Se añadieron las otras tres: **Doble Oportunidad** (`DC`, orden 1X/12/X2), **Ambos
+Marcan** (`BTTS`, orden Sí/No) y **Resultado al descanso** (`1X2_HT`). Córners/tarjetas/hándicap existen en la
+ficha de cada partido (pestañas "Handicap (6)", "Todos (107)"...) pero no en este desplegable de listado, así
+que exigirían navegar partido a partido (más lento, no implementado).
+
+**Bug encontrado y corregido antes de dar el cambio por bueno**: "Goles Totales" se queda pegado como columna
+secundaria aunque el desplegable seleccione otro mercado (confirmado en vivo: incluso en la carga inicial de la
+página, antes de tocar nada, ya se ven dos bloques de mercado a la vez). La extracción original cogía **todos**
+los botones de cuota del evento sin distinguir bloque, así que los 3 mercados nuevos venían con las 2 cuotas de
+Goles Totales pegadas al final (`DC` con 5 valores en vez de 3) y `_parse_simple_market` los descartaba enteros
+por no coincidir el recuento — 0 mercados nuevos en la primera prueba en vivo, pese a que la extracción parecía
+correcta a simple vista en el navegador. Cada botón de cuota vive dentro de un `.ta-Market.ta-MarketType-<X>`
+(`DBLC`=Doble Oportunidad, `BTSC`=Ambos Marcan, `H1RS`=Resultado al descanso, `HCTG`=Goles Totales, la columna
+pegada); `_EXTRACT_MARKET_EVENTS_JS` ahora filtra por ese código antes de leer los botones. Verificado en vivo
+tras el fix: 20 partidos × 4 mercados exhaustivos (100 % de cobertura en 1X2/DC/BTTS/1X2_HT) + Más/Menos con la
+línea que decide cada partido — 100 mercados en total, frente a 40 antes del cambio.
+
+**Betfair** (`providers/betfair.py`): el mismo mecanismo de "desplegable de mercado en la página de listado"
+existe (`[class*="-marketSwitcher"]`, con `label[for="ppb:marketType:<ID>"]`) y tiene bastante más fondo que
+Sportium — 19 opciones vistas en vivo, incluidas **Doble Oportunidad**, **Marcan ambos equipos** y ocho líneas
+de **córners** (`TOTAL_CORNERS_6.5` a `15.5`, un mercado que hoy solo dan las casas de Altenar/Kambi). Se probó
+en vivo: Doble Oportunidad y Ambos Marcan devuelven datos limpios con la misma extracción que ya usa 1X2/Más-Menos
+(mismo orden 1X/X2/12 en Doble Oportunidad, distinto del que usan Sportium/Winamax/los comparadores — ojo si se
+retoma). Los córners dan "No hay resultados" para toda la jornada en pre-partido, aunque sí aparecen listados en
+el desplegable — probablemente solo se ofrecen en vivo.
+
+**No se llegó a activar en producción.** Al repetir las pruebas para verificar el flujo completo, el simple
+click en la opción de menú (el mismo mecanismo que ya usa el `OU_2.5` que llevaba meses funcionando) empezó a
+redirigir a `betfair.es/cf-challenge` — la pantalla "Verificación de seguridad" de Cloudflare. Se comprobó
+además que **el propio `OU_2.5` ya existente, sin tocar código, también lo dispara ahora** (probado con el
+provider tal cual estaba commiteado, sin ninguno de los cambios de esta sesión): la fuente `betfair` llevaba ya
+un tiempo aportando solo 1X2 en `docs/data.json` (9 mercados = 9 partidos, ningún `OU_2.5`), silenciado por el
+`try/except` que rodea `_fetch_over_under` — no es una regresión de este cambio, es un bloqueo ya activo que
+esta sesión solo puso en evidencia. Para comprobar si era un pico puntual por el volumen de pruebas de la propia
+sesión (varias llamadas seguidas en pocos minutos), se esperaron 5 min y se repitió la prueba con el código
+original sin tocar: **el bloqueo seguía activo**, así que no es solo un rate-limit momentáneo.
+
+Siguiendo la política ya documentada del proyecto (sección 3 de `checklist.md`: no se implementa evasión de
+protecciones anti-bot sin discutirlo antes), **no se ha intentado sortear el challenge**. Decisión tomada con
+el usuario: los mercados nuevos de Betfair no se implementaron, y además se **desactivó** la llamada a
+`_fetch_over_under` (el `OU_2.5` que ya existía) en `_fetch_markets_async` — el código y su test se conservan
+por si Betfair levanta el bloqueo más adelante, pero ya no se ejecuta en cada ciclo. Motivo: mantenerlo
+disparando el challenge cada 5 minutos, 24/7, podía agravar el bloqueo sin aportar ningún mercado a cambio.
+Betfair queda por tanto en solo 1X2 hasta que se revise de nuevo.
 
 El arbitraje deportivo no es ilegal en España (Ley 13/2011), pero cada casa de apuestas puede limitar o cerrar
 cuentas por sus propios términos y condiciones. El scraping debe hacerse de forma moderada y revisando los

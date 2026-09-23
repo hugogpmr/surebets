@@ -31,6 +31,13 @@ const DGOJ_LICENSED_BOOKMAKERS = new Set([
   // Bet777 (DIGITAL DISTRIBUTION MANAGEMENT IBÉRICA, S.A.), plataforma propia
   // Sportify (providers/bet777.py); registro de la DGOJ, 2026-09-21.
   "bet777",
+  // PokerStars Sports (TSG Interactive Spain, S.A.), plataforma propia
+  // (providers/pokerstars.py); registro de la DGOJ comprobado el 2026-09-16
+  // (ver checklist.md).
+  "pokerstars",
+  // Marca Apuestas (Casino Marbella Interactive, S.A.), plataforma propia
+  // (providers/marcaapuestas.py); registro de la DGOJ comprobado el 2026-09-23.
+  "marcaapuestas",
 ]);
 
 function isLicensed(bookmaker) {
@@ -63,6 +70,8 @@ const BOOKMAKER_URLS = {
   yosports: "https://www.yosports.es",
   botemania: "https://www.botemania.es",
   bet777: "https://www.bet777.es",
+  pokerstars: "https://www.pokerstars.es/sports/",
+  marcaapuestas: "https://www.marcaapuestas.es",
 };
 
 const PLACED_BETS_KEY = "surebets_placed_bets_v1";

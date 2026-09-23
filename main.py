@@ -106,7 +106,7 @@ async def scan_once(app) -> None:
         config.MIN_MARGIN,
         config.DB_PATH,
         _active_opportunities,
-        notify=lambda text: notify_opportunity(app, text),
+        notify=lambda text: notify_opportunity(app.bot, text),
         logger=logger,
         confirm_cycles=config.CONFIRM_CYCLES,
         round_step=config.ROUND_STEP,

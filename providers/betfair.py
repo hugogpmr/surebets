@@ -71,14 +71,16 @@ class BetfairProvider(OddsProvider):
     están en un contenedor hermano [class*="-betButtonContainer"] cuatro
     niveles por encima del bloque del partido.
 
-    También implementa el mercado fijo "Más/Menos de 2,5 Goles" (over/under):
-    a diferencia de Sportium, aquí la línea es una opción de menú explícita
-    (no una sugerencia que varía por partido), así que el market_type es
-    siempre "OU_2.5". El cambio de mercado no tiene URL propia (estado de
-    cliente), así que hay que simular el click en el selector de mercado
-    [class*="-marketSwitcher"] y luego en la opción
-    label[for="ppb:marketType:OVER_UNDER_25"] (identificador semántico
-    estable, a diferencia de las clases con hash).
+    Solo 1X2: el mercado "Más/Menos de 2,5 Goles" (_fetch_over_under, más abajo)
+    está implementado pero **desactivado** desde el 2026-09-22 — el click en el
+    selector de mercado [class*="-marketSwitcher"] dispara el challenge de
+    Cloudflare ("Verificación de seguridad") en vez de cambiar de mercado,
+    confirmado en vivo (persiste tras 5 min de espera, no es un pico puntual).
+    Sin evasión de protecciones anti-bot sin hablarlo antes (ver checklist.md
+    sección 3), así que se dejó de llamar en vez de intentar sortearlo. Se
+    conserva el código (con test) por si Betfair levanta el bloqueo más
+    adelante. Detalle completo en README.md ("Sportium ampliado... Betfair
+    bloqueado por Cloudflare").
     """
 
     name = "betfair"
@@ -104,7 +106,7 @@ class BetfairProvider(OddsProvider):
                 raw_matches = await page.evaluate(_EXTRACT_MATCHES_JS, 3)
                 markets.extend(self._parse_matches(raw_matches, sport))
 
-                markets.extend(await self._fetch_over_under(page, sport))
+                # _fetch_over_under: desactivado, ver docstring de la clase.
             await browser.close()
         return markets
 

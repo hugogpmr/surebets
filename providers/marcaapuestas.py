@@ -6,19 +6,16 @@ from engine.models import Market, Outcome
 from providers.base import OddsProvider
 
 DEFAULT_COMPETITION_URLS = {
-    "futbol": "https://www.sportium.es/apuestas/sports/soccer/competitions/45211/matches",
+    "futbol": "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19160/matches",
 }
 
-# Mercados adicionales del mismo desplegable .ta-DropdownControl que ya usa "Goles
-# Totales" (ta-item-GolesTotales): misma estructura simple que 1X2 (un botón de cuota
-# por resultado, sin línea que emparejar), verificado en vivo el 2026-09-22.
-# item de clase ta-item-<X> -> (market_type, código interno ta-MarketType-<Y> del
-# bloque de ese mercado, nombres de resultado en el orden en que Sportium pinta los
-# botones). El código interno hace falta porque "Goles Totales" (HCTG) se queda como
-# columna secundaria pegada aunque el desplegable seleccione otro mercado (comprobado
-# en vivo: sin este filtro, sus botones se colaban al final de cada evento).
+# Mismo desplegable .ta-DropdownControl que 1X2 y "Goles Totales": item de clase
+# ta-item-<X> -> (market_type, código interno ta-MarketType-<Y>, nombres de
+# resultado en el orden en que Marca Apuestas pinta los botones). A diferencia
+# de Sportium, esta casa no tiene "Doble Oportunidad" en el desplegable
+# (verificado en vivo el 2026-09-23: solo Resultado1x2/GolesTotales/Hndicap/
+# AmbosMarcan/Resultadoaldescanso), así que DC queda fuera.
 SIMPLE_MARKETS: dict[str, tuple[str, str, list[str]]] = {
-    "DobleOportunidad": ("DC", "DBLC", ["1X", "12", "X2"]),
     "AmbosMarcan": ("BTTS", "BTSC", ["Yes", "No"]),
     "Resultadoaldescanso": ("1X2_HT", "H1RS", ["1", "X", "2"]),
 }
@@ -42,10 +39,6 @@ _EXTRACT_EVENTS_JS = """(group) => {
     return events;
 }"""
 
-# Como _EXTRACT_EVENTS_JS pero solo con los botones del bloque .ta-Market cuyo
-# ta-MarketType-<X> coincide con el mercado pedido (ver SIMPLE_MARKETS): necesario
-# porque "Goles Totales" se queda como columna pegada junto a la seleccionada en el
-# desplegable, y coger todos los .ta-SelectionButtonView del evento mezclaría ambas.
 _EXTRACT_MARKET_EVENTS_JS = """(group, marketType) => {
     const items = Array.from(group.querySelectorAll('.ta-EventListItemDetails, .ta-Market'));
     const events = [];
@@ -64,9 +57,6 @@ _EXTRACT_MARKET_EVENTS_JS = """(group, marketType) => {
     return events;
 }"""
 
-# Mercado "Goles Totales" (over/under): cada botón concatena línea y cuota en
-# el mismo texto ("2.5" + "1.70" sin separador), pero por dentro son dos nodos
-# separados: .ta-infoTextHandicap (línea) y .ta-price_text (cuota).
 _EXTRACT_OU_EVENTS_JS = """(group) => {
     const items = Array.from(group.querySelectorAll(
         '.ta-EventListItemDetails, .ta-SelectionButtonView'
@@ -92,26 +82,27 @@ _EXTRACT_OU_EVENTS_JS = """(group) => {
 }"""
 
 
-class SportiumProvider(OddsProvider):
-    """Scraper por DOM (Playwright) para Sportium: no expone una API de cuotas
-    limpia (probablemente WebSocket), así que se lee la tabla ya renderizada.
+class MarcaApuestasProvider(OddsProvider):
+    """Scraper por DOM (Playwright) para Marca Apuestas.
 
-    Verificado en vivo: contenedor .ta-EventListGroup, cada evento es un
-    .ta-EventListItemDetails con equipos en .ta-ParticipantItem, seguido en el
-    DOM por sus botones de cuota .ta-SelectionButtonView (1, X, 2, ...).
-
-    Implementa 1X2, Goles Totales (over/under), Doble Oportunidad, Ambos Marcan
-    (BTTS) y Resultado al descanso (1X2_HT). El mercado se cambia con el
-    desplegable .ta-DropdownControl -> opción .ta-item-<X> (misma página, sin
-    recargar); los cuatro mercados nuevos comparten desplegable con "Goles
-    Totales" (ver SIMPLE_MARKETS), verificado en vivo el 2026-09-22. La línea de
-    goles la decide Sportium por partido (normalmente 2.5, pero no siempre,
-    p.ej. 4.5 en un partido muy desigual), así que el market_type incluye la
-    línea ("OU_2.5", "OU_4.5", ...) para no comparar cuotas de líneas distintas
-    entre casas.
+    Descubrimiento 2026-09-23 (`estudio_tecnicas_otros_bots.md`, auditoría de
+    plataforma): el diagnóstico antiguo de `checklist.md` (2026-09-16, "Cloudflare
+    / API propia, challenge Just a moment...") ya no aplica — la casa cambió de
+    frontend (`no_brand_candy-theme`). Confirmado con un `chromium.launch(headless=True)`
+    real, sin stealth ni trucos: carga con status 200, sin ningún reto, y con
+    cuotas reales en el DOM. Además, el nuevo frontend resultó ser **el mismo
+    framework "ta-" que ya usa `providers/sportium.py`** (mismos nombres de clase
+    CSS y los mismos códigos internos de mercado: `ta-MarketType-BTSC` para Ambos
+    Marcan, `ta-MarketType-H1RS` para Resultado al descanso), verificado con
+    JavaScript en vivo contra la competición de Primera División (id 19160 en la
+    URL, confirmado con los nombres de equipo del listado). Por eso esta clase es
+    casi una copia de `SportiumProvider`: incluye 1X2, Goles Totales (over/under),
+    Ambos Marcan (BTTS) y Resultado al descanso (1X2_HT). A diferencia de
+    Sportium, el desplegable de mercados de esta casa no tiene "Doble
+    Oportunidad", así que ese mercado no está aquí.
     """
 
-    name = "sportium"
+    name = "marcaapuestas"
 
     def __init__(self, competition_urls: dict[str, str] | None = None):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS

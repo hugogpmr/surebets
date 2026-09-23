@@ -6,3 +6,5 @@ beautifulsoup4>=4.12
 playwright>=1.45
 pytest>=8.0
 pytest-asyncio>=0.24
+telethon>=1.40
+qrcode>=7.4

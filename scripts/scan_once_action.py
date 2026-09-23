@@ -38,6 +38,7 @@ from datetime import timedelta
 from telegram import Bot
 
 import config
+from bot.telegram_bot import notify_opportunity
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
@@ -45,10 +46,14 @@ from providers.base import OddsProvider
 from providers.betexplorer import BetExplorerProvider
 from providers.bet777 import Bet777Provider
 from providers.betfair import BetfairProvider
+from providers.betfair_exchange import BetfairExchangeProvider
 from providers.bwin import BwinProvider
 from providers.cuotasahora import CuotasAhoraProvider
 from providers.kambi import KambiProvider
+from providers.marcaapuestas import MarcaApuestasProvider
+from providers.pokerstars import PokerStarsProvider
 from providers.sportium import SportiumProvider
+from providers.williamhill import WilliamHillProvider
 from providers.winamax import WinamaxProvider
 from storage.db import export_snapshot, init_db
 
@@ -66,7 +71,20 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
     return (
         # Winamax (socket de su web) y bwin (API de su web): cientos de mercados por partido,
         # incluidos hándicap asiático y mercados por mitad (bwin también córners y tarjetas).
-        [SportiumProvider(), BetfairProvider(), WinamaxProvider(), BwinProvider()],
+        # PokerStars: solo 1X2 por DOM (su API JSON está detrás de Akamai, ver
+        # providers/pokerstars.py), plataforma propia (no Altenar/Kambi/Sportify).
+        # Marca Apuestas: mismo framework "ta-" que Sportium (mismo vendor de
+        # frontend), verificado en vivo el 2026-09-23 tras confirmar con Playwright
+        # headless real que su antiguo bloqueo de Cloudflare ya no aplica (ver
+        # estudio_tecnicas_otros_bots.md) - 1X2, over/under, BTTS y 1X2_HT.
+        [
+            SportiumProvider(),
+            BetfairProvider(),
+            WinamaxProvider(),
+            BwinProvider(),
+            PokerStarsProvider(),
+            MarcaApuestasProvider(),
+        ],
         [
             # Jokerbet + Pastón + Betway vía la API de Altenar (córners, tarjetas,
             # hándicaps, mercados por mitad pre-partido; solo fútbol de momento).
@@ -78,6 +96,16 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             # fuente de precios distinta de Altenar y Kambi. Goles, hándicap asiático y
             # mitades; sin córners ni tarjetas.
             Bet777Provider(),
+            # William Hill vía su propia API JSON (plataforma OpenBet), sin navegador. Solo
+            # 1X2 por ahora; el bloqueo de IP de datacenter/VPN es solo de la web, esta API
+            # responde igual sin cookies (ver providers/williamhill.py).
+            WilliamHillProvider(),
+            # Betfair Exchange API oficial (Delayed App Key gratuita), aparte del scraper DOM
+            # de la web de apuestas fijas (BetfairProvider): otro precio del mismo operador,
+            # útil como referencia "sharp" adicional. Opcional y sin verificar en vivo todavía
+            # (hace falta una app key + cuenta que solo el usuario puede generar/dar) - sin
+            # BETFAIR_APP_KEY/USERNAME/PASSWORD en .env se salta sola, ver providers/betfair_exchange.py.
+            BetfairExchangeProvider(),
         ],
     )
 
@@ -174,10 +202,6 @@ async def run_scan(mode: str) -> None:
 
     bot = Bot(config.TELEGRAM_BOT_TOKEN)
 
-    async def notify(text: str) -> None:
-        if config.TELEGRAM_CHAT_ID:
-            await bot.send_message(chat_id=config.TELEGRAM_CHAT_ID, text=text)
-
     result = await run_scan_cycle(
         providers,
         SPORTS,
@@ -185,7 +209,7 @@ async def run_scan(mode: str) -> None:
         config.MIN_MARGIN,
         config.DB_PATH,
         active_state,
-        notify=notify,
+        notify=lambda text: notify_opportunity(bot, text),
         logger=logger,
         confirm_cycles=config.CONFIRM_CYCLES,
         round_step=config.ROUND_STEP,

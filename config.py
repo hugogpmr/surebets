@@ -6,6 +6,11 @@ load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+# Tema (topic) del chat anterior donde se publican los avisos de surebets. Vacío = se
+# manda al chat sin tema. Se crea solo la primera vez y su id se cachea en
+# TELEGRAM_TOPIC_CACHE_PATH para no recrearlo en cada aviso.
+TELEGRAM_TOPIC_NAME = os.getenv("TELEGRAM_TOPIC_NAME", "")
+TELEGRAM_TOPIC_CACHE_PATH = os.getenv("TELEGRAM_TOPIC_CACHE_PATH", "data/notify_topic.json")
 BANKROLL = float(os.getenv("BANKROLL", "250"))
 MIN_MARGIN = float(os.getenv("MIN_MARGIN", "0.01"))
 FETCH_INTERVAL_SECONDS = int(os.getenv("FETCH_INTERVAL_SECONDS", "60"))
@@ -39,3 +44,18 @@ COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cac
 SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "20"))
 SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "12"))
 COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
+
+# Betfair Exchange API oficial (ver providers/betfair_exchange.py), aparte del
+# scraper DOM de la web de apuestas fijas (providers/betfair.py). Opcional: sin
+# estas tres variables el provider se salta solo, sin romper el escaneo. La app
+# key se genera gratis en developer.betfair.com (Delayed App Key, sin coste de
+# activación); usuario/contraseña son los de tu cuenta normal de Betfair.
+BETFAIR_APP_KEY = os.getenv("BETFAIR_APP_KEY", "")
+BETFAIR_USERNAME = os.getenv("BETFAIR_USERNAME", "")
+BETFAIR_PASSWORD = os.getenv("BETFAIR_PASSWORD", "")
+# Comisión que Betfair retiene sobre las ganancias netas de cada mercado (no se
+# resta del precio que se ve en pantalla, solo de lo que realmente cobras): sin
+# descontarla, la cuota "a favor" del Exchange parecería mejor de lo que es de
+# verdad para el arbitraje. 0.05 = 5%, la tarifa por defecto habitual; ajústala
+# si tu cuenta tiene una comisión distinta (Betfair la muestra en "Mi cuenta").
+BETFAIR_EXCHANGE_COMMISSION = float(os.getenv("BETFAIR_EXCHANGE_COMMISSION", "0.05"))

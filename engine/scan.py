@@ -12,7 +12,8 @@ from datetime import datetime, timezone
 from providers.base import OddsProvider
 from storage.db import comparison_key, save_comparisons, save_opportunity
 
-from .arbitrage import compare_market, format_stakes
+from .arbitrage import compare_market
+from .labels import kickoff_line, market_title, outcome_label, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
 from .quality import (
     BLOCKING_FLAGS,
@@ -60,21 +61,6 @@ def normalize_state(raw: dict) -> dict[str, dict]:
     return state
 
 
-def _kickoff_text(start_time: datetime | None) -> str | None:
-    if start_time is None:
-        return None
-    try:
-        from zoneinfo import ZoneInfo
-
-        local = start_time.astimezone(ZoneInfo("Europe/Madrid"))
-    except Exception:  # sin base de datos de zonas horarias (Windows sin tzdata)
-        local = start_time.astimezone(timezone.utc)
-    delta = start_time - datetime.now(timezone.utc)
-    hours = delta.total_seconds() / 3600
-    when = f"en {hours:.1f} h" if hours >= 1 else f"en {max(int(delta.total_seconds() // 60), 0)} min"
-    return f"{local:%d/%m %H:%M} ({when})"
-
-
 def _source_by_leg(comparison) -> str:
     return ", ".join(
         f"{o.bookmaker}←{o.source}" for o in comparison.market.outcomes if o.source
@@ -82,21 +68,24 @@ def _source_by_leg(comparison) -> str:
 
 
 def format_alert(comparison) -> str:
+    """Un emoji por línea, al estilo de los mensajes reenviados del grupo
+    origen (ver telegram_source/relay.py y su MENSAJE de ejemplo en
+    tests/test_relay.py: "📈 ROI ...\\n🏠 Winamax\\n💵 Cuota @...") para que
+    ambos tipos de aviso se vean del mismo estilo en el grupo de Telegram."""
     market = comparison.market
-    stakes = comparison.rounded_stakes or comparison.stakes
-    profit = comparison.rounded_profit if comparison.rounded_stakes else comparison.guaranteed_profit
     lines = [
-        f"🚨 Nueva surebet (fiabilidad {comparison.reliability or 'n/d'})",
-        f"🎯 {market.event} ({market.sport}, {market.market_type})",
+        f"🚨 Nueva surebet · {sport_name(market.sport)}",
+        f"🎯 {market.event}",
+        f"📌 {market_title(market.market_type, market.event, market.sport)}",
     ]
-    kickoff = _kickoff_text(market.start_time)
-    if kickoff:
-        lines.append(f"🕐 Empieza {kickoff}")
-    lines.append(f"Margen: {comparison.margin * 100:.2f}% | Beneficio: {profit}€")
-    lines.append(format_stakes(stakes))
+    lines.append(kickoff_line(market.start_time))
+    lines.append(f"📈 Margen {comparison.margin * 100:.2f}%")
+    for o in market.outcomes:
+        label = outcome_label(market.market_type, o.name, market.event, market.sport)
+        lines.append(f"🏠 {o.bookmaker}: {label} @{o.odds:.2f}")
     sources = _source_by_leg(comparison)
     if sources:
-        lines.append(f"Fuentes: {sources}")
+        lines.append(f"🔗 Fuentes: {sources}")
     if comparison.verification == "verificada":
         lines.append("✅ Margen muy alto verificado con una segunda lectura directa de las casas")
     elif comparison.verification == "pendiente":

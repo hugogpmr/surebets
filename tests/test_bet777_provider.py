@@ -135,6 +135,55 @@ def test_cash_out_flag_comes_from_the_market():
     assert [o.cash_out for o in market.outcomes] == [False, False]
 
 
+# Mercados de córners y tarjetas, capturados en vivo el 2026-09-22 (Independiente
+# Medellín vs. Jaguares de Córdoba, Primera A colombiana) — LaLiga/Premier no los
+# ofrecen, pero ligas de menor perfil sí.
+CORNERS_CARDS_DETAILS = {
+    "markets": [
+        mk("Corners: Result", [out("W1", "Home", 1.16), out("X", "X", 9.10), out("W2", "Away", 6.80)]),
+        mk("Corners: 1st Half Result", [out("W1", "Home", 1.31), out("X", "X", 5.70), out("W2", "Away", 5.60)]),
+        mk("Corners: Total", [out("Over", "Over (9.5)", 1.82), out("Under", "Under (9.5)", 1.84)]),
+        mk("Corners: Team 1 Total", [out("Over", "Over (6)", 1.58), out("Under", "Under (6)", 2.14)]),
+        mk("Corners: Team 2 Total", [out("Over", "Over (3)", 1.96), out("Under", "Under (3)", 1.72)]),
+        mk("Corners: 1st Half Total", [out("Over", "Over (4.5)", 1.92), out("Under", "Under (4.5)", 1.75)]),
+        mk("Corners: 2nd Half Total", [out("Over", "Over (4.5)", 1.67), out("Under", "Under (4.5)", 2.02)]),
+        mk("Corners: Odd/Even", [out("Odd", "Odd", 1.83), out("Even", "Even", 1.83)]),
+        mk("Corners: First Corner", [out("Team1", "Team 1", 1.29), out("Team2", "Team 2", 3.00)]),
+        mk("Corners: Last Corner", [out("Team1", "Team 1", 1.38), out("Team2", "Team 2", 2.58)]),
+        mk("Corners: Total (Bands)", [out("0-8", "0-8", 2.5), out("9-11", "9-11", 3.0), out("12+", "12+", 3.5)]),
+        mk("Corners: Race To (5)", [out("Team1", "Team 1", 1.8), out("Team2", "Team 2", 2.5), out("None", "None", 5.0)]),
+        mk("Yellow Cards: Total", [out("Over", "Over (5.5)", 1.98), out("Under", "Under (5.5)", 1.70)]),
+        mk("Yellow Cards: Result", [out("W1", "Home", 2.5), out("X", "X", 3.2), out("W2", "Away", 2.6)]),
+        mk("Total Red Cards", [out("0", "0", 1.5), out("1", "1", 2.5), out("2+", "2+", 6.0)]),
+        mk("Yellow Cards: First Yellow Card", [out("Team1", "Team 1", 2.0), out("Team2", "Team 2", 1.7)]),
+    ]
+}
+
+
+def test_corners_and_cards_use_the_same_naming_as_altenar_and_kambi():
+    markets = by_type(parse_event_markets(CORNERS_CARDS_DETAILS, "A vs. B"))
+    assert odds(markets["CORNERS_1X2"]) == {"1": 1.16, "X": 9.10, "2": 6.80}
+    assert odds(markets["CORNERS_1X2_HT"]) == {"1": 1.31, "X": 5.70, "2": 5.60}
+    assert odds(markets["CORNERS_OU_9.5"]) == {"Over": 1.82, "Under": 1.84}
+    assert odds(markets["CORNERS_OU_HOME_6"]) == {"Over": 1.58, "Under": 2.14}
+    assert odds(markets["CORNERS_OU_AWAY_3"]) == {"Over": 1.96, "Under": 1.72}
+    assert odds(markets["CORNERS_OU_HT_4.5"]) == {"Over": 1.92, "Under": 1.75}
+    assert odds(markets["CORNERS_OU_2H_4.5"]) == {"Over": 1.67, "Under": 2.02}
+    assert odds(markets["CORNERS_OE"]) == {"Odd": 1.83, "Even": 1.83}
+    assert odds(markets["CORNERS_FIRST"]) == {"1": 1.29, "2": 3.00}
+    assert odds(markets["CORNERS_LAST"]) == {"1": 1.38, "2": 2.58}
+    assert odds(markets["CARDS_OU_5.5"]) == {"Over": 1.98, "Under": 1.70}
+    assert odds(markets["CARDS_1X2"]) == {"1": 2.5, "X": 3.2, "2": 2.6}
+
+
+def test_corners_bands_race_to_and_red_cards_are_left_out():
+    # Sin equivalente en Altenar/Kambi (ninguna otra fuente los emite hoy) o no son de
+    # dos/tres resultados exhaustivos: nunca podrían cruzar, así que no se implementan.
+    types = {m.market_type for m in parse_event_markets(CORNERS_CARDS_DETAILS, "A vs. B")}
+    assert not any(t.startswith(("CORNERS_BANDS", "CORNERS_RACE", "RED_CARDS", "CARDS_FIRST", "CARDS_LAST")) for t in types)
+    assert len(types) == 12  # exactamente los 12 asserts de arriba, nada más
+
+
 def test_line_formatting_matches_altenar_and_kambi():
     assert _fmt_line(2.25) == "2/2.5" and _fmt_line(-0.75, signed=True) == "-0.5/-1"
     assert _fmt_line(1.5, signed=True) == "+1.5" and _fmt_line(0, signed=True) == "0" and _fmt_line(2) == "2"

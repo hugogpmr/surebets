@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
-from providers.altenar import DEFAULT_HORIZON_HOURS, _fmt_line
+from providers.altenar import _fmt_line
 from providers.base import OddsProvider
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
@@ -266,7 +266,7 @@ class WinamaxProvider(OddsProvider):
     ):
         self.competitions = competitions or COMPETITIONS
         self.keys = keys or DEFAULT_KEYS
-        self.horizon = timedelta(hours=horizon_hours or int(os.environ.get("WINAMAX_HORIZON_HOURS", min(DEFAULT_HORIZON_HOURS, 36))))
+        self.horizon = timedelta(hours=horizon_hours or int(os.environ.get("WINAMAX_HORIZON_HOURS", 96)))
         self.max_matches = max_matches or int(os.environ.get("WINAMAX_MAX_MATCHES", "12"))
         self.concurrency = concurrency
         self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports

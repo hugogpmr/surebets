@@ -9,3 +9,8 @@ surebets.tar.gz
 .pytest_cache/
 logs/
 /cache/
+
+# sesion de Telegram (da acceso total a la cuenta: NUNCA subir)
+*.session
+*.session-journal
+data/relay*

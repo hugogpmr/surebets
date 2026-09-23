@@ -20,11 +20,21 @@ de la web) y los resultados por `kind`, y se emiten con los mismos prefijos de
 de totales/hándicap trae todas sus líneas juntas (`Over (2.5)` / `Under (2.5)`); se
 emparejan por línea y solo se emiten las parejas completas y sin suspender.
 
-Limitaciones conocidas: NO tiene córners, tarjetas, tiros ni faltas (comprobado en
-LaLiga y Premier: sus grupos son Popular, Goals, Asian Handicap, Goal Scorer, Halves y
-Combination), así que compite sobre goles, hándicap asiático y mitades. Quedan fuera
-(no son excluyentes y exhaustivos, o de jugador): doble oportunidad, marcador correcto,
-bandas, combinadas, hándicap de 3 vías. La API no está documentada y puede cambiar.
+**Córners y tarjetas (añadido 2026-09-22)**: la comprobación original de LaLiga/Premier
+League dijo "no hay" porque esas dos ligas en concreto no traen esos grupos de mercado
+en absoluto — pero ligas de menor perfil sí (comprobado en vivo con 15 competiciones:
+Serie B brasileña, Primera A colombiana, Copa Chile, Asian Games... con hasta 280
+mercados por partido, muchos de córners/tarjetas). Se implementan los que tienen
+resultados excluyentes y exhaustivos y cruzan con Altenar/Kambi (mismos prefijos
+`CORNERS_OU`/`CORNERS_1X2`/`CORNERS_OE`/`CORNERS_FIRST`/`CORNERS_LAST`/`CARDS_OU`/
+`CARDS_1X2`, con variantes `_HOME`/`_AWAY`/`_HT`). Quedan fuera "Total Red Cards"
+(rojas) y "First/Last Yellow Card": ninguna otra fuente los emite hoy, así que nunca
+podrían cruzar. Tampoco los de bandas/franjas/"race to" (no son de dos/tres resultados).
+Sin tiros ni faltas (no aparecieron en ninguna de las 15 competiciones comprobadas).
+
+Quedan fuera del resto de mercados (no son excluyentes y exhaustivos, o de jugador):
+doble oportunidad, marcador correcto, bandas, combinadas, hándicap de 3 vías. La API no
+está documentada y puede cambiar.
 """
 
 import logging
@@ -99,6 +109,28 @@ _HALF = {
 _HALF_RE = re.compile(r"^(1st|2nd) Half (.+)$")
 _HALF_SUFFIX = {"1st": "_HT", "2nd": "_2H"}
 
+# Córners y tarjetas: nombre con forma "Corners: [1st/2nd Half ]<sub>" (a diferencia de
+# los mercados de goles, aquí la categoría va delante, con dos puntos). "Total" (línea
+# variable) usa el mismo prefijo OU que goles pero con CORNERS_/CARDS_ delante, igual
+# que en providers/altenar.py y providers/kambi.py, para que crucen entre las tres
+# plataformas.
+_METRIC_RE = re.compile(r"^(Corners|Yellow Cards): (?:(1st|2nd) Half )?(.+)$")
+_METRIC_PREFIX = {"Corners": "CORNERS", "Yellow Cards": "CARDS"}
+_METRIC_SUB: dict[str, tuple[str, str]] = {
+    "Total": ("OU", _TOTAL),
+    "Team 1 Total": ("OU_HOME", _TOTAL),
+    "Team 2 Total": ("OU_AWAY", _TOTAL),
+    "Odd/Even": ("OE", _ODD_EVEN),
+    "Result": ("1X2", _THREE_WAY),
+}
+# Primer/último córner: solo dos resultados (Team1/Team2), sin "ninguno" a diferencia
+# de Altenar — verificado en vivo el 2026-09-22 (kind Team1/Team2, igual que Draw No
+# Bet), así que se reutiliza el tipo _TWO_WAY en vez de uno nuevo.
+_CORNERS_ONLY_SUB: dict[str, tuple[str, str]] = {
+    "First Corner": ("FIRST", _TWO_WAY),
+    "Last Corner": ("LAST", _TWO_WAY),
+}
+
 _THREE_WAY_KINDS = {"W1": "1", "X": "X", "W2": "2"}
 _TWO_WAY_KINDS = {"Team1": "1", "Team2": "2"}
 _YES_NO_KINDS = {"Yes": "Yes", "No": "No"}
@@ -161,6 +193,14 @@ def _classify(name: str) -> tuple[str, str] | None:
     if match and match.group(2) in _HALF:
         prefix, kind = _HALF[match.group(2)]
         return prefix + _HALF_SUFFIX[match.group(1)], kind
+    metric_match = _METRIC_RE.match(name)
+    if metric_match:
+        category, half, sub = metric_match.groups()
+        sub_map = {**_METRIC_SUB, **_CORNERS_ONLY_SUB} if category == "Corners" else _METRIC_SUB
+        if sub in sub_map:
+            base, kind = sub_map[sub]
+            suffix = _HALF_SUFFIX[half] if half else ""
+            return f"{_METRIC_PREFIX[category]}_{base}{suffix}", kind
     return None
 
 

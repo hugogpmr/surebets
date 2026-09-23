@@ -29,13 +29,13 @@ Luckia y William Hill de "sin vía" a "cubiertas, aunque no en directo".
 | Kirolbet | Akamai Bot Manager | API JSON (`/Api/esp/Lib/Competicion`) ya localizada y parseada en `providers/kirolbet.py`, pero Akamai devuelve 403 incluso con `fetch()` real ejecutado dentro de la página — detecta el propio Chromium automatizado (fingerprint), no solo el patrón de la petición. |
 | Bwin | reCAPTCHA Enterprise invisible | Se dispara nada más entrar y bloquea la petición que trae los datos del widget de cuotas. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Betsson | API antifraude propia | 403 en `/api/fraud/v1/groupib/tokens/generate`, antes de poder pedir cuotas. |
-| Codere | Bloqueo de red | Denegación directa, sin completar el intercambio HTTP normal desde el entorno de pruebas (cloud). **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
+| Codere | Akamai Bot Manager (confirmado 2026-09-23/24, antes se pensaba "bloqueo de red" genérico) | `www.codere.es` (la web de marketing) carga perfectamente. La plataforma real de apuestas vive en otro subdominio, `m.apuestas.codere.es` (un SPA con hash-routing, `/deportesEs/#/...`) — ese subdominio da "Access Denied" de Akamai (`errors.edgesuite.net`) tanto al navegar directo como reusando las cookies de sensor de Akamai (`bm_sz`/`_abck`) plantadas por `www.codere.es`, probado desde la IP residencial del usuario. Mismo nivel de bloqueo que Kirolbet. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Suertia (OlyBet) | Bloqueo de red | "Access Denied" servido por el proveedor de infraestructura, mismo patrón que Codere. |
 | bet365 | Anti-bot agresivo | Spinner de carga infinito con cualquier navegador automatizado; nunca renderiza cuotas. Es la protección más dura de todas las probadas. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
-| Marca Apuestas | Cloudflare / API propia | Challenge "Just a moment..." o 403 directo en `sportswidget.../refresh-bets`. |
+| Marca Apuestas | ~~Cloudflare / API propia~~ **Resuelto 2026-09-23** | El challenge "Just a moment..."/403 en `sportswidget.../refresh-bets` era de un frontend que ya no usan: cambiaron de plataforma. La nueva (`providers/marcaapuestas.py`) carga sin ningún reto con Playwright headless real y resultó ser el mismo framework "ta-" que Sportium. Ver README "Estado real de los scrapers" y `estudio_tecnicas_otros_bots.md`. |
 | Luckia | Cloudflare | Challenge JS "Just a moment...". **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
 | Interwetten | Cloudflare | Challenge JS "Just a moment...". |
-| William Hill | Bloqueo de IP explícito | La web devuelve literalmente el mensaje "Data Centre block" — es el único bloqueo que se declara a sí mismo como por rango de IP, no por fingerprint. **Ahora cubierta indirectamente vía CuotasAhora.com** (ver abajo). |
+| William Hill | ~~Bloqueo de IP explícito~~ **Resuelto 2026-09-23** | La web (`sports.williamhill.es`) devuelve "Data Centre block" desde datacenter/VPN, pero es solo la web: su API JSON (`providers/williamhill.py`) responde igual desde cualquier IP, incluida la de este sandbox. Confirmado también en vivo desde la IP residencial del usuario que la web carga bien. Ver README "Estado real de los scrapers". |
 
 ### CuotasAhora.com: comparador de cuotas como vía indirecta (hallazgo 2026-09-16)
 
@@ -81,10 +81,13 @@ Playwright real (no teórico):
 **Sin confirmar / de menor prioridad ahora** (candidatas si se quiere ampliar aún más, pero ya no son
 urgentes dado que CuotasAhora cubre mucho de golpe):
 
-Paston, PokerStars Sports, Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible en su momento,
-pero no se llegó a localizar con certeza el contenedor DOM real de la tabla de cuotas. (888sport ya quedó
-cubierto vía CuotasAhora, se quita de esta lista). Las 4 tienen licencia DGOJ confirmada (ver verificación
-arriba), así que si algún día se scrapean en directo no haría falta añadir nada al filtro de licencias.
+Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible en su momento, pero no se llegó a localizar
+con certeza el contenedor DOM real de la tabla de cuotas. (888sport ya quedó cubierto vía CuotasAhora, se
+quita de esta lista; Paston ya funciona vía Altenar y PokerStars Sports ya tiene provider propio,
+`providers/pokerstars.py`, añadido 2026-09-23 — DOM con atributos `data-testid` estables, solo 1X2; su API
+JSON está detrás de Akamai Bot Manager igual que Kirolbet). Zebet/Botemanía tienen licencia DGOJ confirmada
+(ver verificación arriba), así que si se scrapean en directo no haría falta añadir nada al filtro de
+licencias.
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos

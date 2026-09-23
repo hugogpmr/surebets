@@ -63,14 +63,27 @@ COMPARISONS_EXTRA_COLUMNS = {
 }
 
 
+# Igual que COMPARISONS_EXTRA_COLUMNS, para `opportunities`: la cuota de cada
+# pata ("casa:resultado" -> cuota), que /hoy y /ahora muestran en el aviso.
+OPPORTUNITIES_EXTRA_COLUMNS = {
+    "odds_json": "TEXT",
+    "start_time": "TEXT",  # hora de inicio del partido (UTC, ISO) si la fuente la da
+}
+
+
+def _add_missing_columns(conn: sqlite3.Connection, table: str, columns: dict[str, str]) -> None:
+    existing = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+    for column, kind in columns.items():
+        if column not in existing:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {kind}")
+
+
 def init_db(path: str) -> None:
     with sqlite3.connect(path) as conn:
         conn.execute(SCHEMA)
         conn.execute(COMPARISONS_SCHEMA)
-        existing = {row[1] for row in conn.execute("PRAGMA table_info(comparisons)")}
-        for column, kind in COMPARISONS_EXTRA_COLUMNS.items():
-            if column not in existing:
-                conn.execute(f"ALTER TABLE comparisons ADD COLUMN {column} {kind}")
+        _add_missing_columns(conn, "comparisons", COMPARISONS_EXTRA_COLUMNS)
+        _add_missing_columns(conn, "opportunities", OPPORTUNITIES_EXTRA_COLUMNS)
 
 
 def save_opportunity(path: str, opp: SurebetOpportunity) -> int:
@@ -79,8 +92,8 @@ def save_opportunity(path: str, opp: SurebetOpportunity) -> int:
         cur = conn.execute(
             """INSERT INTO opportunities
                (detected_at, event, sport, market_type, bookmakers, margin,
-                total_stake, guaranteed_profit, stakes_json)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                total_stake, guaranteed_profit, stakes_json, odds_json, start_time)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 opp.detected_at.isoformat(),
                 opp.market.event,
@@ -91,6 +104,8 @@ def save_opportunity(path: str, opp: SurebetOpportunity) -> int:
                 opp.total_stake,
                 opp.guaranteed_profit,
                 json.dumps(opp.stakes),
+                json.dumps({f"{o.bookmaker}:{o.name}": o.odds for o in opp.market.outcomes}),
+                opp.market.start_time.isoformat() if opp.market.start_time else None,
             ),
         )
         return cur.lastrowid
