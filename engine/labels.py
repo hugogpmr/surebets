@@ -41,7 +41,16 @@ _METRIC_NOUNS = {
 # "Primer/último X" de cada métrica (femenino/masculino según el sustantivo).
 _METRIC_FIRST = {"CORNERS": ("Primer córner", "Último córner")}
 
-_PERIODS = {"HT": "1ª parte", "2H": "2ª parte"}
+_PERIODS = {
+    "HT": "1ª parte",
+    "2H": "2ª parte",
+    "Q1": "1er cuarto",
+    "Q2": "2º cuarto",
+    "Q3": "3er cuarto",
+    "Q4": "4º cuarto",
+    "SET1": "1er set",
+    "SET2": "2º set",
+}
 
 # Mercados de sí/no: base -> frase con {team} (equipo al que se refiere).
 _YES_NO_TITLES = {
@@ -52,6 +61,7 @@ _YES_NO_TITLES = {
     "WIN_ANY_HALF": "{team} gana alguna de las partes",
     "SCORE_BOTH_HALVES": "{team} marca en las dos partes",
     "PENALTY": "Hay penalti en el partido",
+    "OT": "Habrá prórroga",
 }
 
 # Primer/último evento (1 / Ninguno / 2): base -> texto del mercado.
@@ -141,6 +151,8 @@ def market_title(market_type: str, event: str, sport: str) -> str:
             title = _FIRST_EVENT_TITLES.get(base, market_type)
     elif base == "1X2":
         title = f"Más {noun}" if metric else "Resultado (1X2)"
+    elif base == "ML":
+        title = "Ganador"  # baloncesto/tenis: dos resultados, sin empate posible
     elif base == "DNB":
         title = "Empate no apuesta (si empatan, devuelven)"
     elif base == "DC":

@@ -46,6 +46,15 @@ INTEGRATIONS: dict[str, str] = {
 }
 
 FOOTBALL_SPORT_ID = 66
+# Añadidos 2026-09-24 (GetAllSports confirma 1002/121 eventos pre-partido ese
+# día): mismo widget público, mismo esquema, solo cambia el sportId y la tabla
+# de mercados. Antes estos deportes (claves "baloncesto_*"/"tenis_*" en
+# main.py/scripts/scan_once_action.py) solo los cubría CuotasAhora (1X2 vía
+# comparador); Altenar aporta hándicaps, totales y mercados por cuarto/set
+# como fuente directa.
+BASKETBALL_SPORT_ID = 67
+TENNIS_SPORT_ID = 68
+SPORT_IDS: dict[str, int] = {"futbol": FOOTBALL_SPORT_ID, "baloncesto": BASKETBALL_SPORT_ID, "tenis": TENNIS_SPORT_ID}
 
 # Ventana de partidos a escanear (horas desde ahora). Cada partido cuesta una
 # petición de ~2 MB descomprimido por casa (~1,3 s), así que ampliarla
@@ -176,6 +185,75 @@ FOOTBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
     176: ("CORNERS_AH_HT", _HANDICAP),
 }
 
+# typeId de tenis (sportId 68, verificado en vivo el 2026-09-24 con partidos
+# ATP/WTA reales). "Ganador"/"Primer set - ganador" identifican al jugador por
+# competitorId igual que el 1X2 de fútbol, así que reutilizan _TWO_WAY_12.
+TENNIS_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    186: ("ML", _TWO_WAY_12),  # Ganador del partido
+    202: ("ML_SET1", _TWO_WAY_12),  # Ganador del primer set
+    187: ("AH", _HANDICAP),  # Hándicap de juegos del partido
+    203: ("AH_SET1", _HANDICAP),  # Hándicap de juegos del primer set
+    188: ("SETS_AH", _HANDICAP),  # Hándicap de sets del partido
+    189: ("OU", _TOTAL),  # Total de juegos del partido
+    190: ("OU_HOME", _TOTAL),  # Total de juegos del jugador local
+    191: ("OU_AWAY", _TOTAL),  # Total de juegos del jugador visitante
+    204: ("OU_SET1", _TOTAL),  # Total de juegos del primer set
+    198: ("OE", _ODD_EVEN),  # Juegos del partido: par/impar
+    205: ("OE_SET1", _ODD_EVEN),  # Juegos del primer set: par/impar
+    314: ("SETS_OU", _TOTAL),  # Total de sets jugados
+}
+
+# typeId de baloncesto (sportId 67). Los mercados "por cuarto" (córners de
+# fútbol no existen aquí; el equivalente son los cuartos) reutilizan el MISMO
+# typeId para los 4 cuartos, distinguidos solo por el texto de `market["name"]`
+# ("Primer/1° cuarto", "Segundo/2° cuarto"...) - ver BASKETBALL_QUARTER_SPECS y
+# _quarter_number. Quedan fuera a propósito "margen de victoria" (290/301/849,
+# demasiados resultados o solapados) y "cuarto/mitad con más puntos" (52/234,
+# puede empatar entre cuartos, no es un mercado 1X2 limpio).
+BASKETBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    219: ("ML", _TWO_WAY_12),  # Ganador (incl. prórroga)
+    220: ("OT", _YES_NO),  # Habrá prórroga
+    223: ("AH", _HANDICAP),  # Hándicap de puntos (incl. prórroga)
+    225: ("OU", _TOTAL),  # Total de puntos (incl. prórroga)
+    227: ("OU_HOME", _TOTAL),
+    228: ("OU_AWAY", _TOTAL),
+    229: ("OE", _ODD_EVEN),  # Impar/par (incl. prórroga)
+    64: ("DNB_HT", _TWO_WAY_12),  # 1ª mitad - apuesta sin empate
+    66: ("AH_HT", _HANDICAP),
+    68: ("OU_HT", _TOTAL),
+    69: ("OU_HT_HOME", _TOTAL),
+    70: ("OU_HT_AWAY", _TOTAL),
+    74: ("OE_HT", _ODD_EVEN),
+    86: ("DNB_2H", _TWO_WAY_12),
+    88: ("AH_2H", _HANDICAP),
+    90: ("OU_2H", _TOTAL),
+    94: ("OE_2H", _ODD_EVEN),
+    756: ("OU_Q1_HOME", _TOTAL),  # Primer cuarto - total del equipo local
+    757: ("OU_Q1_AWAY", _TOTAL),
+}
+# typeId reutilizado por los 4 cuartos: el prefijo final se arma con
+# f"{prefix}_Q{n}" según el cuarto que diga `market["name"]`.
+BASKETBALL_QUARTER_SPECS: dict[int, tuple[str, str]] = {
+    236: ("OU", _TOTAL),
+    302: ("DNB", _TWO_WAY_12),
+    303: ("AH", _HANDICAP),
+    304: ("OE", _ODD_EVEN),
+}
+_SPORT_MARKET_SPECS = {"futbol": FOOTBALL_MARKET_SPECS, "tenis": TENNIS_MARKET_SPECS, "baloncesto": BASKETBALL_MARKET_SPECS}
+_SPORT_QUARTER_SPECS = {"baloncesto": BASKETBALL_QUARTER_SPECS}
+
+# "Primer/1° cuarto", "Segundo/2° cuarto"... Altenar usa DOS formatos de
+# ordinal según el mercado (verificado en vivo: typeId 303 usa "1° cuarto",
+# 236/302/304 usan "Primer cuarto"), así que se reconocen ambos.
+_QUARTER_ORDINALS = {"primer": 1, "primero": 1, "1": 1, "segundo": 2, "2": 2, "tercer": 3, "tercero": 3, "3": 3, "cuarto": 4, "4": 4}
+_QUARTER_NAME_RE = re.compile(r"^([a-záéíóúñ]+|\d+)[°ºª]?\s+cuarto\b", re.IGNORECASE)
+
+
+def _quarter_number(name: str) -> int | None:
+    match = _QUARTER_NAME_RE.match(name.strip())
+    return _QUARTER_ORDINALS.get(match.group(1).lower()) if match else None
+
+
 # Resultados fijos de cada tipo de mercado. Los que hacen referencia a un
 # equipo ("1"/"2") NO se reconocen por su texto: cada casa los nombra distinto
 # (Betway "1"/"2", Jokerbet/Pastón el nombre del equipo, verificado en vivo el
@@ -296,12 +374,21 @@ def parse_event_markets(
         competitor_ids = tuple(c["id"] for c in competitors[:2]) if len(competitors) >= 2 else (None, None)
     home_id, away_id = competitor_ids
     odds_by_id = {odd["id"]: odd for odd in details.get("odds", [])}
+    specs = _SPORT_MARKET_SPECS.get(sport, FOOTBALL_MARKET_SPECS)
+    quarter_specs = _SPORT_QUARTER_SPECS.get(sport)
     markets: list[Market] = []
     for market in _pick_market_variants(details.get("markets", [])).values():
-        spec = FOOTBALL_MARKET_SPECS.get(market.get("typeId"))
+        type_id = market.get("typeId")
+        spec = specs.get(type_id)
         if spec is None:
-            continue
-        prefix, kind = spec
+            quarter_spec = quarter_specs.get(type_id) if quarter_specs else None
+            quarter = _quarter_number(str(market.get("name") or "")) if quarter_spec else None
+            if quarter_spec is None or quarter is None:
+                continue
+            prefix, kind = quarter_spec
+            prefix = f"{prefix}_Q{quarter}"
+        else:
+            prefix, kind = spec
         if kind == _DOUBLE_CHANCE:
             dc_market = _parse_double_chance(event_name, sport, bookmaker, prefix, market, odds_by_id)
             if dc_market is not None:
@@ -475,10 +562,14 @@ class AltenarProvider(OddsProvider):
         self.max_workers = max_workers
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
-        if not any(key.split("_", 1)[0] == "futbol" for key in sports):
+        requested = {key.split("_", 1)[0] for key in sports} & set(SPORT_IDS)
+        if not requested:
             return []
         with httpx.Client(timeout=30, headers={"Accept": "application/json"}) as client:
-            return self._fetch_football(client)
+            markets: list[Market] = []
+            for sport in requested:
+                markets.extend(self._fetch_sport(client, sport))
+            return markets
 
     def _get_json(self, client, endpoint: str, integration: str, **params) -> dict:
         last_error: Exception | None = None
@@ -503,13 +594,13 @@ class AltenarProvider(OddsProvider):
                 time.sleep(1.5 * (attempt + 1))
         raise RuntimeError(f"Altenar: red inestable o límite de peticiones en {endpoint}/{integration}") from last_error
 
-    def _list_events(self, client, integration: str) -> dict[int, dict]:
+    def _list_events(self, client, integration: str, sport: str = "futbol") -> dict[int, dict]:
         data = self._get_json(
             client,
             "GetEvents",
             integration,
             eventCount=0,
-            sportId=FOOTBALL_SPORT_ID,
+            sportId=SPORT_IDS[sport],
             catIds=0,
             champIds=0,
             group="AllEvents",
@@ -535,7 +626,7 @@ class AltenarProvider(OddsProvider):
             if event.get("status") != 0 or " vs. " not in event.get("name", ""):
                 continue
             labels = [champs.get(event.get("champId")), categories.get(event.get("catId")), event["name"]]
-            if is_excluded(labels, self.exclude_esports, self.exclude_women):
+            if is_excluded(labels, self.exclude_esports, self.exclude_women, sport):
                 continue
             start = datetime.fromisoformat(event["startDate"].replace("Z", "+00:00"))
             if not (now < start <= limit):
@@ -544,10 +635,13 @@ class AltenarProvider(OddsProvider):
         return events
 
     def _fetch_football(self, client) -> list[Market]:
+        return self._fetch_sport(client, "futbol")
+
+    def _fetch_sport(self, client, sport: str) -> list[Market]:
         listings: dict[str, dict[int, dict]] = {}
         for integration in self.integrations:
             try:
-                listings[integration] = self._list_events(client, integration)
+                listings[integration] = self._list_events(client, integration, sport)
             except Exception:
                 logger.warning("Altenar: fallo listando eventos de %s", integration, exc_info=True)
                 listings[integration] = {}
@@ -582,7 +676,7 @@ class AltenarProvider(OddsProvider):
                 logger.warning("Altenar: fallo en detalle %s/%s", integration, event_id, exc_info=True)
                 return []
             parsed = parse_event_markets(
-                details, canonical[event_id], "futbol", self.integrations[integration], competitors[event_id]
+                details, canonical[event_id], sport, self.integrations[integration], competitors[event_id]
             )
             for market in parsed:
                 market.start_time = starts[event_id]

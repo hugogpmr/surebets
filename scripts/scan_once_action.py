@@ -86,11 +86,15 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             MarcaApuestasProvider(),
         ],
         [
-            # Jokerbet + Pastón + Betway vía la API de Altenar (córners, tarjetas,
-            # hándicaps, mercados por mitad pre-partido; solo fútbol de momento).
+            # Jokerbet + Pastón + Betway vía la API de Altenar: fútbol (córners,
+            # tarjetas, hándicaps, mercados por mitad) y, desde 2026-09-24,
+            # baloncesto (hándicap/total/par-impar por cuarto y mitad, incl.
+            # prórroga) y tenis (hándicap/total de juegos y sets, por set) - antes
+            # esas dos claves solo las cubría CuotasAhoraProvider (1X2 vía comparador).
             AltenarProvider(),
             # Paf + LeoVegas vía la API pública de Kambi (otra plataforma B2B, otro
-            # feed de precios: permite arbitraje ENTRE plataformas en córners/tarjetas).
+            # feed de precios: permite arbitraje ENTRE plataformas). Mismos tres
+            # deportes que Altenar desde 2026-09-24.
             KambiProvider(),
             # Bet777 vía la API de su plataforma Sportify (cuotas de FeedConstruct): tercera
             # fuente de precios distinta de Altenar y Kambi. Goles, hándicap asiático y
@@ -120,10 +124,13 @@ def comparator_providers(max_matches: int | None = None) -> list[OddsProvider]:
     ]
 
 
-# Las ligas/deportes nuevos (top 5 europeas, Copa del Rey, LaLiga2,
-# baloncesto y tenis) solo están cubiertos por CuotasAhoraProvider (ver su
-# docstring y README.md "Competiciones soportadas"): Sportium/Betfair/
-# Winamax ignoran las claves para las que no tienen `competition_urls`.
+# Las ligas nuevas de fútbol (top 5 europeas, Copa del Rey, LaLiga2...) solo
+# están cubiertas por CuotasAhoraProvider (ver su docstring y README.md
+# "Competiciones soportadas"): Sportium/Betfair/Winamax ignoran las claves
+# para las que no tienen `competition_urls`. Baloncesto y tenis, en cambio, sí
+# tienen fuente directa desde 2026-09-24 (Altenar/Kambi no filtran por
+# competición: traen TODOS los partidos de esos deportes, así que cruzan aquí
+# igual que si estuvieran en `competition_urls`).
 SPORTS = [
     "futbol",
     "futbol_champions",

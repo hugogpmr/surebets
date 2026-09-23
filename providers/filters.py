@@ -44,6 +44,14 @@ def is_womens(*labels: str | None) -> bool:
     return any(label and _WOMENS.search(label) for label in labels)
 
 
-def is_excluded(labels: list[str | None], exclude_esports: bool, exclude_women: bool) -> bool:
-    """`labels` = categoría, competición, ruta y nombres de equipo del partido."""
-    return (exclude_esports and is_esports(*labels)) or (exclude_women and is_womens(*labels))
+def is_excluded(labels: list[str | None], exclude_esports: bool, exclude_women: bool, sport: str = "futbol") -> bool:
+    """`labels` = categoría, competición, ruta y nombres de equipo del partido.
+
+    El filtro de femenino solo aplica a fútbol: ahí un partido real se pierde
+    casi siempre en el cruce porque cada casa lo nombra distinto y los
+    comparadores no lo traen (ver docstring del módulo). En baloncesto/tenis
+    la WNBA/WTA son un producto mayoritario con nombres consistentes entre
+    plataformas, así que excluirla no tendría ese motivo y solo restaría
+    cobertura.
+    """
+    return (exclude_esports and is_esports(*labels)) or (sport == "futbol" and exclude_women and is_womens(*labels))

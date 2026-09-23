@@ -40,17 +40,18 @@ PROVIDERS: list[OddsProvider] = [
     # cubre CuotasAhora - ampliar ahí una vez esté estable en producción.
     BetExplorerProvider(),
     # Jokerbet + Pastón + Betway vía la API de la plataforma Altenar (sin
-    # navegador): córners, tarjetas, hándicaps y mercados por mitad
-    # pre-partido. Solo fútbol de momento - ver providers/altenar.py.
+    # navegador): fútbol (córners, tarjetas, hándicaps, mitades), baloncesto
+    # (cuartos/mitades, incl. prórroga) y tenis (sets) - ver providers/altenar.py.
     AltenarProvider(),
     # Paf + LeoVegas vía la API pública de Kambi (otra plataforma B2B, otro
     # feed de precios: permite arbitraje ENTRE plataformas en córners/tarjetas).
     KambiProvider(),
 ]
-# Las ligas/deportes nuevos (top 5 europeas, Copa del Rey, LaLiga2,
-# baloncesto y tenis) solo están cubiertos por CuotasAhoraProvider (ver su
-# docstring y README.md "Competiciones soportadas"): Sportium/Betfair/
-# Winamax ignoran las claves para las que no tienen `competition_urls`.
+# Las ligas nuevas de fútbol (top 5 europeas, Copa del Rey, LaLiga2...) solo
+# están cubiertas por CuotasAhoraProvider (ver su docstring y README.md
+# "Competiciones soportadas"): Sportium/Betfair/Winamax ignoran las claves
+# para las que no tienen `competition_urls`. Baloncesto y tenis sí tienen
+# fuente directa (Altenar/Kambi, ver arriba) desde 2026-09-24.
 SPORTS = [
     "futbol",
     "futbol_champions",

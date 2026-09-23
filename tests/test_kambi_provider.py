@@ -185,8 +185,10 @@ def test_live_or_out_of_horizon_events_are_ignored():
     assert provider._fetch_football(client=None) == []
 
 
-def test_returns_nothing_when_no_football_sport_requested():
-    assert KambiProvider().fetch_markets(["tenis_atp"]) == []
+def test_returns_nothing_when_no_supported_sport_requested():
+    # baloncesto/tenis sí están soportados (ver test_basketball_and_tennis_provider.py);
+    # balonmano no, así que no debe intentar red alguna.
+    assert KambiProvider().fetch_markets(["balonmano_champions"]) == []
 
 
 def test_get_json_retries_transient_connection_errors_and_rate_limits(monkeypatch):

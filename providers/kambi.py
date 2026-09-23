@@ -51,26 +51,63 @@ OPERATORS: dict[str, str] = {
     "pafspeedybetes": "speedybet",
 }
 
+# Slug de deporte en la URL de listView (verificado en vivo 2026-09-24: ambos
+# devuelven cientos de eventos pre-partido). Antes estas claves ("baloncesto_*"/
+# "tenis_*" en main.py/scripts/scan_once_action.py) solo las cubría CuotasAhora.
+SPORT_PATHS: dict[str, str] = {"futbol": "football", "baloncesto": "basketball", "tenis": "tennis"}
+
 # Kambi devuelve cuotas y líneas en milésimas (1910 = 1.91, 2500 = 2.5).
 _MILLI = 1000
 
-_PERIOD_RE = re.compile(r"^(?P<base>.*?)(?: - (?P<half>1st|2nd) Half)?$")
-_TEAM_TOTAL_RE = re.compile(r"^Total (?P<metric>Goals|Corners|Cards)(?: by| By| -) (?P<team>.+)$")
+_PERIOD_RE = re.compile(
+    r"^(?P<base>.*?)(?: - (?P<period>1st Half|2nd Half|Quarter [1-4]|Including Overtime|Set 1|Set 2))?$"
+)
+# "won by" es el formato de tenis ("Total games won by Dane Sweeny"); "by"/"By"/"-"
+# el de fútbol/baloncesto ("Total Points by <equipo>"). Insensible a mayúsculas: el
+# nombre de la métrica llega en minúscula en el primer caso ("games") y en
+# mayúscula en el segundo ("Points").
+_TEAM_TOTAL_RE = re.compile(r"^Total (?P<metric>Goals|Corners|Cards|Points|Games)(?: won by| by| By| -) (?P<team>.+)$", re.IGNORECASE)
 
-_METRIC_PREFIX = {"Goals": "OU", "Corners": "CORNERS_OU", "Cards": "CARDS_OU"}
-_TOTAL_BASES = {"Total Goals": "OU", "Total Corners": "CORNERS_OU", "Total Cards": "CARDS_OU"}
+_METRIC_PREFIX = {"Goals": "OU", "Corners": "CORNERS_OU", "Cards": "CARDS_OU", "Points": "OU", "Games": "OU"}
+_TOTAL_BASES = {
+    "Total Goals": "OU",
+    "Total Corners": "CORNERS_OU",
+    "Total Cards": "CARDS_OU",
+    "Total Points": "OU",  # baloncesto (incl. prórroga salvo sufijo de mitad/cuarto)
+    "Total Games": "OU",  # tenis: total de juegos del partido (o de un set, con sufijo)
+    "Total Sets": "SETS_OU",  # tenis: total de sets jugados
+}
 _MOST_BASES = {"Most Corners": "CORNERS_1X2", "Most Cards": "CARDS_1X2"}
 
 _THREE_WAY = {"OT_ONE": "1", "OT_CROSS": "X", "OT_TWO": "2"}
 _TWO_WAY_12 = {"OT_ONE": "1", "OT_TWO": "2"}
 _YES_NO = {"OT_YES": "Yes", "OT_NO": "No"}
+_ODD_EVEN = {"OT_ODD": "Odd", "OT_EVEN": "Even"}
 # Doble oportunidad (verificado en vivo el 2026-09-21): local o empate / local o visitante /
 # empate o visitante.
 _DOUBLE_CHANCE = {"OT_ONE_OR_CROSS": "1X", "OT_ONE_OR_TWO": "12", "OT_CROSS_OR_TWO": "X2"}
 
+# Sufijos de periodo reconocidos en el `criterion.englishLabel` ("Handicap -
+# 1st Half", "Total Points - Quarter 1"...). Añadidos 2026-09-24 para
+# baloncesto ("Quarter 1".."Quarter 4", "Including Overtime" = partido
+# completo, mismo prefijo que sin sufijo) y tenis ("Set 1"/"Set 2" en mercados
+# de líneas, p.ej. "Total Games - Set 1"; el ganador del set es una label
+# aparte, "Set 1"/"Set 2" sin prefijo, ver más abajo).
+_PERIOD_SUFFIXES = {
+    "1st Half": "_HT",
+    "2nd Half": "_2H",
+    "Quarter 1": "_Q1",
+    "Quarter 2": "_Q2",
+    "Quarter 3": "_Q3",
+    "Quarter 4": "_Q4",
+    "Including Overtime": "",
+    "Set 1": "_SET1",
+    "Set 2": "_SET2",
+}
 
-def _half_suffix(half: str | None) -> str:
-    return {None: "", "1st": "_HT", "2nd": "_2H"}[half]
+
+def _period_suffix(period: str | None) -> str:
+    return _PERIOD_SUFFIXES.get(period, "")
 
 
 def _price(milli) -> float | None:
@@ -186,8 +223,8 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
         label = offer.get("criterion", {}).get("englishLabel", "")
         offer_type = offer.get("betOfferType", {}).get("englishName", "")
         period = _PERIOD_RE.match(label)
-        base, half = period.group("base").strip(), period.group("half")
-        suffix = _half_suffix(half)
+        base, period_name = period.group("base").strip(), period.group("period")
+        suffix = _period_suffix(period_name)
 
         market = None
         if offer_type == "Match":
@@ -201,6 +238,14 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
                 market = _fixed_market(event_name, sport, bookmaker, f"DNB{suffix}", offer, _TWO_WAY_12)
             elif base in _MOST_BASES:
                 market = _fixed_market(event_name, sport, bookmaker, f"{_MOST_BASES[base]}{suffix}", offer, _THREE_WAY)
+            # Baloncesto ("Moneyline - Including Overtime") y tenis ("Match Odds"):
+            # ganador a dos bandas, sin empate posible.
+            elif base in ("Moneyline", "Match Odds"):
+                market = _fixed_market(event_name, sport, bookmaker, f"ML{suffix}", offer, _TWO_WAY_12)
+            # Tenis: ganador de un set concreto ("Set 1"/"Set 2" es la label entera,
+            # no un sufijo de otro mercado - a diferencia de "Total Games - Set 1").
+            elif label in ("Set 1", "Set 2"):
+                market = _fixed_market(event_name, sport, bookmaker, f"ML_SET{label[-1]}", offer, _TWO_WAY_12)
         elif offer_type == "Double Chance":
             if base == "Double Chance":  # no "... and Both Teams To Score", etc.
                 market = _fixed_market(event_name, sport, bookmaker, f"DC{suffix}", offer, _DOUBLE_CHANCE)
@@ -215,7 +260,7 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
                 team_match = _TEAM_TOTAL_RE.match(base)
                 if team_match and team_match.group("team") in (home, away):
                     side = "HOME" if team_match.group("team") == home else "AWAY"
-                    prefix = f"{_METRIC_PREFIX[team_match.group('metric')]}_{side}"
+                    prefix = f"{_METRIC_PREFIX[team_match.group('metric').capitalize()]}_{side}"
             if prefix is not None:
                 market = _total_market(event_name, sport, bookmaker, f"{prefix}{suffix}", offer)
         elif offer_type == "Asian Over/Under" and base == "Asian Total":
@@ -224,6 +269,15 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
                 asian_totals.append(candidate)
         elif offer_type == "Asian Handicap" and base == "Asian Handicap":
             market = _handicap_market(event_name, sport, bookmaker, f"AH{suffix}", offer, home, away)
+        # Baloncesto: "Point Spread"/"Handicap" (puntos, incl. sufijo de mitad/cuarto).
+        # Tenis: "Game Handicap" (juegos) y "Set Handicap" (sets ganados).
+        elif offer_type == "Handicap":
+            if base in ("Point Spread", "Handicap", "Game Handicap"):
+                market = _handicap_market(event_name, sport, bookmaker, f"AH{suffix}", offer, home, away)
+            elif base == "Set Handicap":
+                market = _handicap_market(event_name, sport, bookmaker, f"SETS_AH{suffix}", offer, home, away)
+        elif offer_type == "Odd/Even" and base == "Total Points Odd/Even":
+            market = _fixed_market(event_name, sport, bookmaker, f"OE{suffix}", offer, _ODD_EVEN)
 
         if market is not None:
             markets.append(market)
@@ -277,10 +331,14 @@ class KambiProvider(OddsProvider):
         self.max_workers = max_workers
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
-        if not any(key.split("_", 1)[0] == "futbol" for key in sports):
+        requested = {key.split("_", 1)[0] for key in sports} & set(SPORT_PATHS)
+        if not requested:
             return []
         with httpx.Client(timeout=30, headers={"User-Agent": "Mozilla/5.0"}) as client:
-            return self._fetch_football(client)
+            markets: list[Market] = []
+            for sport in requested:
+                markets.extend(self._fetch_sport(client, sport))
+            return markets
 
     def _get_json(self, client, operator: str, path: str, **params) -> dict:
         url = f"{API_BASE}{operator}/{path}"
@@ -299,8 +357,8 @@ class KambiProvider(OddsProvider):
             return response.json()
         raise RuntimeError(f"Kambi: límite de peticiones o red inestable persistente en {operator}/{path}")
 
-    def _list_events(self, client, operator: str) -> dict[int, dict]:
-        data = self._get_json(client, operator, "listView/football/all/all/all/matches.json")
+    def _list_events(self, client, operator: str, sport: str = "futbol") -> dict[int, dict]:
+        data = self._get_json(client, operator, f"listView/{SPORT_PATHS[sport]}/all/all/all/matches.json")
         now = datetime.now(timezone.utc)
         limit = now + timedelta(hours=self.horizon_hours)
         events = {}
@@ -314,7 +372,7 @@ class KambiProvider(OddsProvider):
             labels = [event.get("group"), event["homeName"], event["awayName"]]
             for node in event.get("path") or []:
                 labels += [node.get("name"), node.get("englishName")]
-            if is_excluded(labels, self.exclude_esports, self.exclude_women):
+            if is_excluded(labels, self.exclude_esports, self.exclude_women, sport):
                 continue
             start = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
             if now < start <= limit:
@@ -322,10 +380,13 @@ class KambiProvider(OddsProvider):
         return events
 
     def _fetch_football(self, client) -> list[Market]:
+        return self._fetch_sport(client, "futbol")
+
+    def _fetch_sport(self, client, sport: str) -> list[Market]:
         listings: dict[str, dict[int, dict]] = {}
         for operator in self.operators:
             try:
-                listings[operator] = self._list_events(client, operator)
+                listings[operator] = self._list_events(client, operator, sport)
             except Exception:
                 logger.warning("Kambi: fallo listando eventos de %s", operator, exc_info=True)
                 listings[operator] = {}
@@ -356,7 +417,7 @@ class KambiProvider(OddsProvider):
                 return []
             name = f"{event['homeName'].strip()} vs. {event['awayName'].strip()}"
             parsed = parse_event_offers(
-                details, name, "futbol", self.operators[operator], event["homeName"], event["awayName"]
+                details, name, sport, self.operators[operator], event["homeName"], event["awayName"]
             )
             start = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
             for market in parsed:

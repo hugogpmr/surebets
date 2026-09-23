@@ -277,10 +277,13 @@ ampliado el 2026-09-17):
   League griega se probó con dos slugs de URL distintos (`super-league-1` y `super-league`), ambos
   devolvieron 404 — no se insistió más, slug correcto pendiente de encontrar. Rugby se volvió a comprobar
   (tercera vez, distintos días/horas) y sigue sin partidos programados en el momento de cada comprobación.
-- **Baloncesto**: Liga Endesa/ACB, EuroLeague, NBA y EuroCup.
+- **Baloncesto**: Liga Endesa/ACB, EuroLeague, NBA y EuroCup. Desde 2026-09-24 también tienen fuente directa
+  en Altenar/Kambi (hándicap, total y par/impar por cuarto y mitad, incl. prórroga) - ver "Baloncesto y tenis
+  en Altenar y Kambi" más abajo.
 - **Tenis**: en vez de una URL de "liga" fija como fútbol/baloncesto (los torneos ATP/WTA rotan cada semana,
   no hay competición estable todo el año), apunta al hub general `/tennis/`, que ya lista los partidos del
-  día de todos los torneos activos.
+  día de todos los torneos activos. Desde 2026-09-24 también tiene fuente directa en Altenar/Kambi (hándicap
+  y total de juegos, hándicap de sets, mercados del primer set).
 - **Balonmano** (deporte nuevo, 2026-09-17): Champions League masculina de la EHF — se eligió por encima de
   cualquier liga doméstica por tener mejor cobertura de casas (12 en la comprobación en vivo). Misma familia
   de pestañas de mercado que fútbol (1X2 con empate, DC, y detrás de "Más": DNB/OE/Descanso-Final, más
@@ -732,6 +735,69 @@ el usuario: los mercados nuevos de Betfair no se implementaron, y además se **d
 por si Betfair levanta el bloqueo más adelante, pero ya no se ejecuta en cada ciclo. Motivo: mantenerlo
 disparando el challenge cada 5 minutos, 24/7, podía agravar el bloqueo sin aportar ningún mercado a cambio.
 Betfair queda por tanto en solo 1X2 hasta que se revise de nuevo.
+
+### Baloncesto y tenis en Altenar y Kambi (2026-09-24)
+
+Hasta ahora baloncesto (`baloncesto_acb/euroleague/nba/eurocup`) y tenis (`tenis_atp`) solo los cubría
+`CuotasAhoraProvider` (1X2 vía comparador, sin fuente directa). `GetAllSports` de Altenar confirmó en vivo
+que el mismo widget público que ya se usa para fútbol (sportId 66) también sirve baloncesto (sportId 67,
+~1000 eventos pre-partido ese día) y tenis (sportId 68, ~120); Kambi expone lo mismo por `listView/basketball/...`
+y `listView/tennis/...`. Mismo esquema, mismo mecanismo sin navegador — solo hacía falta mapear su tabla de
+mercados, así que `providers/altenar.py` y `providers/kambi.py` ahora aceptan cualquiera de los tres deportes.
+
+- **Tenis**: ganador del partido y del primer set (`ML`/`ML_SET1`), hándicap de juegos del partido y del
+  primer set (`AH`/`AH_SET1`), hándicap de sets (`SETS_AH`), total de juegos del partido/primer
+  set/por jugador (`OU`/`OU_SET1`/`OU_HOME`/`OU_AWAY`), par/impar de juegos (`OE`/`OE_SET1`) y total de sets
+  jugados (`SETS_OU`). El jugador se identifica por `competitorId` (Altenar) o `participant` (Kambi), igual
+  que el 1X2 de fútbol — sin depender del texto, que cada casa escribe distinto.
+- **Baloncesto**: ganador incl. prórroga (`ML`), habrá prórroga (`OT`, sí/no), hándicap y total de puntos
+  incl. prórroga (`AH`/`OU`, con variantes por equipo), par/impar, y los mismos cuatro mercados
+  (hándicap/total/empate-no-apuesta/par-impar) por mitad (`_HT`/`_2H`) y **por cuarto** (`_Q1".."_Q4`).
+  Quedan fuera a propósito "margen de victoria" y "cuarto/mitad con más puntos": no son un mercado exhaustivo
+  de 2/3 resultados limpio (hay bloques de "otro" o pueden empatar entre periodos).
+- **El cuarto es un caso especial en Altenar**: a diferencia de fútbol/tenis, donde cada periodo tiene su
+  propio `typeId` (p.ej. `18`=total del partido, `68`=total 1ª mitad), baloncesto **reutiliza el mismo
+  `typeId`** para los 4 cuartos (verificado en vivo: `236`="Totales" del cuarto que sea) y solo el texto de
+  `market["name"]` dice cuál es ("Primer Cuarto", "1° cuarto"... Altenar usa **los dos formatos** según el
+  mercado). `providers/altenar.py:_quarter_number` reconoce ambos; si el texto no encaja con ninguno el
+  mercado se descarta entero en vez de adivinar el cuarto (mismo criterio de "fallo seguro" que el resto del
+  proyecto). Kambi en cambio sí trae el cuarto como sufijo de la label (`"... - Quarter 1"`), así que ahí es
+  un caso más del sufijo de periodo genérico que ya usaba `_HT`/`_2H`.
+- **El filtro de femenino ahora es específico de fútbol**: `providers/filters.py:is_excluded` recibe el
+  deporte y solo aplica `EXCLUDE_WOMENS_FOOTBALL` cuando es `"futbol"`. En baloncesto/tenis la WNBA/WTA son
+  producto mayoritario y con nombres consistentes entre casas (a diferencia del fútbol femenino, que rara vez
+  cruza por eso mismo) — aplicar el mismo filtro ahí solo habría restado cobertura sin motivo real.
+- Verificado en vivo con datos reales (no solo unitario): Altenar+Kambi juntos cruzan tenis y baloncesto
+  ENTRE plataformas igual que ya hacían en fútbol (ejemplo real capturado: `Hapoel Tel-Aviv vs. Bayern`,
+  mercado `OU_169.5`, Betway 1.74 Over / Paf 2.10 Under).
+
+### Casas white-label sin fuente pública viable (recomprobado en vivo 2026-09-24)
+
+Siguiendo la pista de "buscar la plataforma B2B detrás de una casa bloqueada" (la que desbloqueó 7+ casas vía
+Altenar/Kambi), se recomprobaron con Playwright headless real (no solo el navegador interactivo) las tres
+pendientes de `estudio_tecnicas_otros_bots.md`:
+
+- **Suertia/OlyBet**: la web de marketing (`suertia.es`) redirige a `olybet.es`; el sportsbook real vive en
+  `apuestas.olybet.es` (Nuxt.js), confirmado por red que corre sobre **GiG Sport / Sportnco**
+  (`fonts/icons/gig/GiGSport.ttf`, estado `__NUXT__` con `sportx-static.sportnco.com`). A diferencia de
+  Altenar/Kambi, aquí **no hay una API JSON pública aparte**: las cuotas vienen ya renderizadas en el HTML
+  (server-side, todo dentro de `__NUXT__`), así que en teoría bastaría un `httpx.get()` sin navegador. En la
+  práctica un WAF (**F5/Volterra**, `server: volt-adc`) devuelve "Request Rejected" tanto a `httpx` como a un
+  `chromium.launch(headless=True)` real — con la MISMA IP residencial (Orange España) con la que el navegador
+  interactivo de esta sesión sí cargó la página completa con cuotas reales. Mismo patrón que Interwetten: el
+  navegador interactivo no es un fiable "esto no está bloqueado", hace falta el lanzamiento headless real.
+  No implementado — bloqueo de fingerprint, no de IP ni de anti-bot JS visible.
+- **Betsson**: la web de apuestas (`betsson.es/apuestas-deportivas`) SÍ carga completa con Playwright headless
+  (200, shell del widget de sportsbook presente) — mejor que el diagnóstico anterior. Pero el hándicap real
+  sigue el mismo que documentaba `checklist.md`: `POST /api/fraud/v1/groupib/tokens/generate` devuelve
+  **403 de forma consistente** (repetido varias veces durante la carga), el paso de verificación antifraude
+  (Group-IB) que el widget necesita antes de poder pedir cuotas. Reconfirmado tal cual, no es un diagnóstico
+  obsoleto.
+- **Luckia**: sigue devolviendo el challenge de Cloudflare ("Just a moment...", 403) con Playwright headless
+  real. Sin cambios respecto a `checklist.md`.
+
+Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
+indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
 El arbitraje deportivo no es ilegal en España (Ley 13/2011), pero cada casa de apuestas puede limitar o cerrar
 cuentas por sus propios términos y condiciones. El scraping debe hacerse de forma moderada y revisando los

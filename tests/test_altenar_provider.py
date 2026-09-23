@@ -198,8 +198,10 @@ def test_live_or_out_of_horizon_events_are_ignored():
     assert provider._fetch_football(client=None) == []
 
 
-def test_returns_nothing_when_no_football_sport_requested():
-    assert AltenarProvider().fetch_markets(["baloncesto_nba"]) == []
+def test_returns_nothing_when_no_supported_sport_requested():
+    # baloncesto/tenis sí están soportados (ver test_basketball_and_tennis_provider.py);
+    # balonmano no, así que no debe intentar red alguna.
+    assert AltenarProvider().fetch_markets(["balonmano_champions"]) == []
 
 
 TEAM_NAME_STYLE = {
