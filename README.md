@@ -104,7 +104,8 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 | **Suertia (OlyBet)** | ❌ Bloqueado a nivel de red | "Access Denied" del proveedor. Ver detalle abajo. |
 | **Marca Apuestas** (nuevo 2026-09-23) | ✅ Funciona (`providers/marcaapuestas.py`) | El bloqueo Cloudflare/403 antiguo ya no aplica: la casa cambió de frontend. Confirmado con Playwright headless real, sin trucos (status 200, sin ningún reto). Resultó ser **el mismo framework "ta-" que Sportium** (mismas clases CSS y mismos códigos internos de mercado BTSC/H1RS), así que el provider es casi una copia del de Sportium: 1X2, Más/Menos, Ambos Marcan y Resultado al descanso (sin Doble Oportunidad, que esta casa no tiene en su desplegable). Ver `estudio_tecnicas_otros_bots.md`. |
 | **Interwetten** | ⚠️ Implementado pero bloqueado (`providers/interwetten.py`) | DOM limpio y parseable (clases semánticas estables, sin CSS-modules), pero Cloudflare devuelve el challenge JS "Just a moment..." a cualquier Playwright headless, confirmado en dos entornos (sandbox de desarrollo y PC de producción del usuario, IP residencial) el 2026-09-22 — no es throttling de sandbox como cuotasahora.com, es un bloqueo real. El navegador interactivo sí carga la página, pero automatizar eso sería evasión de anti-bot: no se hace. |
-| **Zebet, Botemanía** (Pastón ya funciona vía Altenar, PokerStars ya funciona, ver arriba) | ❓ Sin confirmar para scraping directo, pero **ya con licencia DGOJ confirmada** (ver abajo) | Cargan sin bloqueo aparente, pero no se llegó a localizar/confirmar la tabla de cuotas real en el DOM. Candidatos a re-probar directamente (aunque ahora es menos prioritario, dado que CuotasAhora ya cubre muchas casas de golpe). |
+| **Zebet** (nuevo 2026-09-24) | ✅ Funciona (`providers/zebet.py`) | Playwright headless normal, sin trucos — confirmado en vivo tras descartar que fuera un falso positivo del Browser pane (mismo patrón que Interwetten/Retabet/OlyBet). Plataforma propia del grupo Zeturf (no un B2B conocido). DOM limpio con clases estables (`bet-actor1`/`bet-actorN`/`bet-actor2` para 1/X/2, no por texto); cuotas ya en el HTML servido, no hace falta la conexión SSE que solo empuja partidos en vivo. Solo 1X2 de LaLiga por ahora. |
+| **Botemanía** (Pastón, LeoVegas, Yosports ya funcionan vía Altenar/Kambi, ver arriba) | ✅ Funciona vía Kambi (`providers/kambi.py`, tenant `botemaniaes`, nuevo 2026-09-21) | Con licencia DGOJ confirmada (ver abajo). |
 | **Betfair Exchange** (nuevo 2026-09-23, `providers/betfair_exchange.py`) | ⚠️ Implementado, **sin verificar en vivo** | API oficial gratuita (Delayed App Key), aparte del scraper DOM de la web de apuestas fijas (`providers/betfair.py`). A diferencia de todo lo demás de esta tabla, no se ha podido probar contra la API real: hace falta una app key + cuenta de Betfair que solo el usuario puede generar (developer.betfair.com). Se salta sola en el escaneo si `BETFAIR_APP_KEY`/`BETFAIR_USERNAME`/`BETFAIR_PASSWORD` no están en `.env`. Ver `estudio_tecnicas_otros_bots.md`. |
 
 ✅ **Licencias DGOJ verificadas (2026-09-16)**: se contrastaron a mano las 78 fichas del buscador oficial
@@ -112,9 +113,9 @@ de operadores ([ordenacionjuego.es](https://www.ordenacionjuego.es/operadores-ju
 **Todas** las casas usadas por este sistema (directas + vía CuotasAhora, incluido 1xBet.es) tienen licencia
 vigente en España — la sospecha inicial de que 1xBet.es no la tuviera era incorrecta (licencia bajo WAGERFAIR,
 S.A.). De paso se confirmó que Paston, Botemanía, Zebet y PokerStars Sports también están licenciadas
-(EUROAPUESTAS ONLINE, GAMESYS SPAIN, ZEBETTING Y GAMING, TSG INTERACTIVE respectivamente); de esas cuatro,
-Paston y PokerStars Sports ya tienen scraping directo implementado (Altenar y `providers/pokerstars.py`
-respectivamente), Botemanía y Zebet siguen sin confirmar. El panel web ([docs/](docs/)) marca en rojo cualquier casa que no esté en esta
+(EUROAPUESTAS ONLINE, GAMESYS SPAIN, ZEBETTING Y GAMING, TSG INTERACTIVE respectivamente); las cuatro tienen
+ya scraping directo implementado (Altenar, Kambi, `providers/zebet.py` y `providers/pokerstars.py`
+respectivamente, Zebet añadido el 2026-09-24). El panel web ([docs/](docs/)) marca en rojo cualquier casa que no esté en esta
 lista verificada — hoy no debería salir ninguna en rojo; si sale alguna, es una señal de fallo de scraping o
 de una casa nueva sin comprobar. Esta verificación es una foto de un momento dado (la DGOJ actualiza el
 registro mensualmente) — revisar de nuevo si ha pasado mucho tiempo.

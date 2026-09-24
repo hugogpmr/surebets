@@ -25,7 +25,10 @@ from .models import Market, Outcome
 
 # Fuentes que leen la propia casa (API o web de la casa): precio de referencia.
 DIRECT_SOURCES = frozenset(
-    {"altenar", "kambi", "sportium", "betfair", "winamax", "bwin", "bet777", "kirolbet", "pokerstars", "williamhill"}
+    {
+        "altenar", "kambi", "sportium", "betfair", "winamax", "bwin", "bet777", "kirolbet",
+        "pokerstars", "williamhill", "marcaapuestas", "zebet",
+    }
 )
 # Comparadores: agregan casas ajenas y pueden ir desfasados (verificado hasta
 # ~7 % en 1X2 en la hora previa al partido, ver README).

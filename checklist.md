@@ -78,16 +78,16 @@ Playwright real (no teórico):
   dos surebets pequeñas y plausibles (+0.27% Betis-Getafe entre Codere/Winamax/Paf, +2.09% Valencia-Real
   Sociedad entre Paf/Sportium/Codere) — nada de los falsos positivos del 30-40% de los bugs anteriores.
 
-**Sin confirmar / de menor prioridad ahora** (candidatas si se quiere ampliar aún más, pero ya no son
-urgentes dado que CuotasAhora cubre mucho de golpe):
+**Resueltas desde entonces**: Zebet (`providers/zebet.py`, añadido 2026-09-24 — plataforma propia del grupo
+Zeturf, DOM limpio, 1X2 de LaLiga; ver README "Estado real de los scrapers") y Botemanía (vía Kambi, tenant
+`botemaniaes`, añadido 2026-09-21). 888sport ya quedó cubierto vía CuotasAhora; Paston vía Altenar; PokerStars
+Sports tiene provider propio (`providers/pokerstars.py`, 2026-09-23). Todas con licencia DGOJ confirmada (ver
+verificación arriba).
 
-Zebet, Botemanía — cargaron sin 403/Cloudflare/CAPTCHA visible en su momento, pero no se llegó a localizar
-con certeza el contenedor DOM real de la tabla de cuotas. (888sport ya quedó cubierto vía CuotasAhora, se
-quita de esta lista; Paston ya funciona vía Altenar y PokerStars Sports ya tiene provider propio,
-`providers/pokerstars.py`, añadido 2026-09-23 — DOM con atributos `data-testid` estables, solo 1X2; su API
-JSON está detrás de Akamai Bot Manager igual que Kirolbet). Zebet/Botemanía tienen licencia DGOJ confirmada
-(ver verificación arriba), así que si se scrapean en directo no haría falta añadir nada al filtro de
-licencias.
+**Sin confirmar / de menor prioridad ahora**: 888sport y Versus cargan sin bloqueo aparente pero no exponen
+un JSON de cuotas evidente ni se ha localizado su contenedor DOM real (888sport usa la plataforma "unified
+client" de safe-iplay; Versus un widget propio) — candidatos si se quiere seguir ampliando, aunque ya no son
+urgentes dado que CuotasAhora/BetExplorer cubren ambas casas de golpe.
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos

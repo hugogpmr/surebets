@@ -38,6 +38,10 @@ const DGOJ_LICENSED_BOOKMAKERS = new Set([
   // Marca Apuestas (Casino Marbella Interactive, S.A.), plataforma propia
   // (providers/marcaapuestas.py); registro de la DGOJ comprobado el 2026-09-23.
   "marcaapuestas",
+  // Zebet (ZEBETTING Y GAMING), plataforma propia del grupo Zeturf
+  // (providers/zebet.py); registro de la DGOJ comprobado el 2026-09-16 (ver
+  // checklist.md), scraping directo añadido el 2026-09-24.
+  "zebet",
 ]);
 
 function isLicensed(bookmaker) {
@@ -72,6 +76,7 @@ const BOOKMAKER_URLS = {
   bet777: "https://www.bet777.es",
   pokerstars: "https://www.pokerstars.es/sports/",
   marcaapuestas: "https://www.marcaapuestas.es",
+  zebet: "https://www.zebet.es",
 };
 
 const PLACED_BETS_KEY = "surebets_placed_bets_v1";

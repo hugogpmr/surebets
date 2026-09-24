@@ -55,6 +55,7 @@ from providers.pokerstars import PokerStarsProvider
 from providers.sportium import SportiumProvider
 from providers.williamhill import WilliamHillProvider
 from providers.winamax import WinamaxProvider
+from providers.zebet import ZebetProvider
 from storage.db import export_snapshot, init_db
 
 logging.basicConfig(level=logging.INFO)
@@ -77,6 +78,11 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
         # frontend), verificado en vivo el 2026-09-23 tras confirmar con Playwright
         # headless real que su antiguo bloqueo de Cloudflare ya no aplica (ver
         # estudio_tecnicas_otros_bots.md) - 1X2, over/under, BTTS y 1X2_HT.
+        # Zebet: plataforma propia del grupo Zeturf, verificada en vivo el
+        # 2026-09-24 con Playwright headless real (antes "sin confirmar" en
+        # checklist.md por el mismo motivo que Interwetten/Retabet: el navegador
+        # interactivo no basta como señal) - solo 1X2 de LaLiga por ahora, ver
+        # providers/zebet.py.
         [
             SportiumProvider(),
             BetfairProvider(),
@@ -84,6 +90,7 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             BwinProvider(),
             PokerStarsProvider(),
             MarcaApuestasProvider(),
+            ZebetProvider(),
         ],
         [
             # Jokerbet + Pastón + Betway vía la API de Altenar: fútbol (córners,
