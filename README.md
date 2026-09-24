@@ -87,7 +87,7 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 | Casa | Estado | Detalle |
 |---|---|---|
 | **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2, Más/Menos (Goles Totales, línea variable por partido), Doble Oportunidad, Ambos Marcan y Resultado al descanso en vivo verificados (2026-09-22). |
-| **Betfair** | ⚠️ Solo 1X2, a propósito (`providers/betfair.py`) | Playwright headless normal. 1X2 funciona. El Más/Menos de 2,5 (y los intentos de ampliar a Doble Oportunidad/Ambos Marcan/Córners) están implementados pero **desactivados**: el cambio de mercado dispara el challenge "Verificación de seguridad" de Cloudflare — verificado en vivo el 2026-09-22, persiste tras 5 min de espera, no se ha intentado evitarlo. Ver detalle abajo. |
+| **Betfair** | ❌ Bloqueado por Cloudflare, incluida la vista base de 1X2 (empeoró el 2026-09-25) | Playwright headless. El 2026-09-22 solo el cambio de mercado disparaba el challenge de Cloudflare (1X2 seguía funcionando). El 2026-09-25 el bloqueo se confirmó ya en la propia carga de la vista 1X2 — probado en vivo desde la IP residencial del usuario con un script suelto, no solo desde este sandbox (que sale por una IP de datacenter/VPN y no sirve de referencia, ver checklist.md). El código de Más/Menos/Doble Oportunidad/Ambos Marcan/Córners sigue implementado pero desactivado; ahora el propio 1X2 puede estar fallando en producción también. Sin evasión de Cloudflare. Ver detalle abajo. |
 | **Winamax** | ✅ Funciona (`providers/winamax.py`) | Por el socket de su propia web (socket.io), abierto desde un navegador: 23 competiciones y ~100 mercados por partido (1X2, DNB, doble oportunidad, ambos marcan, Más/Menos con muchas líneas y por equipo, hándicap asiático, Par/Impar, primer/último gol, todo también por mitades). Sin córners ni tarjetas pre-partido (comprobado sobre 388 tipos de mercado). Una petición HTTP suelta recibe 403; la web completa no siempre conecta su cliente, por eso se habla el socket directamente. |
 | **bwin** (nuevo 2026-09-21) | ✅ Funciona (`providers/bwin.py`) | API JSON de su propio front (`cds-api`), leída desde el navegador con la página cargada (HTTP suelto = 403). Fuente **directa** con cientos de mercados por partido, incluidos córners, tarjetas, hándicap asiático y mercados por mitad. Su "Resultado VA (+2)" (pago anticipado) NO se trata como 1X2. |
 | **CuotasAhora.com** (comparador) | ✅ Funciona (`providers/cuotasahora.py`) | Playwright headless. No es una casa, es un comparador (versión española de OddsPortal) que agrega 1X2 de ~14 casas por partido en una sola tabla HTML. Ver detalle abajo — es la vía por la que se desbloquean, indirectamente, bet365/bwin/Codere/Luckia/William Hill. |
@@ -753,6 +753,33 @@ el usuario: los mercados nuevos de Betfair no se implementaron, y además se **d
 por si Betfair levanta el bloqueo más adelante, pero ya no se ejecuta en cada ciclo. Motivo: mantenerlo
 disparando el challenge cada 5 minutos, 24/7, podía agravar el bloqueo sin aportar ningún mercado a cambio.
 Betfair queda por tanto en solo 1X2 hasta que se revise de nuevo.
+
+### Betfair: el bloqueo de Cloudflare empeoró, ahora afecta también a la carga base de 1X2 (2026-09-25)
+
+Al retomar la idea de reactivar Doble Oportunidad/Ambos Marcan/Córners, se repitió la comprobación en vivo. Por
+el panel interactivo de esta sesión (misma IP que el resto de pruebas) el desplegable de mercado seguía
+funcionando limpio, sin ningún reto de Cloudflare, ni para cambiar a "Más/Menos de 2,5 Goles" ni para el resto de
+opciones — en apariencia, buena noticia. Pero, siguiendo la lección ya aprendida con Interwetten/Retabet/OlyBet
+(**el navegador interactivo pasando no es evidencia de que un `chromium.launch(headless=True)` real vaya a
+pasar**), se probó también con headless real desde este mismo sandbox: bloqueado por Cloudflare ("Just a
+moment...") ya en la propia carga de la página, antes de tocar el desplegable siquiera — peor que el diagnóstico
+del 2026-09-22 (entonces la vista base sí cargaba, solo fallaba el cambio de mercado).
+
+Como la IP de este sandbox es de un proveedor VPN/datacenter (no la IP residencial real de producción, ver nota
+de entorno en `checklist.md`), no bastaba con esta prueba para concluir nada sobre producción. **Se le pidió al
+usuario que ejecutara el mismo diagnóstico desde su propio PC** (headless real, IP residencial) - confirmado
+en vivo el mismo bloqueo: `Just a moment...` ya en la carga de la vista 1X2. Es decir, el bloqueo de Cloudflare
+escaló de "solo el cambio de mercado" a "la página entera", y esta vez se confirmó también desde la IP real de
+producción, no solo desde el sandbox.
+
+**Consecuencia práctica**: el 1X2 de Betfair que hoy está en producción (`providers/betfair.py`, sin ningún
+cambio de código) puede estar fallando en los ciclos de escaneo reales desde hace un tiempo indeterminado — el
+`try/except` que rodea la lectura ya lo silenciaría igual que silenciaba antes el bloqueo del `OU_2.5`. No se ha
+desactivado el provider (un fallo aislado no rompe el resto del ciclo, `engine/scan.py` ya envuelve cada fuente
+en su propio try/except), pero conviene que el usuario revise si `docs/data.json`/`data/surebets.db` siguen
+mostrando mercados `betfair` recientes, y decidir si merece la pena seguir intentándolo cada ciclo (~45-75 s de
+timeout desperdiciados por escaneo mientras el bloqueo siga activo) o pausarlo hasta que se confirme que se ha
+levantado. Sin evasión de Cloudflare, como en el resto de casas bloqueadas de este proyecto.
 
 ### Baloncesto y tenis en Altenar y Kambi (2026-09-24)
 
