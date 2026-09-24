@@ -90,9 +90,11 @@ en vez de mirar el DOM. Una petición suelta da 403 (protección propia, no un W
 igual con un `fetch()` desde la página ya cargada (mismo patrón que bwin). Ver README "Estado real de los
 scrapers".
 
-**Sin confirmar / de menor prioridad ahora**: Versus carga sin bloqueo aparente pero usa un widget propio y
-no se ha localizado un JSON de cuotas evidente — candidato si se quiere seguir ampliando, aunque ya no es
-urgente dado que CuotasAhora/BetExplorer lo cubren de golpe.
+**Versus resuelta 2026-09-24** (`providers/versus.py`): resultó ser el mismo framework "ta-" que Sportium y
+Marca Apuestas (mismos códigos internos de mercado `BTSC`/`H1RS`), así que el provider es casi una copia de
+`SportiumProvider` con otra URL de competición y otros nombres de ítem del desplegable. Sin candidatas
+pendientes de explorar por ahora: el resto de casas sin cubrir en directo están genuinamente bloqueadas
+(sección 0) o cubiertas de sobra por los comparadores.
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos

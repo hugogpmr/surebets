@@ -54,6 +54,7 @@ from providers.marcaapuestas import MarcaApuestasProvider
 from providers.pokerstars import PokerStarsProvider
 from providers.sport888 import Sport888Provider
 from providers.sportium import SportiumProvider
+from providers.versus import VersusProvider
 from providers.williamhill import WilliamHillProvider
 from providers.winamax import WinamaxProvider
 from providers.zebet import ZebetProvider
@@ -87,6 +88,10 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
         # 888sport: API JSON propia (plataforma Spectate), leída con un fetch()
         # DESDE la página ya cargada del navegador (una petición suelta da 403) -
         # mismo patrón que bwin. Solo 1X2 de LaLiga por ahora, ver providers/sport888.py.
+        # Versus: mismo framework "ta-" que Sportium/Marca Apuestas (mismo backend,
+        # códigos internos de mercado BTSC/H1RS idénticos, solo cambian los nombres
+        # de ítem del desplegable) - 1X2, Goles Totales, Ambos Marcan y Resultado al
+        # descanso. Ver providers/versus.py.
         [
             SportiumProvider(),
             BetfairProvider(),
@@ -96,6 +101,7 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             MarcaApuestasProvider(),
             ZebetProvider(),
             Sport888Provider(),
+            VersusProvider(),
         ],
         [
             # Jokerbet + Pastón + Betway vía la API de Altenar: fútbol (córners,
