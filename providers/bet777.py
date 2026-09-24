@@ -35,6 +35,24 @@ Sin tiros ni faltas (no aparecieron en ninguna de las 15 competiciones comprobad
 Quedan fuera del resto de mercados (no son excluyentes y exhaustivos, o de jugador):
 doble oportunidad, marcador correcto, bandas, combinadas, hándicap de 3 vías. La API no
 está documentada y puede cambiar.
+
+**Baloncesto y tenis (añadido 2026-09-24)**: el mismo `sport=basketball`/`sport=tennis`
+en `events`/`markets` funciona sin cambios (verificado en vivo, misma API sin auth), con
+el mismo vocabulario de `kind` (Over/Under, Home/Away, Odd/Even) que fútbol, así que
+`_line_markets`/`_fixed_market` se reutilizan tal cual. Solo cambia el diccionario de
+`name_untranslated` reconocidos, con los mismos prefijos que Altenar/Kambi para que crucen:
+- Baloncesto: "Match Winner" (2 vías, incluye prórroga) -> `ML`; "Points Handicap" -> `AH`;
+  "Total Points"/por equipo -> `OU`/`OU_HOME`/`OU_AWAY`; "Total Points Odd/Even" -> `OE`.
+  Por mitad ("1st/2nd Half ..."): el ganador se llama "Winner (2-Way)" (no "Draw No Bet"
+  como en Altenar/Kambi, pero se emite igual como `DNB_HT`/`DNB_2H` para cruzar) + mismo
+  AH/OU/OE. Por cuarto ("1st/2nd/3rd/4th Quarter ..."): solo AH/OU/OE (`_Q1".."_Q4`), sin
+  ganador a 2 ni 3 vías en esta casa. Fuera "Match Result (Regular Time)" (3 vías con
+  empate antes de prórroga: no tiene pareja en Altenar/Kambi) y los combinados/de margen.
+- Tenis: "Match Winner" -> `ML`; "Games Handicap" -> `AH`; "Total Games"/por jugador ->
+  `OU`/`OU_HOME`/`OU_AWAY`; "Total Games Odd/Even" -> `OE`; "Sets Handicap" -> `SETS_AH`;
+  "Total Sets" -> `SETS_OU`. Por set ("1st Set ..."; nunca se ha visto "2nd Set" antes de
+  empezar el partido): "Winner" -> `ML_SET1`, "Games Handicap" -> `AH_SET1`, "Total Games"
+  -> `OU_SET1`.
 """
 
 import logging
@@ -56,6 +74,9 @@ logger = logging.getLogger(__name__)
 API_BASE = "https://api.sportify.bet/echo/v1/"
 BOOKMAKER_ID = "bet777es"
 BOOKMAKER = "bet777"
+# Valor del parámetro `sport` de la API Sportify por cada clave interna nuestra
+# (verificado en vivo el 2026-09-24: los tres responden sin autenticación).
+SPORT_API_NAMES: dict[str, str] = {"futbol": "football", "baloncesto": "basketball", "tenis": "tennis"}
 # La web manda estas cabeceras; la API responde igual sin ellas, pero así el
 # tráfico es el mismo que el de un navegador normal en bet777.es.
 HEADERS = {
@@ -137,6 +158,60 @@ _YES_NO_KINDS = {"Yes": "Yes", "No": "No"}
 _ODD_EVEN_KINDS = {"Odd": "Odd", "Even": "Even"}
 _LINE_RE = re.compile(r"\((-?\d+(?:\.\d+)?)\)\s*$")
 
+# Ganador a dos vías por `kind` W1/W2 (baloncesto/tenis: sin empate posible,
+# a diferencia de _TWO_WAY que usa Team1/Team2 para DNB de fútbol).
+_TWO_WAY_W = "two_way_w"
+_TWO_WAY_W_KINDS = {"W1": "1", "W2": "2"}
+
+# Baloncesto (sportId Sportify 3, verificado en vivo el 2026-09-24). Ver docstring
+# del módulo para qué se deja fuera y por qué.
+_BASKETBALL_FULL = {
+    "Match Winner": ("ML", _TWO_WAY_W),
+    "Points Handicap": ("AH", _HANDICAP),
+    "Total Points": ("OU", _TOTAL),
+    "Team 1 Total Points": ("OU_HOME", _TOTAL),
+    "Team 2 Total Points": ("OU_AWAY", _TOTAL),
+    "Total Points Odd/Even": ("OE", _ODD_EVEN),
+}
+# "Winner (2-Way)" es el nombre de bet777; se emite como DNB (no ML) por mitad
+# para cruzar con el mismo prefijo que usan Altenar/Kambi ahí.
+_BASKETBALL_HALF = {
+    "Winner (2-Way)": ("DNB", _TWO_WAY_W),
+    "Points Handicap": ("AH", _HANDICAP),
+    "Total Points": ("OU", _TOTAL),
+    "Team 1 Total Points": ("OU_HOME", _TOTAL),
+    "Team 2 Total Points": ("OU_AWAY", _TOTAL),
+    "Total Points Odd/Even": ("OE", _ODD_EVEN),
+}
+_BASKETBALL_QUARTER = {
+    "Points Handicap": ("AH", _HANDICAP),
+    "Total Points": ("OU", _TOTAL),
+    "Total Points Odd/Even": ("OE", _ODD_EVEN),
+}
+_BASKETBALL_HALF_RE = re.compile(r"^(1st|2nd) Half (.+)$")
+_BASKETBALL_QUARTER_RE = re.compile(r"^(1st|2nd|3rd|4th) Quarter (.+)$")
+_QUARTER_SUFFIX = {"1st": "_Q1", "2nd": "_Q2", "3rd": "_Q3", "4th": "_Q4"}
+
+# Tenis (sportId Sportify 4, verificado en vivo el 2026-09-24). Solo se ha visto
+# "1st Set" pre-partido (nunca "2nd Set": aparecerá en vivo si acaso).
+_TENNIS_FULL = {
+    "Match Winner": ("ML", _TWO_WAY_W),
+    "Games Handicap": ("AH", _HANDICAP),
+    "Total Games": ("OU", _TOTAL),
+    "Player 1 Total Games": ("OU_HOME", _TOTAL),
+    "Player 2 Total Games": ("OU_AWAY", _TOTAL),
+    "Total Games Odd/Even": ("OE", _ODD_EVEN),
+    "Sets Handicap": ("SETS_AH", _HANDICAP),
+    "Total Sets": ("SETS_OU", _TOTAL),
+}
+_TENNIS_SET = {
+    "Winner": ("ML", _TWO_WAY_W),
+    "Games Handicap": ("AH", _HANDICAP),
+    "Total Games": ("OU", _TOTAL),
+}
+_TENNIS_SET_RE = re.compile(r"^(1st|2nd) Set (.+)$")
+_SET_SUFFIX = {"1st": "_SET1", "2nd": "_SET2"}
+
 
 def _fmt(value: float, signed: bool = False) -> str:
     text = str(int(value)) if value == int(value) else f"{value:g}"
@@ -184,9 +259,18 @@ def _outcome(name: str, market: dict, price: float) -> Outcome:
     )
 
 
-def _classify(name: str) -> tuple[str, str] | None:
-    """(prefijo de market_type con sufijo de mitad, tipo) de un mercado por su
-    nombre en inglés, o None si no lo emitimos."""
+def _classify(name: str, sport: str = "futbol") -> tuple[str, str] | None:
+    """(prefijo de market_type con sufijo de periodo, tipo) de un mercado por su
+    nombre en inglés, o None si no lo emitimos. Cada deporte tiene su propio
+    vocabulario de nombres (ver docstring del módulo)."""
+    if sport == "baloncesto":
+        return _classify_baloncesto(name)
+    if sport == "tenis":
+        return _classify_tenis(name)
+    return _classify_futbol(name)
+
+
+def _classify_futbol(name: str) -> tuple[str, str] | None:
     if name in _FULL_TIME:
         return _FULL_TIME[name]
     match = _HALF_RE.match(name)
@@ -201,6 +285,30 @@ def _classify(name: str) -> tuple[str, str] | None:
             base, kind = sub_map[sub]
             suffix = _HALF_SUFFIX[half] if half else ""
             return f"{_METRIC_PREFIX[category]}_{base}{suffix}", kind
+    return None
+
+
+def _classify_baloncesto(name: str) -> tuple[str, str] | None:
+    if name in _BASKETBALL_FULL:
+        return _BASKETBALL_FULL[name]
+    match = _BASKETBALL_HALF_RE.match(name)
+    if match and match.group(2) in _BASKETBALL_HALF:
+        prefix, kind = _BASKETBALL_HALF[match.group(2)]
+        return prefix + _HALF_SUFFIX[match.group(1)], kind
+    match = _BASKETBALL_QUARTER_RE.match(name)
+    if match and match.group(2) in _BASKETBALL_QUARTER:
+        prefix, kind = _BASKETBALL_QUARTER[match.group(2)]
+        return prefix + _QUARTER_SUFFIX[match.group(1)], kind
+    return None
+
+
+def _classify_tenis(name: str) -> tuple[str, str] | None:
+    if name in _TENNIS_FULL:
+        return _TENNIS_FULL[name]
+    match = _TENNIS_SET_RE.match(name)
+    if match and match.group(2) in _TENNIS_SET:
+        prefix, kind = _TENNIS_SET[match.group(2)]
+        return prefix + _SET_SUFFIX[match.group(1)], kind
     return None
 
 
@@ -268,7 +376,7 @@ def parse_event_markets(details: dict, event_name: str, sport: str = "futbol") -
     for market in _as_list(details.get("markets")):
         if not isinstance(market, dict):
             continue
-        spec = _classify(market.get("name_untranslated") or "")
+        spec = _classify(market.get("name_untranslated") or "", sport)
         if spec is None:
             continue
         prefix, kind = spec
@@ -276,6 +384,8 @@ def parse_event_markets(details: dict, event_name: str, sport: str = "futbol") -
             parsed = _fixed_market(event_name, sport, prefix, market, _THREE_WAY_KINDS)
         elif kind == _TWO_WAY:
             parsed = _fixed_market(event_name, sport, prefix, market, _TWO_WAY_KINDS)
+        elif kind == _TWO_WAY_W:
+            parsed = _fixed_market(event_name, sport, prefix, market, _TWO_WAY_W_KINDS)
         elif kind == _YES_NO:
             parsed = _fixed_market(event_name, sport, prefix, market, _YES_NO_KINDS)
         elif kind == _ODD_EVEN:
@@ -289,10 +399,10 @@ def parse_event_markets(details: dict, event_name: str, sport: str = "futbol") -
 
 
 class Bet777Provider(OddsProvider):
-    """Bet777 por su API pública (plataforma Sportify, cuotas de FeedConstruct), solo
-    fútbol pre-partido dentro de `horizon_hours`, sin fútbol virtual ni (por defecto)
-    femenino (ver providers/filters.py). API barata y sin navegador, así que se puede
-    releer en el mismo escaneo para verificar surebets de margen muy alto."""
+    """Bet777 por su API pública (plataforma Sportify, cuotas de FeedConstruct): fútbol,
+    baloncesto y tenis pre-partido dentro de `horizon_hours`, sin fútbol virtual ni (por
+    defecto) femenino (ver providers/filters.py). API barata y sin navegador, así que se
+    puede releer en el mismo escaneo para verificar surebets de margen muy alto."""
 
     name = "bet777"
     fast_recheck = True
@@ -310,10 +420,14 @@ class Bet777Provider(OddsProvider):
         self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
-        if not any(key.split("_", 1)[0] == "futbol" for key in sports):
+        requested = {key.split("_", 1)[0] for key in sports} & set(SPORT_API_NAMES)
+        if not requested:
             return []
         with httpx.Client(timeout=30, headers=HEADERS) as client:
-            return self._fetch_football(client)
+            markets: list[Market] = []
+            for sport in requested:
+                markets.extend(self._fetch_sport(client, sport))
+            return markets
 
     def _get_json(self, client, endpoint: str, **params) -> dict:
         last_error: Exception | None = None
@@ -332,8 +446,8 @@ class Bet777Provider(OddsProvider):
             return response.json()
         raise RuntimeError(f"Bet777: red inestable o límite de peticiones en {endpoint}") from last_error
 
-    def _list_events(self, client) -> list[dict]:
-        data = self._get_json(client, "events", sport="football", lang="en")
+    def _list_events(self, client, sport: str) -> list[dict]:
+        data = self._get_json(client, "events", sport=SPORT_API_NAMES[sport], lang="en")
         now = datetime.now(timezone.utc)
         limit = now + timedelta(hours=self.horizon_hours)
         events = []
@@ -346,18 +460,19 @@ class Bet777Provider(OddsProvider):
                     if len(teams) != 2 or not event.get("starts_at"):
                         continue
                     # Nombre de competición/región y equipos: distinguen el fútbol
-                    # virtual y el femenino, que no queremos.
+                    # virtual y el femenino, que no queremos (el filtro de femenino
+                    # solo se aplica de verdad si sport == "futbol", ver filters.py).
                     labels = [competition.get("name"), event.get("competition_name"), event.get("region_name"), *teams]
-                    if is_excluded(labels, self.exclude_esports, self.exclude_women):
+                    if is_excluded(labels, self.exclude_esports, self.exclude_women, sport=sport):
                         continue
                     start = datetime.fromisoformat(event["starts_at"].replace("Z", "+00:00"))
                     if now < start <= limit:
                         events.append({"id": event["id"], "name": f"{teams[0].strip()} vs. {teams[1].strip()}", "start": start})
         return events
 
-    def _fetch_football(self, client) -> list[Market]:
-        events = self._list_events(client)
-        logger.info("Bet777: %d partidos pre-partido en las próximas %d h", len(events), self.horizon_hours)
+    def _fetch_sport(self, client, sport: str) -> list[Market]:
+        events = self._list_events(client, sport)
+        logger.info("Bet777: %d partidos de %s pre-partido en las próximas %d h", len(events), sport, self.horizon_hours)
 
         def fetch(event):
             try:
@@ -366,7 +481,7 @@ class Bet777Provider(OddsProvider):
                 logger.warning("Bet777: fallo en detalle %s", event["id"], exc_info=True)
                 return []
             try:
-                parsed = parse_event_markets(details, event["name"])
+                parsed = parse_event_markets(details, event["name"], sport)
             except Exception:  # un partido con formato raro no debe tumbar a los demás
                 logger.warning("Bet777: no se pudo interpretar %s", event["id"], exc_info=True)
                 return []

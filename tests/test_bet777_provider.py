@@ -217,9 +217,11 @@ class FakeBet777(Bet777Provider):
         self._listing = listing_payload
         self._details = details_by_id
         self.detail_calls = []
+        self.sport_calls = []
 
     def _get_json(self, client, endpoint, **params):
         if endpoint == "events":
+            self.sport_calls.append(params["sport"])
             return self._listing
         self.detail_calls.append(params["event_id"])
         return self._details[params["event_id"]]
@@ -256,9 +258,10 @@ def test_women_can_be_kept_when_asked():
     assert provider.fetch_markets(["futbol"])
 
 
-def test_non_football_requests_do_nothing_and_a_broken_event_does_not_stop_the_others():
+def test_unsupported_sports_do_nothing_and_a_broken_event_does_not_stop_the_others():
+    # balonmano no tiene fuente en Sportify (solo futbol/baloncesto/tenis).
     provider = FakeBet777(listing({}), {})
-    assert provider.fetch_markets(["baloncesto_nba"]) == []
+    assert provider.fetch_markets(["balonmano_champions"]) == []
 
     now = datetime.now(timezone.utc)
     payload = listing({"La Liga": [event(1, "A", "B", now + timedelta(hours=2)), event(2, "C", "D", now + timedelta(hours=2))]})
@@ -267,6 +270,104 @@ def test_non_football_requests_do_nothing_and_a_broken_event_does_not_stop_the_o
     provider = FakeBet777(payload, {"1-1": broken, "1-2": good})
     markets = provider.fetch_markets(["futbol"])
     assert {m.event for m in markets} == {"C vs. D"}
+
+
+# --- baloncesto y tenis, capturados en vivo el 2026-09-24 -----------------------------------------
+
+BASKETBALL_DETAILS = {
+    "markets": [
+        mk("Match Winner", [out("W1", "Home", 1.82), out("W2", "Away", 1.94)]),
+        mk("Match Result (Regular Time)", [out("W1", "Home", 1.9), out("X", "Draw", 15.0), out("W2", "Away", 2.0)]),
+        mk("Points Handicap", [out("Home", "Home (-9.5)", 1.9), out("Away", "Away (9.5)", 1.9)]),
+        mk("Total Points", [out("Over", "Over (171.5)", 1.9), out("Under", "Under (171.5)", 1.9)]),
+        mk("Team 1 Total Points", [out("Over", "Over (89.5)", 1.9), out("Under", "Under (89.5)", 1.9)]),
+        mk("Team 2 Total Points", [out("Over", "Over (81.5)", 1.9), out("Under", "Under (81.5)", 1.9)]),
+        mk("Total Points Odd/Even", [out("Odd", "Odd", 1.9), out("Even", "Even", 1.9)]),
+        mk("1st Half Winner (2-Way)", [out("W1", "Home", 1.8), out("W2", "Away", 2.0)]),
+        mk("1st Half Result (3-Way)", [out("W1", "Home", 2.1), out("X", "X", 4.0), out("W2", "Away", 3.2)]),
+        mk("1st Half Points Handicap", [out("Home", "Home (-4.5)", 1.9), out("Away", "Away (4.5)", 1.9)]),
+        mk("1st Half Total Points", [out("Over", "Over (87.5)", 1.9), out("Under", "Under (87.5)", 1.9)]),
+        mk("1st Half Team 1 Total Points", [out("Over", "Over (44.5)", 1.9), out("Under", "Under (44.5)", 1.9)]),
+        mk("1st Half Team 2 Total Points", [out("Over", "Over (43.5)", 1.9), out("Under", "Under (43.5)", 1.9)]),
+        mk("1st Half Total Points Odd/Even", [out("Odd", "Odd", 1.9), out("Even", "Even", 1.9)]),
+        mk("1st Quarter Points Handicap", [out("Home", "Home (-2.5)", 1.9), out("Away", "Away (2.5)", 1.9)]),
+        mk("1st Quarter Total Points", [out("Over", "Over (42.5)", 1.9), out("Under", "Under (42.5)", 1.9)]),
+        mk("1st Quarter Total Points Odd/Even", [out("Odd", "Odd", 1.9), out("Even", "Even", 1.9)]),
+        # no se emiten: sin pareja en Altenar/Kambi, o no exhaustivos/de margen
+        mk("1st Quarter Result (3-Way)", [out("W1", "Home", 2.0), out("X", "X", 4.5), out("W2", "Away", 3.0)]),
+        mk("1st Quarter Winning Margin", [out("1-5", "1-5", 3.0), out("6-10", "6-10", 4.0)]),
+        mk("Highest Scoring Quarter", [out("1st", "1st", 3.0), out("2nd", "2nd", 3.2)]),
+        mk("Top Points Scorer", [out("Player1", "Player 1", 5.0), out("Player2", "Player 2", 6.0)]),
+    ]
+}
+
+
+def test_basketball_full_half_and_quarter_markets_match_altenar_and_kambi_naming():
+    markets = by_type(parse_event_markets(BASKETBALL_DETAILS, "Hapoel Tel-Aviv vs. Bayern Munich", "baloncesto"))
+    assert odds(markets["ML"]) == {"1": 1.82, "2": 1.94}
+    assert odds(markets["AH_-9.5"]) == {"1": 1.9, "2": 1.9}
+    assert odds(markets["OU_171.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OU_HOME_89.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OU_AWAY_81.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OE"]) == {"Odd": 1.9, "Even": 1.9}
+    # por mitad: "Winner (2-Way)" se emite como DNB_HT, igual que Altenar/Kambi
+    assert odds(markets["DNB_HT"]) == {"1": 1.8, "2": 2.0}
+    assert odds(markets["AH_HT_-4.5"]) == {"1": 1.9, "2": 1.9}
+    assert odds(markets["OU_HT_87.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OU_HOME_HT_44.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OU_AWAY_HT_43.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OE_HT"]) == {"Odd": 1.9, "Even": 1.9}
+    # por cuarto
+    assert odds(markets["AH_Q1_-2.5"]) == {"1": 1.9, "2": 1.9}
+    assert odds(markets["OU_Q1_42.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["OE_Q1"]) == {"Odd": 1.9, "Even": 1.9}
+    assert all(m.sport == "baloncesto" for m in markets.values())
+    assert len(markets) == 15  # exactamente los 15 asserts de arriba; el resto queda fuera
+
+
+TENNIS_DETAILS = {
+    "markets": [
+        mk("Match Winner", [out("W1", "Home", 1.82), out("W2", "Away", 1.86)]),
+        mk("Games Handicap", [out("Home", "Home (-2.5)", 2.13), out("Away", "Away (2.5)", 1.62)]),
+        mk("Total Games", [out("Over", "Over (21.5)", 1.84), out("Under", "Under (21.5)", 1.84)]),
+        mk("Player 1 Total Games", [out("Over", "Over (11.5)", 1.45), out("Under", "Under (11.5)", 2.52)]),
+        mk("Player 2 Total Games", [out("Over", "Over (9.5)", 1.5), out("Under", "Under (9.5)", 2.4)]),
+        mk("Total Games Odd/Even", [out("Even", "Even", 1.86), out("Odd", "Odd", 1.82)]),
+        mk("Sets Handicap", [out("Home", "Home (-1.5)", 2.84), out("Away", "Away (1.5)", 1.36)]),
+        mk("Total Sets", [out("Over", "Over (2.5)", 2.33), out("Under", "Under (2.5)", 1.52)]),
+        mk("1st Set Winner", [out("W1", "Home", 1.82), out("W2", "Away", 1.86)]),
+        mk("1st Set Games Handicap", [out("Home", "Home (-1.5)", 2.08), out("Away", "Away (1.5)", 1.65)]),
+        mk("1st Set Total Games", [out("Over", "Over (8.5)", 1.36), out("Under", "Under (8.5)", 2.84)]),
+        # no se emiten: no son de dos resultados exhaustivos, o especiales
+        mk("1st Set/Match", [out("1/1", "1/1", 1.3), out("1/2", "1/2", 8.0)]),
+        mk("Player 1: Will Win at Least One Set", [out("Yes", "Yes", 1.1), out("No", "No", 6.0)]),
+        mk("Player Will Lose 1st Set and Win Match", [out("Yes", "Yes", 4.0), out("No", "No", 1.2)]),
+    ]
+}
+
+
+def test_tennis_full_match_and_set_markets_match_altenar_and_kambi_naming():
+    markets = by_type(parse_event_markets(TENNIS_DETAILS, "Player A vs. Player B", "tenis"))
+    assert odds(markets["ML"]) == {"1": 1.82, "2": 1.86}
+    assert odds(markets["AH_-2.5"]) == {"1": 2.13, "2": 1.62}
+    assert odds(markets["OU_21.5"]) == {"Over": 1.84, "Under": 1.84}
+    assert odds(markets["OU_HOME_11.5"]) == {"Over": 1.45, "Under": 2.52}
+    assert odds(markets["OU_AWAY_9.5"]) == {"Over": 1.5, "Under": 2.4}
+    assert odds(markets["OE"]) == {"Odd": 1.82, "Even": 1.86}
+    assert odds(markets["SETS_AH_-1.5"]) == {"1": 2.84, "2": 1.36}
+    assert odds(markets["SETS_OU_2.5"]) == {"Over": 2.33, "Under": 1.52}
+    assert odds(markets["ML_SET1"]) == {"1": 1.82, "2": 1.86}
+    assert odds(markets["AH_SET1_-1.5"]) == {"1": 2.08, "2": 1.65}
+    assert odds(markets["OU_SET1_8.5"]) == {"Over": 1.36, "Under": 2.84}
+    assert all(m.sport == "tenis" for m in markets.values())
+    assert len(markets) == 11
+
+
+def test_fetch_markets_requests_each_sports_own_api_value():
+    payload = listing({})
+    provider = FakeBet777(payload, {})
+    provider.fetch_markets(["futbol", "baloncesto_nba", "tenis_atp"])
+    assert set(provider.sport_calls) == {"football", "basketball", "tennis"}
 
 
 def test_get_json_retries_rate_limits(monkeypatch):

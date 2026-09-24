@@ -553,6 +553,18 @@ usa su web (`api.sportify.bet`, parámetro `bookmaker=bet777es`):
 - Un ciclo: ~43 partidos y ~2.800 mercados en unos 10-15 s (antes de añadir córners/tarjetas: ~2.400); cruza con
   Betway, Paf, bwin y Jokerbet. `fast_recheck = True` (API barata: participa en la verificación de márgenes muy
   altos) y figura en `DIRECT_SOURCES`.
+- **Baloncesto y tenis, añadido 2026-09-24**: el mismo endpoint funciona igual con `sport=basketball`/`sport=tennis`
+  (verificado en vivo, sin autenticación) y con el mismo vocabulario de `kind` que fútbol (Over/Under, Home/Away,
+  Odd/Even), así que la lógica de parseo (`_line_markets`/`_fixed_market`) se reutiliza sin cambios; solo cambia el
+  diccionario de nombres reconocidos. Baloncesto: "Match Winner" (2 vías incl. prórroga) -> `ML`; "Points Handicap"
+  -> `AH`; "Total Points" (y por equipo) -> `OU`/`OU_HOME`/`OU_AWAY`; "Total Points Odd/Even" -> `OE`; por mitad
+  igual con `_HT`/`_2H` (el ganador de mitad se llama "Winner (2-Way)" en esta casa, pero se emite como `DNB_HT`
+  para cruzar con Altenar/Kambi); por cuarto (`_Q1".."_Q4`) solo hay hándicap/total/par-impar, sin ganador a 2 ni 3
+  vías. Tenis: "Match Winner" -> `ML`; "Games Handicap" -> `AH`; "Total Games" (y por jugador) ->
+  `OU`/`OU_HOME`/`OU_AWAY`; "Sets Handicap" -> `SETS_AH`; "Total Sets" -> `SETS_OU`; por primer set (nunca se vio
+  "2nd Set" pre-partido) -> `ML_SET1`/`AH_SET1`/`OU_SET1`. Fuera en ambos deportes: "Match Result (Regular Time)"
+  de baloncesto (3 vías con empate antes de prórroga, sin pareja en Altenar/Kambi), márgenes de victoria,
+  combinados y mercados de jugador.
 - La API no está documentada y puede cambiar sin aviso.
 
 ### Control de calidad de las surebets (`engine/quality.py`, nuevo 2026-09-20)
