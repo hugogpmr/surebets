@@ -56,6 +56,8 @@ DETAILS = {
         mk("Goals Asian Handicap", [out("Home", "Home (-0.75)", 2.98), out("Away", "Away (0.75)", 1.3)]),
         mk("1st Half Result", [out("W1", "Home", 3.5), out("X", "Draw", 2.1), out("W2", "Away", 3.6)]),
         mk("2nd Half Result", [out("W1", "Home", 3.2), out("X", "Draw", 2.5), out("W2", "Away", 3.0)]),
+        mk("1st Half Double Chance", [out("1X", "1X", 1.6), out("12", "12", 1.35), out("X2", "X2", 1.45)]),
+        mk("2nd Half Double Chance", [out("1X", "1X", 1.55), out("12", "12", 1.4), out("X2", "X2", 1.5)]),
         mk("1st Half Both Teams To Score", [out("Yes", "Yes", 3.2), out("No", "No", 1.3)]),
         mk("1st Half Total Goals Asian", [out("Over", "Over (0.75)", 1.5), out("Under", "Under (0.75)", 2.28)]),
         mk("2nd Half Goals Handicap", [out("Home", "Home (-0.5)", 3.0), out("Away", "Away (0.5)", 1.35)]),
@@ -74,6 +76,7 @@ def test_full_time_fixed_markets_use_the_shared_naming():
     assert odds(markets["DNB"]) == {"1": 2.1, "2": 1.7}
     assert odds(markets["BTTS"]) == {"Yes": 1.7, "No": 1.93}
     assert odds(markets["OE"]) == {"Odd": 1.9, "Even": 1.9}
+    assert odds(markets["DC"]) == {"1X": 1.5, "12": 1.3, "X2": 1.4}
     assert all(o.bookmaker == "bet777" for m in markets.values() for o in m.outcomes)
 
 
@@ -99,6 +102,8 @@ def test_half_time_and_second_half_variants():
     markets = by_type(parse_event_markets(DETAILS, "A vs. B"))
     assert odds(markets["1X2_HT"]) == {"1": 3.5, "X": 2.1, "2": 3.6}
     assert odds(markets["1X2_2H"]) == {"1": 3.2, "X": 2.5, "2": 3.0}
+    assert odds(markets["DC_HT"]) == {"1X": 1.6, "12": 1.35, "X2": 1.45}
+    assert odds(markets["DC_2H"]) == {"1X": 1.55, "12": 1.4, "X2": 1.5}
     assert odds(markets["BTTS_HT"]) == {"Yes": 3.2, "No": 1.3}
     assert odds(markets["OU_HT_0.5/1"]) == {"Over": 1.5, "Under": 2.28}
     assert odds(markets["AH_2H_-0.5"]) == {"1": 3.0, "2": 1.35}
@@ -107,7 +112,7 @@ def test_half_time_and_second_half_variants():
 
 def test_markets_that_are_not_exhaustive_or_are_duplicates_are_left_out():
     types = {m.market_type for m in parse_event_markets(DETAILS, "A vs. B")}
-    assert not any(t.startswith(("CS", "DC", "EH")) for t in types)
+    assert not any(t.startswith(("CS", "EH")) for t in types)  # marcador correcto, hándicap 3 vías
     assert len([t for t in types if t == "1X2"]) == 1  # "Early Payout" no duplica el 1X2
 
 

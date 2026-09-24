@@ -161,7 +161,9 @@ La solución fue una tabla de alias curada a mano para los 20 equipos de LaLiga 
 
 **Doble oportunidad** (`DC`, `DC_HT`, `DC_2H`; resultados `1X`/`12`/`X2`): Altenar y Kambi la emiten desde el 2026-09-21, así que cruza con
 Winamax, bwin y los comparadores. Altenar identifica cada resultado por el `typeId` de la selección (9/10/11) y no por su texto; Kambi por su
-tipo (`OT_ONE_OR_CROSS`...). Jokerbet no ofrece este mercado; las combinadas ("doble oportunidad y ambos marcan"...) no se emiten.
+tipo (`OT_ONE_OR_CROSS`...). Jokerbet no ofrece este mercado; las combinadas ("doble oportunidad y ambos marcan"...) no se emiten. **Bet777
+también la tiene (añadido 2026-09-24)**: su `kind` ya viene como "1X"/"12"/"X2", sin falta de tabla de traducción. **Zebet también (mismo
+día)**: la lee de la ficha de cada partido, con las etiquetas ya en ese formato.
 
 ### Intento de scraping directo de más casas (2026-09-21)
 

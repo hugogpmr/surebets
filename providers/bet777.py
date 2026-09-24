@@ -32,9 +32,15 @@ resultados excluyentes y exhaustivos y cruzan con Altenar/Kambi (mismos prefijos
 podrían cruzar. Tampoco los de bandas/franjas/"race to" (no son de dos/tres resultados).
 Sin tiros ni faltas (no aparecieron en ninguna de las 15 competiciones comprobadas).
 
+**Doble oportunidad (añadido 2026-09-24)**: verificado en vivo que sí existe ("Double
+Chance"/"1st Half Double Chance"/"2nd Half Double Chance"), con `kind` "1X"/"12"/"X2"
+igual que el nombre del resultado (no hacía falta tabla de traducción) -> `DC`/`DC_HT`/
+`DC_2H`, mismos prefijos que Altenar/Kambi/Winamax/CuotasAhora/Zebet.
+
 Quedan fuera del resto de mercados (no son excluyentes y exhaustivos, o de jugador):
-doble oportunidad, marcador correcto, bandas, combinadas, hándicap de 3 vías. La API no
-está documentada y puede cambiar.
+marcador correcto, bandas, combinadas, hándicap de 3 vías, tramos de tiempo
+("1-15/30/60/75 Min. ..."), "a cero"/clean sheet (ninguna otra fuente lo emite hoy).
+La API no está documentada y puede cambiar.
 
 **Baloncesto y tenis (añadido 2026-09-24)**: el mismo `sport=basketball`/`sport=tennis`
 en `events`/`markets` funciona sin cambios (verificado en vivo, misma API sin auth), con
@@ -95,6 +101,7 @@ _YES_NO = "yes_no"
 _ODD_EVEN = "odd_even"
 _TOTAL = "total"  # Over (línea) / Under (línea), varias líneas en el mismo mercado
 _HANDICAP = "handicap"  # Home (línea) / Away (línea), varias líneas
+_DOUBLE_CHANCE = "double_chance"  # 1X / 12 / X2
 
 # Mercados de partido completo por `name_untranslated` -> (prefijo de market_type, tipo).
 _FULL_TIME = {
@@ -110,6 +117,7 @@ _FULL_TIME = {
     "Team 2 Total Goals Asian": ("OU_AWAY", _TOTAL),
     "Goals Handicap": ("AH", _HANDICAP),
     "Goals Asian Handicap": ("AH", _HANDICAP),
+    "Double Chance": ("DC", _DOUBLE_CHANCE),
 }
 # Mismos mercados por mitad: el nombre empieza por "1st Half " / "2nd Half " y el
 # resto va aquí (el resultado de la mitad se llama "Result", no "Match Result").
@@ -126,6 +134,7 @@ _HALF = {
     "Team 2 Total Goals Asian": ("OU_AWAY", _TOTAL),
     "Goals Handicap": ("AH", _HANDICAP),
     "Goals Asian Handicap": ("AH", _HANDICAP),
+    "Double Chance": ("DC", _DOUBLE_CHANCE),
 }
 _HALF_RE = re.compile(r"^(1st|2nd) Half (.+)$")
 _HALF_SUFFIX = {"1st": "_HT", "2nd": "_2H"}
@@ -156,6 +165,8 @@ _THREE_WAY_KINDS = {"W1": "1", "X": "X", "W2": "2"}
 _TWO_WAY_KINDS = {"Team1": "1", "Team2": "2"}
 _YES_NO_KINDS = {"Yes": "Yes", "No": "No"}
 _ODD_EVEN_KINDS = {"Odd": "Odd", "Even": "Even"}
+# kind == nombre del resultado ("1X"/"12"/"X2"), verificado en vivo el 2026-09-24.
+_DOUBLE_CHANCE_KINDS = {"1X": "1X", "12": "12", "X2": "X2"}
 _LINE_RE = re.compile(r"\((-?\d+(?:\.\d+)?)\)\s*$")
 
 # Ganador a dos vías por `kind` W1/W2 (baloncesto/tenis: sin empate posible,
@@ -390,6 +401,8 @@ def parse_event_markets(details: dict, event_name: str, sport: str = "futbol") -
             parsed = _fixed_market(event_name, sport, prefix, market, _YES_NO_KINDS)
         elif kind == _ODD_EVEN:
             parsed = _fixed_market(event_name, sport, prefix, market, _ODD_EVEN_KINDS)
+        elif kind == _DOUBLE_CHANCE:
+            parsed = _fixed_market(event_name, sport, prefix, market, _DOUBLE_CHANCE_KINDS)
         else:
             markets.extend(_line_markets(event_name, sport, prefix, kind, market))
             continue
