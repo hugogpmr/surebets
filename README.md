@@ -98,7 +98,8 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 | **Speedybet** | ⚠️ Solo vía comparadores | Su web dice usar Kambi (mismo grupo que Paf) pero no se encontró su código de operador (probados ~15 nombres, varios devolvieron 429 por límite de peticiones, no concluyente). Sigue entrando vía CuotasAhora/BetExplorer. |
 | **William Hill** (nuevo 2026-09-23) | ✅ Funciona (`providers/williamhill.py`) | API JSON pública de su plataforma OpenBet, sin navegador ni cookies (funciona igual con o sin sesión). El bloqueo de IP de datacenter/VPN ("Data Centre block") es solo de la web `sports.williamhill.es`, no de esta API — probado en vivo desde IP residencial (carga bien) y desde este sandbox (API responde 200 igual, la web sigue bloqueada). Solo 1X2: pedir el mercado por su nombre de la web ("Ganador del partido") da la promo "2 Up" (paga como ganador con 2 goles de ventaja), no cuotas normales — el 1X2 real vive bajo el grupo "Ganador del Partido - Cuotas mejoradas", mismo caso que el "Resultado VA (+2)" de bwin. |
 | **bet365, bwin, Codere, Luckia** | ⚠️ Indirecto, vía CuotasAhora.com / BetExplorer.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través de ambos comparadores. bet365 confirmado en vivo el 2026-09-23: sigue con Cloudflare incluso desde Playwright headless real y desde la IP residencial del usuario (no es solo IP de datacenter, como sí lo era William Hill). |
-| **888sport, Betway, Retabet, Paf.es, Speedybet.es, Versus.es, 1xBet.es** | ✅ Vía CuotasAhora.com / BetExplorer.com | No probadas directamente, cubiertas de golpe a través de los comparadores. |
+| **888sport** (nuevo 2026-09-24) | ✅ Funciona (`providers/sport888.py`) | API JSON propia de su plataforma "Spectate", leída con un `fetch()` **desde la página ya cargada** del navegador (`credentials: 'include'`) — mismo patrón que bwin: una petición HTTP suelta da 403 (protección propia, dominios `safe-iplay.com`/`safe-installation.com`), pero funciona igual reutilizando la sesión que la propia carga de la página establece. Respuesta ya estructurada en JSON (nada de DOM que parsear). Solo 1X2 de LaLiga por ahora. |
+| **Betway, Retabet, Paf.es, Speedybet.es, Versus.es, 1xBet.es** | ✅ Vía CuotasAhora.com / BetExplorer.com | No probadas directamente, cubiertas de golpe a través de los comparadores. |
 | **Kirolbet** | ⚠️ Implementado pero bloqueado (`providers/kirolbet.py`) | Akamai Bot Manager. Ver detalle abajo. |
 | **Betsson** | ❌ Bloqueado | API antifraude propia. Ver detalle abajo. |
 | **Suertia (OlyBet)** | ❌ Bloqueado a nivel de red | "Access Denied" del proveedor. Ver detalle abajo. |
@@ -173,7 +174,8 @@ Comprobado con un Playwright headless normal (sin técnicas de evasión, que est
 | Retabet | ❌ "Error de seguridad" (403). |
 | William Hill | ~~❌ Bloquea centros de datos/VPN~~ **Resuelto 2026-09-23**: solo la web (`sports.williamhill.es`), su API JSON no bloquea nada. Ver `providers/williamhill.py`. |
 | Codere | ❌ Akamai Bot Manager en la plataforma real de apuestas (`m.apuestas.codere.es`, un subdominio aparte de `www.codere.es` que sí carga bien). "Access Denied" incluso reusando las cookies de sensor de Akamai de `www.codere.es`, probado desde la IP residencial del usuario — mismo nivel que Kirolbet. Solo llega vía comparadores. |
-| 888sport, Versus | ⚠️ Cargan, pero no exponen un JSON de cuotas evidente (888sport usa la plataforma "unified client" de safe-iplay; Versus un widget propio). Sin explorar. |
+| 888sport | ~~⚠️ Sin JSON evidente~~ **Resuelto 2026-09-24**: sí tiene una API JSON limpia (plataforma "Spectate"), solo hacía falta capturar la llamada de red real en vez de mirar el DOM. Ver `providers/sport888.py` y la fila de arriba. |
+| Versus | ⚠️ Carga, pero usa un widget propio y no se ha localizado un JSON de cuotas evidente. Sin explorar. |
 | bwin, Winamax | ✅ Integradas (arriba). |
 
 ### Mercados soportados

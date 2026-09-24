@@ -27,7 +27,7 @@ from .models import Market, Outcome
 DIRECT_SOURCES = frozenset(
     {
         "altenar", "kambi", "sportium", "betfair", "winamax", "bwin", "bet777", "kirolbet",
-        "pokerstars", "williamhill", "marcaapuestas", "zebet",
+        "pokerstars", "williamhill", "marcaapuestas", "zebet", "888sport",
     }
 )
 # Comparadores: agregan casas ajenas y pueden ir desfasados (verificado hasta

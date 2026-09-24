@@ -52,6 +52,7 @@ from providers.cuotasahora import CuotasAhoraProvider
 from providers.kambi import KambiProvider
 from providers.marcaapuestas import MarcaApuestasProvider
 from providers.pokerstars import PokerStarsProvider
+from providers.sport888 import Sport888Provider
 from providers.sportium import SportiumProvider
 from providers.williamhill import WilliamHillProvider
 from providers.winamax import WinamaxProvider
@@ -83,6 +84,9 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
         # checklist.md por el mismo motivo que Interwetten/Retabet: el navegador
         # interactivo no basta como señal) - solo 1X2 de LaLiga por ahora, ver
         # providers/zebet.py.
+        # 888sport: API JSON propia (plataforma Spectate), leída con un fetch()
+        # DESDE la página ya cargada del navegador (una petición suelta da 403) -
+        # mismo patrón que bwin. Solo 1X2 de LaLiga por ahora, ver providers/sport888.py.
         [
             SportiumProvider(),
             BetfairProvider(),
@@ -91,6 +95,7 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             PokerStarsProvider(),
             MarcaApuestasProvider(),
             ZebetProvider(),
+            Sport888Provider(),
         ],
         [
             # Jokerbet + Pastón + Betway vía la API de Altenar: fútbol (córners,

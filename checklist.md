@@ -84,10 +84,15 @@ Zeturf, DOM limpio, 1X2 de LaLiga; ver README "Estado real de los scrapers") y B
 Sports tiene provider propio (`providers/pokerstars.py`, 2026-09-23). Todas con licencia DGOJ confirmada (ver
 verificación arriba).
 
-**Sin confirmar / de menor prioridad ahora**: 888sport y Versus cargan sin bloqueo aparente pero no exponen
-un JSON de cuotas evidente ni se ha localizado su contenedor DOM real (888sport usa la plataforma "unified
-client" de safe-iplay; Versus un widget propio) — candidatos si se quiere seguir ampliando, aunque ya no son
-urgentes dado que CuotasAhora/BetExplorer cubren ambas casas de golpe.
+**888sport resuelta 2026-09-24** (`providers/sport888.py`): tiene una API JSON limpia (plataforma "Spectate")
+detrás de su "unified client" de safe-iplay — solo hacía falta capturar la llamada de red real (`getTournamentMatches`)
+en vez de mirar el DOM. Una petición suelta da 403 (protección propia, no un WAF conocido), pero funciona
+igual con un `fetch()` desde la página ya cargada (mismo patrón que bwin). Ver README "Estado real de los
+scrapers".
+
+**Sin confirmar / de menor prioridad ahora**: Versus carga sin bloqueo aparente pero usa un widget propio y
+no se ha localizado un JSON de cuotas evidente — candidato si se quiere seguir ampliando, aunque ya no es
+urgente dado que CuotasAhora/BetExplorer lo cubren de golpe.
 
 **Bugs de cruce de eventos encontrados y corregidos con datos reales** (no relacionados con bloqueos, pero
 relevantes para la fiabilidad del sistema): comparar el string completo del evento confundía partidos
