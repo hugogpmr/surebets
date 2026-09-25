@@ -96,7 +96,7 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 | **Paf, LeoVegas** (plataforma Kambi, nuevo 2026-09-20) | ✅ Funciona (`providers/kambi.py`) | API pública de ofertas de Kambi, sin navegador. Fuente **directa** de la casa (no comparador): mismos mercados extra que Altenar (córners, tarjetas, faltas, hándicaps, por mitad) pero otra plataforma y otros precios, lo que permite arbitraje entre plataformas. Ver detalle abajo. |
 | **PokerStars** (nuevo 2026-09-23) | ✅ Funciona (`providers/pokerstars.py`) | Playwright headless normal, DOM (`/sports/futbol/1/matches/`, atributos `data-testid` estables, no clases con hash). Solo 1X2 por ahora. Su API JSON propia (parece tecnología Betfair) está detrás de Akamai Bot Manager — un `fetch()` a mano dentro de la página ya da 403, mismo patrón que Kirolbet — por eso se lee el DOM en vez de hablarla directo. Plataforma propia, no Altenar/Kambi/Sportify. |
 | **Speedybet** | ⚠️ Solo vía comparadores | Su web dice usar Kambi (mismo grupo que Paf) pero no se encontró su código de operador (probados ~15 nombres, varios devolvieron 429 por límite de peticiones, no concluyente). Sigue entrando vía CuotasAhora/BetExplorer. |
-| **William Hill** (nuevo 2026-09-23) | ✅ Funciona (`providers/williamhill.py`) | API JSON pública de su plataforma OpenBet, sin navegador ni cookies (funciona igual con o sin sesión). El bloqueo de IP de datacenter/VPN ("Data Centre block") es solo de la web `sports.williamhill.es`, no de esta API — probado en vivo desde IP residencial (carga bien) y desde este sandbox (API responde 200 igual, la web sigue bloqueada). Solo 1X2: pedir el mercado por su nombre de la web ("Ganador del partido") da la promo "2 Up" (paga como ganador con 2 goles de ventaja), no cuotas normales — el 1X2 real vive bajo el grupo "Ganador del Partido - Cuotas mejoradas", mismo caso que el "Resultado VA (+2)" de bwin. |
+| **William Hill** (nuevo 2026-09-23, ampliado 2026-09-25) | ✅ Funciona (`providers/williamhill.py`) | API JSON pública de su plataforma OpenBet, sin navegador ni cookies (funciona igual con o sin sesión). El bloqueo de IP de datacenter/VPN ("Data Centre block") es solo de la web `sports.williamhill.es`, no de esta API — probado en vivo desde IP residencial (carga bien) y desde este sandbox (API responde 200 igual, la web sigue bloqueada). El listado (barato) da el 1X2: pedirlo por su nombre de la web ("Ganador del partido") da la promo "2 Up" (paga como ganador con 2 goles de ventaja), no cuotas normales — el 1X2 real vive bajo el grupo "Ganador del Partido - Cuotas mejoradas", mismo caso que el "Resultado VA (+2)" de bwin. Desde 2026-09-25, la ficha de cada partido (otro endpoint de la misma API, sin `marketType`) añade DC, BTTS, DNB, 1X2_HT y Más/Menos con todas las líneas de partido/1ª/2ª parte — solo dentro de un horizonte más corto (24 h) que el 1X2, porque esta casa cubre todas las ligas del mundo y cada ficha pesa varios cientos de KB. Ver "Cambios del 2026-09-25" más abajo. |
 | **bet365, bwin, Codere, Luckia** | ⚠️ Indirecto, vía CuotasAhora.com / BetExplorer.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través de ambos comparadores. bet365 confirmado en vivo el 2026-09-23: sigue con Cloudflare incluso desde Playwright headless real y desde la IP residencial del usuario (no es solo IP de datacenter, como sí lo era William Hill). |
 | **888sport** (nuevo 2026-09-24) | ✅ Funciona (`providers/sport888.py`) | API JSON propia de su plataforma "Spectate", leída con un `fetch()` **desde la página ya cargada** del navegador (`credentials: 'include'`) — mismo patrón que bwin: una petición HTTP suelta da 403 (protección propia, dominios `safe-iplay.com`/`safe-installation.com`), pero funciona igual reutilizando la sesión que la propia carga de la página establece. Respuesta ya estructurada en JSON (nada de DOM que parsear). Además de 1X2, la ficha de cada partido (`getEventData`, pedida en paralelo para todos los partidos con el mismo patrón `Promise.all` que bwin, sin navegación de página extra) trae 79 mercados por partido: 1X2, DC/DC_HT, BTTS/BTTS_HT/BTTS_2H, DNB, OE/OE_HT/OE_2H, OU/OU_HT/OU_2H/OU_HOME/OU_AWAY (todas las líneas) y AH (hándicap asiático de 2 vías; el de 3 vías con empate se descarta, sin pareja en otra fuente). Verificado en vivo: 654 mercados reales en 20 partidos de LaLiga en 15,8 s. |
 | **Versus** (nuevo 2026-09-24) | ✅ Funciona (`providers/versus.py`) | Playwright headless normal, sin trucos — resultó ser **el mismo framework "ta-" que Sportium y Marca Apuestas** (mismos códigos internos `ta-MarketType-BTSC`/`ta-MarketType-H1RS`, solo cambian los nombres de ítem del desplegable). 1X2, Goles Totales (over/under), Ambos Marcan y Resultado al descanso. Sin Doble Oportunidad (no está en el desplegable); el "Hándicap" de esta casa es de 3 vías con ajuste de marcador (con empate), no el hándicap asiático de 2 vías del resto de fuentes, así que se descarta. |
@@ -780,6 +780,40 @@ en su propio try/except), pero conviene que el usuario revise si `docs/data.json
 mostrando mercados `betfair` recientes, y decidir si merece la pena seguir intentándolo cada ciclo (~45-75 s de
 timeout desperdiciados por escaneo mientras el bloqueo siga activo) o pausarlo hasta que se confirme que se ha
 levantado. Sin evasión de Cloudflare, como en el resto de casas bloqueadas de este proyecto.
+
+### William Hill ampliado de 1X2 a 20 mercados por partido (2026-09-25)
+
+Con Betfair bloqueado (ver arriba), se buscó la opción más barata para seguir ampliando mercados: revisar las
+casas ya conectadas antes que perseguir casas nuevas bloqueadas. William Hill solo daba 1X2 desde su
+implementación (2026-09-23); su docstring ya apuntaba "sin corners/tarjetas explorados, cada mercado adicional es
+otro `marketType` que probar en vivo" como tarea pendiente. En vez de adivinar nombres de `marketType` contra el
+endpoint de listado (probado en vivo, solo "Doble oportunidad" se acertó por ensayo y error de una decena de
+nombres candidatos), se abrió la ficha de un partido real en el navegador y se inspeccionó su tráfico de red:
+además del listado ya usado, la web llama a `GET /data/ngs/event/es-es/OB_SP9/events/<event_id>/[<colección>]`
+— la ficha completa de un partido, misma API pública sin `marketType` ni autenticación. Sin colección en la URL
+da la colección "Popular" (Doble oportunidad, Ambos equipos marcarán, Más/Menos de goles con TODAS las líneas de
+partido/1ª/2ª parte, y "Victoria sin empate en caso de empate" = DNB); con el segmento `Tiempos y Periodos` da
+además "Apuestas al 1er Tiempo" (1X2_HT). Los mercados se identifican por `marketGroupName` (estable entre
+partidos) o un prefijo fijo para Doble oportunidad (su nombre completo lleva una frase explicativa variable).
+
+Implementado en `providers/williamhill.py`: `_fetch_football` sigue leyendo el listado barato para el 1X2 (sin
+cambios), y añade una segunda pasada `_fetch_extra_markets` que lee la ficha de cada partido en paralelo
+(`ThreadPoolExecutor`, igual que `providers/altenar.py`) solo para los partidos dentro de
+`extra_markets_horizon_hours` (24 h por defecto, más corto que las 48 h del 1X2): cada ficha pesa 200-500 KB
+(incluye goleadores, que no se usan) y esta casa —a diferencia de Sportium/Marca Apuestas/Versus, que leen una
+sola competición— cubre TODAS las ligas del mundo (337 partidos reales en la ventana de 48 h por defecto,
+verificado en vivo), así que sin acotar el horizonte la segunda pasada dispararía el coste del escaneo.
+`fast_recheck` pasa de `True` a `False` (como bwin/Winamax) porque ya no es lo bastante barato como para releerse
+en el mismo ciclo para verificar una surebet de margen alto.
+
+Se probó y descartó la colección "Hándicaps": es hándicap europeo de 3 vías con marcador (empate posible, líneas
+enteras), el mismo patrón ya rechazado en Zebet/Versus/888sport por no tener pareja de cruce en ninguna otra
+fuente de este repo — cuarta vez que aparece exactamente el mismo hándicap de 3 vías en una casa distinta,
+confirma que merece la pena comprobarlo por defecto en cualquier casa nueva. Verificado en vivo end-to-end: 2.170
+mercados en 126 partidos en la ventana de 24 h por defecto (6,6 s), y cruce real confirmado por nombre exacto de
+evento contra `providers/bet777.py` en los mismos `market_type` (p.ej. `Costa Rica vs. Curacao` con 1X2/1X2_HT/
+BTTS/DC/OU en varias líneas y medio tiempo en ambas fuentes) — la comparación real en producción usa el matching
+por equipos de `engine/matching.py`, no coincidencia exacta de texto, así que el cruce real será mayor.
 
 ### Baloncesto y tenis en Altenar y Kambi (2026-09-24)
 
