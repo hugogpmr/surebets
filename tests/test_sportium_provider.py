@@ -1,4 +1,4 @@
-from providers.sportium import SportiumProvider
+from providers.sportium import SportiumProvider, parse_match_markets
 
 # Forma real de los datos extraídos del DOM de Sportium (ver _EXTRACT_EVENTS_JS).
 RAW_EVENTS = [
@@ -97,3 +97,85 @@ def test_skips_simple_market_when_outcome_count_does_not_match():
         [{"teams": ["A", "B"], "odds": ["1.80"]}], "futbol", "BTTS", ["Yes", "No"]
     )
     assert markets == []
+
+
+# --- Mercados nuevos de la ficha de partido (2026-09-25) ---
+# Formas reales capturadas en vivo el 2026-09-25 (Málaga-Espanyol, La Liga),
+# pestañas "Handicap" y "Mitades" (ver _EXTRACT_MATCH_MARKETS_JS).
+HOME, AWAY = "Málaga", "Espanyol"
+
+
+def block(code, *pairs):
+    """`pairs` = [(línea|None, cuota)], en el mismo orden en que Sportium
+    pinta los botones (local primero)."""
+    return {"code": code, "buttons": [{"line": line, "price": price} for line, price in pairs]}
+
+
+def test_parses_clean_asian_handicap():
+    markets = parse_match_markets([block("FAHC", ("-0.5", "2.45"), ("0.5", "1.50"))], HOME, AWAY, "futbol", "sportium")
+    assert len(markets) == 1
+    assert markets[0].market_type == "AH_-0.5"
+    assert [(o.name, o.odds) for o in markets[0].outcomes] == [("1", 2.45), ("2", 1.50)]
+
+
+def test_asian_handicap_half_time_and_second_half_prefixes():
+    raw = [block("FAHT", ("-0.5", "3.20"), ("0.5", "1.35")), block("H2OF", ("-1.5", "8.00"), ("1.5", "1.06"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    types = {m.market_type for m in markets}
+    assert types == {"AH_HT_-0.5", "AH_2H_-1.5"}
+
+
+def test_rejects_three_way_handicap_with_draw():
+    # "Handicap - 3 opciones": 3 botones (local/empate/visitante), no 2 - no
+    # es el hándicap asiático que ya emiten el resto de fuentes del repo.
+    raw = [{"code": "FHMR", "buttons": [{"line": "-1", "price": "5.25"}, {"line": "-1", "price": "4.00"}, {"line": "1", "price": "1.55"}]}]
+    assert parse_match_markets(raw, HOME, AWAY, "futbol", "sportium") == []
+
+
+def test_rejects_handicap_block_with_asymmetric_lines():
+    # Dos botones cuyas líneas no son opuestas (dato corrupto o mercado mal
+    # identificado): no se fabrica un AH con una línea inventada.
+    raw = [block("FAHC", ("-0.5", "2.45"), ("1.0", "1.50"))]
+    assert parse_match_markets(raw, HOME, AWAY, "futbol", "sportium") == []
+
+
+def test_parses_double_chance_half_time():
+    raw = [block("1DBC", (None, "1.33"), (None, "1.67"), (None, "1.38"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    assert markets[0].market_type == "DC_HT"
+    assert [(o.name, o.odds) for o in markets[0].outcomes] == [("1X", 1.33), ("12", 1.67), ("X2", 1.38)]
+
+
+def test_parses_draw_no_bet_half_time():
+    raw = [block("1DNB", (None, "1.85"), (None, "1.95"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    assert markets[0].market_type == "DNB_HT"
+    assert [(o.name, o.odds) for o in markets[0].outcomes] == [("1", 1.85), ("2", 1.95)]
+
+
+def test_parses_btts_half_time():
+    raw = [block("BTS1", (None, "4.75"), (None, "1.20"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    assert markets[0].market_type == "BTTS_HT"
+    assert [(o.name, o.odds) for o in markets[0].outcomes] == [("Yes", 4.75), ("No", 1.20)]
+
+
+def test_parses_over_under_half_time():
+    raw = [block("OUH1", ("0.5", "1.40"), ("0.5", "2.80"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    assert markets[0].market_type == "OU_HT_0.5"
+    assert [(o.name, o.odds) for o in markets[0].outcomes] == [("Over", 1.40), ("Under", 2.80)]
+
+
+def test_ignores_unknown_market_codes():
+    # Mercados sin implementar (goleadores, marcador exacto...): se ignoran
+    # sin fallar, no se adivina un tipo para ellos.
+    raw = [{"code": "GOAL_SCORER", "buttons": [{"line": None, "price": "5.00"}]}]
+    assert parse_match_markets(raw, HOME, AWAY, "futbol", "sportium") == []
+
+
+def test_deduplicates_by_market_type_keeping_first():
+    raw = [block("FAHC", ("-0.5", "2.45"), ("0.5", "1.50")), block("FAHC", ("-0.5", "9.99"), ("0.5", "9.99"))]
+    markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
+    assert len(markets) == 1
+    assert [o.odds for o in markets[0].outcomes] == [2.45, 1.50]

@@ -86,7 +86,7 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 
 | Casa | Estado | Detalle |
 |---|---|---|
-| **Sportium** | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2, Más/Menos (Goles Totales, línea variable por partido), Doble Oportunidad, Ambos Marcan y Resultado al descanso en vivo verificados (2026-09-22). |
+| **Sportium** (ampliado 2026-09-25) | ✅ Funciona (`providers/sportium.py`) | Playwright headless normal, sin trucos. 1X2, Más/Menos (Goles Totales, línea variable por partido), Doble Oportunidad, Ambos Marcan y Resultado al descanso en vivo verificados (2026-09-22). Desde 2026-09-25, además lee las pestañas "Handicap" y "Mitades" de la ficha de cada partido para un número acotado de partidos — añade hándicap asiático de 2 vías (partido/1ª/2ª parte), Doble Oportunidad/Empate No Cuenta/Ambos Marcan al descanso y Más/Menos al descanso. Ver "Cambios del 2026-09-25" más abajo — Marca Apuestas y Versus (mismo framework "ta-" pero con códigos de mercado DISTINTOS en la ficha de partido, comprobado en vivo) se quedan fuera de esta ampliación, pendientes de su propia investigación. |
 | **Betfair** | ❌ Bloqueado por Cloudflare, incluida la vista base de 1X2 (empeoró el 2026-09-25) | Playwright headless. El 2026-09-22 solo el cambio de mercado disparaba el challenge de Cloudflare (1X2 seguía funcionando). El 2026-09-25 el bloqueo se confirmó ya en la propia carga de la vista 1X2 — probado en vivo desde la IP residencial del usuario con un script suelto, no solo desde este sandbox (que sale por una IP de datacenter/VPN y no sirve de referencia, ver checklist.md). El código de Más/Menos/Doble Oportunidad/Ambos Marcan/Córners sigue implementado pero desactivado; ahora el propio 1X2 puede estar fallando en producción también. Sin evasión de Cloudflare. Ver detalle abajo. |
 | **Winamax** | ✅ Funciona (`providers/winamax.py`) | Por el socket de su propia web (socket.io), abierto desde un navegador: 23 competiciones y ~100 mercados por partido (1X2, DNB, doble oportunidad, ambos marcan, Más/Menos con muchas líneas y por equipo, hándicap asiático, Par/Impar, primer/último gol, todo también por mitades). Sin córners ni tarjetas pre-partido (comprobado sobre 388 tipos de mercado). Una petición HTTP suelta recibe 403; la web completa no siempre conecta su cliente, por eso se habla el socket directamente. |
 | **bwin** (nuevo 2026-09-21) | ✅ Funciona (`providers/bwin.py`) | API JSON de su propio front (`cds-api`), leída desde el navegador con la página cargada (HTTP suelto = 403). Fuente **directa** con cientos de mercados por partido, incluidos córners, tarjetas, hándicap asiático y mercados por mitad. Su "Resultado VA (+2)" (pago anticipado) NO se trata como 1X2. |
@@ -854,6 +854,45 @@ no el 1X2 ni las otras dos). Doble oportunidad y hándicap de gol a partido comp
 pestañas leídas — viven detrás de la búsqueda "Todos los mercados", que exige un clic por mercado individual, más
 caro y dejado para una futura sesión, mismo criterio incremental que el resto de fuentes de este repo (p.ej. Zebet
 en su momento).
+
+### Sportium ampliado con Hándicap asiático y mercados al descanso (2026-09-25)
+
+Tercera ampliación de la sesión (tras William Hill y PokerStars): el usuario pidió seguir, se investigó si
+Sportium/Marca Apuestas/Versus (mismo framework "ta-") tenían mercados sin explotar en la ficha de cada partido
+(ya lo apuntaba README: "Córners/tarjetas/hándicap existen en la ficha de cada partido... pero no en este
+desplegable de listado"). Confirmado en vivo: la pestaña "Handicap (6)" de Sportium tiene 3 mercados de hándicap
+asiático de 2 vías limpio (partido/1ª/2ª parte, códigos `FAHC`/`FAHT`/`H2OF`) y otros 3 de hándicap a 3 vías con
+empate (`FHMR`/`FHH1`/`HCH2`, mismo patrón ya rechazado en Zebet/Versus/888sport/William Hill/PokerStars — sexta
+vez que aparece exactamente esta forma en una casa distinta); la pestaña "Mitades" añade Doble Oportunidad/Empate
+No Cuenta/Ambos Marcan al descanso (`1DBC`/`1DNB`/`BTS1`) y Más/Menos al descanso (`OUH1`). Sin córners: se revisó
+el listado completo de sus 107 mercados y ninguno los menciona (a diferencia de PokerStars).
+
+**Trampa encontrada y corregida antes de dar el cambio por bueno**: la primera implementación usaba el mismo
+mecanismo que había funcionado investigando manualmente con el panel interactivo del navegador — clicar la pestaña
+por una clase CSS estable con el ID del evento (`.ta-<eventId>-hcp_s`) — y fallaba sistemáticamente (timeout) desde
+un `chromium.launch(headless=True)` real. Inspeccionando el DOM en la propia sesión headless (no en el panel
+interactivo) se confirmó que esta ficha de partido tiene **dos variantes de UI con clases de botón distintas**:
+`ta-MenuRowItem`+ID del evento en la sesión interactiva del panel, `ta-ButtonBarItem` genérico (sin ID) en
+Playwright headless real — la misma lección ya aprendida varias veces en este proyecto (Interwetten/Retabet/
+OlyBet/Betfair) de que el panel interactivo no es prueba de lo que hará headless, aplicada esta vez no a si un
+sitio está bloqueado sino a qué selector usar. Solución: clicar las pestañas por su TEXTO ("Handicap"/"Mitades",
+con regex de prefijo porque el número entre paréntesis varía), estable en ambas variantes.
+
+**Se investigaron Marca Apuestas y Versus para replicar el mismo cambio y se decidió NO hacerlo todavía**: pese a
+compartir el mismo framework "ta-" y los mismos códigos en el desplegable del listado (BTSC/H1RS, ya
+documentado), la ficha de partido de Marca Apuestas usa códigos de hándicap totalmente distintos (`ASOU`/`AOH1`/
+`AOH2`/`AHRF`/`AHRH`, ninguno coincide con los de Sportium) y con un formato de línea compuesto ("2 / 2.5", "0 /
+-0.5") bajo un título "Handicap Asiático (Resultado Actual 0:0)" que sugiere un mercado en vivo re-etiquetado, no
+el hándicap asiático limpio de 2 vías que sí tiene Sportium — necesitaría su propio análisis cuidadoso del
+formato de línea antes de implementarse, no es un copiar-y-pegar seguro. Versus, además, ni siquiera navega a la
+misma pestaña con el mismo selector de texto (`text=/^Handicap/` coincidió con un enlace del índice "Todos los
+mercados" en vez de la pestaña real). Documentado aquí para que una futura sesión no asuma que "mismo framework"
+implica "mismos mercados y misma navegación" — ya era sabido para el desplegable del listado, pero no se había
+comprobado a este nivel de detalle en la ficha de partido.
+
+Coste: igual orden de magnitud que PokerStars (una página de Playwright + 2 clics por partido), acotado a
+`extra_markets_max_matches` (25 por defecto, sin horizonte por fecha). Verificado en vivo end-to-end: 143 mercados
+nuevos en 20 partidos en 69,3 s, sin fallos.
 
 ### Baloncesto y tenis en Altenar y Kambi (2026-09-24)
 
