@@ -94,7 +94,7 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 | **BetExplorer.com** (comparador, nuevo 2026-09-17) | ✅ Funciona (`providers/betexplorer.py`) | Playwright headless. Segundo comparador, empresa distinta a CuotasAhora/OddsPortal. Mismas casas DGOJ, tablas HTML semánticas (más simples de leer que CuotasAhora). Ver detalle abajo. |
 | **Jokerbet, Pastón, Betway** (plataforma Altenar, nuevo 2026-09-20) | ✅ Funciona (`providers/altenar.py`) | API JSON pública de su widget, sin navegador. Córners, tarjetas, hándicaps y mercados por mitad pre-partido, que los comparadores no tienen. Ver detalle abajo. |
 | **Paf, LeoVegas** (plataforma Kambi, nuevo 2026-09-20) | ✅ Funciona (`providers/kambi.py`) | API pública de ofertas de Kambi, sin navegador. Fuente **directa** de la casa (no comparador): mismos mercados extra que Altenar (córners, tarjetas, faltas, hándicaps, por mitad) pero otra plataforma y otros precios, lo que permite arbitraje entre plataformas. Ver detalle abajo. |
-| **PokerStars** (nuevo 2026-09-23) | ✅ Funciona (`providers/pokerstars.py`) | Playwright headless normal, DOM (`/sports/futbol/1/matches/`, atributos `data-testid` estables, no clases con hash). Solo 1X2 por ahora. Su API JSON propia (parece tecnología Betfair) está detrás de Akamai Bot Manager — un `fetch()` a mano dentro de la página ya da 403, mismo patrón que Kirolbet — por eso se lee el DOM en vez de hablarla directo. Plataforma propia, no Altenar/Kambi/Sportify. |
+| **PokerStars** (nuevo 2026-09-23, ampliado 2026-09-25) | ✅ Funciona (`providers/pokerstars.py`) | Playwright headless normal, DOM (`/sports/futbol/1/matches/`, atributos `data-testid` estables, no clases con hash). Su API JSON propia (parece tecnología Betfair) está detrás de Akamai Bot Manager — un `fetch()` a mano dentro de la página ya da 403, mismo patrón que Kirolbet — por eso se lee el DOM en vez de hablarla directo. Plataforma propia, no Altenar/Kambi/Sportify. Desde 2026-09-25, además del 1X2 del listado, lee 3 pestañas de la ficha de cada partido (Más/Menos de goles, Córners y tarjetas, Mitad) para un número acotado de partidos (`extra_markets_max_matches`, 25 por defecto) — añade OU/BTTS/1X2_HT y, por primera vez fuera de Altenar/Kambi/bwin/bet777, **córners y tarjetas**. Ver "Cambios del 2026-09-25" más abajo. |
 | **Speedybet** | ⚠️ Solo vía comparadores | Su web dice usar Kambi (mismo grupo que Paf) pero no se encontró su código de operador (probados ~15 nombres, varios devolvieron 429 por límite de peticiones, no concluyente). Sigue entrando vía CuotasAhora/BetExplorer. |
 | **William Hill** (nuevo 2026-09-23, ampliado 2026-09-25) | ✅ Funciona (`providers/williamhill.py`) | API JSON pública de su plataforma OpenBet, sin navegador ni cookies (funciona igual con o sin sesión). El bloqueo de IP de datacenter/VPN ("Data Centre block") es solo de la web `sports.williamhill.es`, no de esta API — probado en vivo desde IP residencial (carga bien) y desde este sandbox (API responde 200 igual, la web sigue bloqueada). El listado (barato) da el 1X2: pedirlo por su nombre de la web ("Ganador del partido") da la promo "2 Up" (paga como ganador con 2 goles de ventaja), no cuotas normales — el 1X2 real vive bajo el grupo "Ganador del Partido - Cuotas mejoradas", mismo caso que el "Resultado VA (+2)" de bwin. Desde 2026-09-25, la ficha de cada partido (otro endpoint de la misma API, sin `marketType`) añade DC, BTTS, DNB, 1X2_HT y Más/Menos con todas las líneas de partido/1ª/2ª parte — solo dentro de un horizonte más corto (24 h) que el 1X2, porque esta casa cubre todas las ligas del mundo y cada ficha pesa varios cientos de KB. Ver "Cambios del 2026-09-25" más abajo. |
 | **bet365, bwin, Codere, Luckia** | ⚠️ Indirecto, vía CuotasAhora.com / BetExplorer.com | Bloqueadas para scraping directo (ver causas abajo), pero sus cuotas 1X2 llegan igualmente a través de ambos comparadores. bet365 confirmado en vivo el 2026-09-23: sigue con Cloudflare incluso desde Playwright headless real y desde la IP residencial del usuario (no es solo IP de datacenter, como sí lo era William Hill). |
@@ -814,6 +814,46 @@ mercados en 126 partidos en la ventana de 24 h por defecto (6,6 s), y cruce real
 evento contra `providers/bet777.py` en los mismos `market_type` (p.ej. `Costa Rica vs. Curacao` con 1X2/1X2_HT/
 BTTS/DC/OU en varias líneas y medio tiempo en ambas fuentes) — la comparación real en producción usa el matching
 por equipos de `engine/matching.py`, no coincidencia exacta de texto, así que el cruce real será mayor.
+
+### PokerStars ampliado con córners, tarjetas, Más/Menos, BTTS y 1X2 al descanso (2026-09-25)
+
+Tras ampliar William Hill (ver arriba), el usuario pidió seguir con PokerStars: única fuente directa que aún se
+quedaba en solo 1X2 sin haberse investigado más. Su API JSON está detrás de Akamai (ver docstring del módulo), así
+que la ampliación tenía que ser también por DOM, igual que el 1X2 ya existente. Abriendo un partido real en el
+navegador se encontró que la ficha organiza sus ~90 mercados en pestañas navegables por fragmento de URL
+(`<url-del-partido>/#goles`, `#corneres-y-tarjetas`, `#mitad`...) — un `page.goto` directo a la URL con `#` ya
+carga esa pestaña, sin necesidad de clicar nada. Cada mercado es un `<details data-testid="sports-expandable-
+accordion">` con un `<summary>` (su nombre) y una `<table>`: el `<thead>` ya da los nombres de resultado (equipos/
+"Empate" para markets a 3 vías, "Más de"/"Menos de" o "Sí"/"No" para 2 vías) y el `<tbody>` una fila por línea.
+**Hallazgo clave que simplificó todo**: el contenido de un mercado sigue en el DOM aunque su `<details>` esté
+colapsado (comprobado en vivo inspeccionando `selectionCount` de varios mercados cerrados) — así que no hace falta
+clicar cada mercado individualmente para "expandirlo", solo cargar la pestaña que lo contiene y leer toda la
+tabla de una vez, igual de barato que si estuviera todo abierto.
+
+Implementado en `providers/pokerstars.py`: `parse_extra_markets` clasifica cada `<details>` por el texto exacto de
+su `<summary>` (tablas de 2 vías: `_OU_TABLE_FAMILIES` mapea el título a una plantilla de `market_type` y extrae
+la línea del texto de cada fila con una regex que exige coma decimal — "Goles en la 1.a mitad - 2,5" tiene un "1"
+suelto de "1.a" antes de la línea real, así que exigir la coma evita cogerlo por error, error real que se detectó
+con un test antes de dar el cambio por bueno) y tablas de 3 vías cuyas CABECERAS son los propios nombres de
+resultado (equipo/"Empate"), sin depender de una posición fija de columna. Nuevo: 1X2 de la 1ª parte ("Descanso"),
+Más/Menos de goles (partido y 1ª parte, todas las líneas), Ambos equipos marcan (partido y 1ª parte, identificados
+por el texto EXACTO de su fila dentro de una tabla que mezcla varios mercados parecidos bajo el mismo título), y
+**córners y tarjetas** (total, por equipo local/visitante, y "equipo con más córners" a 3 vías) — la primera vez
+que este repo cruza córners con una fuente fuera de Altenar/Kambi/bwin/bet777. Se probó y descartó "Hándicap de
+Córners": el mismo patrón de hándicap de 3 vías con empate ya rechazado en Zebet/Versus/888sport/William Hill
+(cabeceras Equipo/Empate/Equipo en vez de 2 resultados) — quinta vez que aparece esta forma exacta en una casa
+distinta, confirma que merece la pena comprobarla por defecto en cualquier casa nueva con hándicap.
+
+**Coste**: a diferencia de bet777/888sport/William Hill (JSON, sin navegador o una sola sesión), aquí cada pestaña
+es una página de Playwright aparte — no hay API JSON utilizable (Akamai). La segunda pasada se acota a
+`extra_markets_max_matches` (25 por defecto, sin horizonte por fecha porque el listado no da fecha exacta, solo
+"Hoy"/"Mañana") leídos con concurrencia acotada (`extra_markets_concurrency`, 6 páginas a la vez) sobre el mismo
+navegador. Verificado en vivo end-to-end: 459 mercados nuevos en 25 partidos en 102s (algún timeout suelto de
+pestaña bajo esa concurrencia, siempre capturado sin tumbar el resto — el mismo partido pierde solo esa pestaña,
+no el 1X2 ni las otras dos). Doble oportunidad y hándicap de gol a partido completo NO están en ninguna de las 3
+pestañas leídas — viven detrás de la búsqueda "Todos los mercados", que exige un clic por mercado individual, más
+caro y dejado para una futura sesión, mismo criterio incremental que el resto de fuentes de este repo (p.ej. Zebet
+en su momento).
 
 ### Baloncesto y tenis en Altenar y Kambi (2026-09-24)
 
