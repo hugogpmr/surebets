@@ -5,6 +5,6 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=root
-WorkingDirectory=/root/surebets
-ExecStart=/root/surebets/deploy/vm_fast_scan.sh
+User=__USER__
+WorkingDirectory=__APP_DIR__
+ExecStart=__APP_DIR__/deploy/vm_fast_scan.sh

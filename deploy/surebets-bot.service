@@ -5,10 +5,10 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/root/surebets
-Environment=PYTHONPATH=/root/surebets
-ExecStart=/root/surebets/.venv/bin/python scripts/run_telegram_bot.py
+User=__USER__
+WorkingDirectory=__APP_DIR__
+Environment=PYTHONPATH=__APP_DIR__
+ExecStart=__APP_DIR__/.venv/bin/python scripts/run_telegram_bot.py
 Restart=on-failure
 RestartSec=10
 

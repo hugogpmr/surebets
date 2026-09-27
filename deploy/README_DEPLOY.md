@@ -96,10 +96,8 @@ otros repos). Si alguna vez quieres revocarlo: misma pantalla de **Fine-grained 
 ## Opción B: VM propia (Hetzner de pago, o reintentar Oracle Always Free)
 
 Aquí sí corre el bot "de verdad", igual que en tu PC ahora mismo, con `/hoy`/`/ahora`/`/stats`
-funcionando. `deploy/setup_vm.sh` y `deploy/surebets.service` sirven igual en cualquier VM Ubuntu.
-Este camino además instala un segundo servicio, `deploy/surebets-relay.service`, que corre
-[telegram_source/relay.py](../telegram_source/relay.py) 24/7: sigue escuchando el grupo origen y
-reenviando al destino exactamente igual que cuando lo corres a mano en tu PC.
+funcionando. `deploy/setup_vm.sh` sirve igual en cualquier VM Ubuntu y registra cuatro servicios
+systemd (ver "Qué instala `setup_vm.sh`" más abajo): el bot, los dos timers de escaneo y el relay.
 
 ### B1. Hetzner Cloud (~3.79€/mes, sin líos de capacidad)
 
@@ -138,29 +136,43 @@ Dime: IP pública, ruta a la clave privada SSH (o contraseña si te la mandaron 
 por defecto (`root` en Hetzner, `ubuntu` en Oracle). Con eso me conecto por SSH desde tu propio PC y
 hago: `deploy/package.sh` (empaqueta el proyecto sin `.venv`/`.env`/db, pero sí con la sesión del
 relay si ya la creaste) → `scp` del paquete y de tu `.env` (con el token nuevo) a la VM →
-`deploy/setup_vm.sh` en la VM (instala Python, Playwright, registra el bot y el relay como servicios
-systemd) → verifico que el bot responde en Telegram y que el relay reenvía un mensaje de prueba.
+`deploy/setup_vm.sh` en la VM (instala Python, Playwright, registra el bot, los timers de escaneo y
+el relay como servicios systemd) → verifico que el bot responde en Telegram, que un ciclo rápido
+corre bien (`sudo systemctl start surebets-fast`) y que el relay reenvía un mensaje de prueba.
+
+### Qué instala `setup_vm.sh`: modelo de dos velocidades
+
+Desde 2026-09-28, `setup_vm.sh` registra el mismo modelo de dos velocidades que ya usa Windows
+(`scripts/local_scan.ps1` + `scripts/local_slow_scan.ps1`, ver su documentación en
+`scripts/scan_once_action.py`) en vez de un único proceso continuo - cuatro servicios systemd:
+
+- **`surebets-bot`** (`scripts/run_telegram_bot.py`): proceso ligero, solo atiende
+  `/hoy`/`/ahora`/`/stats` (lectura de la base de datos) - no escanea nada.
+- **`surebets-fast.timer`** → **`surebets-fast.service`** (`deploy/vm_fast_scan.sh`): `--mode fast`
+  cada 12 min (fuentes directas + caché de comparadores), commitea y pushea `data/`+`docs/data.json`
+  a GitHub tras cada ciclo con cambios, igual que `local_scan.ps1`.
+- **`surebets-slow.timer`** → **`surebets-slow.service`** (`deploy/vm_slow_scan.sh`): `--mode slow`
+  cada 30 min, refresca la caché de comparadores (no toca git ni Telegram).
+- **`surebets-relay`**: sin cambios, ver B3.
+
+Si la VM tenía el `surebets.service` antiguo (proceso único con `main.py`) activo de una instalación
+previa, `setup_vm.sh` lo para y deshabilita solo antes de registrar los nuevos - los dos modelos
+escaneando a la vez duplicarían cada ciclo. El script es idempotente: volver a ejecutarlo (tras un
+`git pull` en la VM) actualiza dependencias y unidades sin duplicar nada.
+
+**Antes del primer ciclo rápido**, la VM necesita una identidad de git para poder commitear (mismo
+motivo que en Windows): `git config --global user.name "..."` y `user.email "..."` - `setup_vm.sh`
+avisa si falta, pero no la configura por ti (son tus credenciales).
 
 ### Comandos útiles (VM ya desplegada)
 
 ```bash
 ssh -i /ruta/a/tu/clave usuario@IP_PUBLICA
-journalctl -u surebets -f                # logs en vivo del bot
+journalctl -u surebets-bot -f            # logs en vivo del bot (/hoy /ahora /stats)
+journalctl -u surebets-fast -f           # logs del último ciclo rápido
+journalctl -u surebets-slow -f           # logs del último ciclo lento
 journalctl -u surebets-relay -f          # logs en vivo del relay
-sudo systemctl restart surebets surebets-relay   # reiniciar tras un cambio de código
+systemctl list-timers                    # próxima ejecución de cada timer
+sudo systemctl restart surebets-bot surebets-relay   # reiniciar tras un cambio de código
+sudo systemctl start surebets-fast       # forzar un ciclo rápido ya, sin esperar al timer
 ```
-
-### Migración pendiente a dos velocidades (empezada, sin terminar)
-
-`deploy/surebets-bot.service` + `surebets-fast.service`/`.timer` + `surebets-slow.service`/`.timer`
-(más `scripts/run_telegram_bot.py` y `deploy/vm_fast_scan.sh`/`vm_slow_scan.sh`) son el equivalente en
-systemd del modelo de dos velocidades que ya usa Windows (`scripts/local_scan.ps1` +
-`scripts/local_slow_scan.ps1`, ver su documentación en `scripts/scan_once_action.py`): un proceso
-ligero solo para `/hoy`/`/ahora`/`/stats` más dos timers (`--mode fast` cada 12 min, `--mode slow` cada
-30 min para refrescar la caché de comparadores) en vez de un único proceso continuo.
-
-**No está wireado a `deploy/setup_vm.sh`** (que sigue registrando solo `deploy/surebets.service`, el
-modelo de proceso único con `main.py`) **ni activado en ninguna VM todavía** - si llegas a habilitar
-los nuevos timers a la vez que el `surebets.service` viejo en la misma VM, escanearán por duplicado.
-Antes de activarlos: parar/deshabilitar `surebets.service` (`sudo systemctl disable --now surebets`),
-copiar los `.service`/`.timer` a `/etc/systemd/system/`, y `systemctl enable --now` los tres nuevos.
