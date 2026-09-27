@@ -1,0 +1,15 @@
+[Unit]
+Description=Surebets Telegram relay (reenvio de mensajes de un grupo a otro)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__APP_DIR__
+ExecStart=__APP_DIR__/.venv/bin/python -m telegram_source.relay run
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -310,6 +310,10 @@ def _require(ok, what: str) -> None:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    # httpx registra en INFO cada peticion con su URL completa; la de Telegram lleva el
+    # token del bot (api.telegram.org/bot<TOKEN>/...) y acabaria en journalctl/logs.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
     commands = {"login": login, "qr": login_qr, "chats": chats, "topics": topics, "run": run}
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd not in commands:

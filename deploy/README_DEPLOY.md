@@ -97,6 +97,9 @@ otros repos). Si alguna vez quieres revocarlo: misma pantalla de **Fine-grained 
 
 Aquí sí corre el bot "de verdad", igual que en tu PC ahora mismo, con `/hoy`/`/ahora`/`/stats`
 funcionando. `deploy/setup_vm.sh` y `deploy/surebets.service` sirven igual en cualquier VM Ubuntu.
+Este camino además instala un segundo servicio, `deploy/surebets-relay.service`, que corre
+[telegram_source/relay.py](../telegram_source/relay.py) 24/7: sigue escuchando el grupo origen y
+reenviando al destino exactamente igual que cuando lo corres a mano en tu PC.
 
 ### B1. Hetzner Cloud (~3.79€/mes, sin líos de capacidad)
 
@@ -113,18 +116,36 @@ funcionando. `deploy/setup_vm.sh` y `deploy/surebets.service` sirven igual en cu
 3. Si da "Out of capacity": prueba otra región o reinténtalo más tarde. Alternativa de respaldo dentro
    de Oracle: shape `VM.Standard.E2.1.Micro` (x86, 1GB RAM, más ajustado).
 
-### B3. Confirmarme estos datos y hago el resto (Hetzner u Oracle)
+### B3. El relay (reenvío de mensajes) necesita una sesión creada por ti antes
+
+El relay usa tu cuenta personal de Telegram para *leer* el grupo origen (el bot solo publica en el
+destino), así que hace falta una sesión ya logueada — eso requiere el código que te manda Telegram a
+tu cuenta, no algo que yo pueda hacer por ti sin tu confirmación:
+
+1. En tu PC (una sola vez): `python -m telegram_source.relay login` (pide teléfono + código por
+   consola) o `python -m telegram_source.relay qr` (escaneas un QR desde el móvil). Esto crea
+   `data/relay.session`.
+2. Rellena en `.env` las variables de la sección "Relay de Telegram" (`TG_API_ID`, `TG_API_HASH`,
+   `RELAY_SOURCE_CHAT`, `RELAY_TARGET_CHAT_ID`, y `RELAY_BOT_TOKEN` si usas un bot distinto al de
+   avisos) — ver `.env.example`. `python -m telegram_source.relay chats` o `topics` ayudan a sacar los
+   ids.
+3. Esa sesión (`data/relay.session`) viaja con el resto del proyecto cuando hagamos `scp` del paquete
+   a la VM (no está excluida de `deploy/package.sh`) — no hace falta repetir el login allí.
+
+### B4. Confirmarme estos datos y hago el resto (Hetzner u Oracle)
 
 Dime: IP pública, ruta a la clave privada SSH (o contraseña si te la mandaron por email), y el usuario
 por defecto (`root` en Hetzner, `ubuntu` en Oracle). Con eso me conecto por SSH desde tu propio PC y
-hago: `deploy/package.sh` (empaqueta el proyecto sin `.venv`/`.env`/db) → `scp` del paquete y de tu
-`.env` (con el token nuevo) a la VM → `deploy/setup_vm.sh` en la VM (instala Python, Playwright,
-registra el bot como servicio systemd) → verifico que responde en Telegram.
+hago: `deploy/package.sh` (empaqueta el proyecto sin `.venv`/`.env`/db, pero sí con la sesión del
+relay si ya la creaste) → `scp` del paquete y de tu `.env` (con el token nuevo) a la VM →
+`deploy/setup_vm.sh` en la VM (instala Python, Playwright, registra el bot y el relay como servicios
+systemd) → verifico que el bot responde en Telegram y que el relay reenvía un mensaje de prueba.
 
 ### Comandos útiles (VM ya desplegada)
 
 ```bash
 ssh -i /ruta/a/tu/clave usuario@IP_PUBLICA
-journalctl -u surebets -f          # logs en vivo
-sudo systemctl restart surebets    # reiniciar tras un cambio de código
+journalctl -u surebets -f                # logs en vivo del bot
+journalctl -u surebets-relay -f          # logs en vivo del relay
+sudo systemctl restart surebets surebets-relay   # reiniciar tras un cambio de código
 ```
