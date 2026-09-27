@@ -25,9 +25,15 @@ DB_PATH = os.getenv("DB_PATH", "surebets.db")
 
 # Una surebet solo se avisa cuando aparece en este nº de escaneos seguidos
 # (equivale al filtro de "edad del arb" de BetBurger: descarta cuotas que
-# parpadean un instante). 1 = avisar a la primera. Con un escaneo cada ~5 min,
-# 2 añade unos 5 min de latencia a cambio de menos falsos positivos.
-CONFIRM_CYCLES = int(os.getenv("CONFIRM_CYCLES", "2"))
+# parpadean un instante). 1 = avisar a la primera, sin esperar una segunda
+# lectura - decisión explícita del usuario (2026-09-27): con el ciclo rápido
+# cada 12 min, exigir 2 ciclos añadía hasta 12 min de latencia a surebets que
+# suelen durar mucho menos que eso, así que prefiere velocidad a este filtro
+# concreto. Los márgenes altos (15-25%) siguen pasando por su propia
+# verificación aparte (VERIFY_MARGIN/verify_cycles en engine/quality.py y
+# engine/scan.py), que esto NO desactiva - solo afecta a las surebets de
+# margen normal, que antes esperaban 2 ciclos sin más motivo que este.
+CONFIRM_CYCLES = int(os.getenv("CONFIRM_CYCLES", "1"))
 # Los importes del reparto se redondean a múltiplos de este valor (€), para que
 # las casas tarden más en limitar la cuenta. 0 = importes exactos al céntimo.
 ROUND_STEP = float(os.getenv("ROUND_STEP", "5"))
