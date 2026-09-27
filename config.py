@@ -11,6 +11,13 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 # TELEGRAM_TOPIC_CACHE_PATH para no recrearlo en cada aviso.
 TELEGRAM_TOPIC_NAME = os.getenv("TELEGRAM_TOPIC_NAME", "")
 TELEGRAM_TOPIC_CACHE_PATH = os.getenv("TELEGRAM_TOPIC_CACHE_PATH", "data/notify_topic.json")
+# Espaciado mínimo (segundos) entre avisos de surebet a Telegram: su flood control deja
+# ~20 mensajes/minuto a un mismo grupo (1 cada 3 s), y un ciclo con muchas surebets a la
+# vez las manda todas de golpe sin esto - visto en vivo el 2026-09-27: 71 surebets en un
+# ciclo, 120 fallos de flood control. No es que Telegram vaya a banear el bot por un pico
+# puntual, es para que los avisos lleguen de verdad en vez de fallar y quedar pospuestos
+# al siguiente ciclo (ver bot/telegram_bot.py notify_opportunity).
+NOTIFY_MIN_INTERVAL_SECONDS = float(os.getenv("NOTIFY_MIN_INTERVAL_SECONDS", "3"))
 BANKROLL = float(os.getenv("BANKROLL", "250"))
 MIN_MARGIN = float(os.getenv("MIN_MARGIN", "0.01"))
 FETCH_INTERVAL_SECONDS = int(os.getenv("FETCH_INTERVAL_SECONDS", "60"))
@@ -44,6 +51,13 @@ COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cac
 SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "20"))
 SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "12"))
 COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
+
+# Máximo de providers leyéndose a la vez (cada uno con su propio Chromium si lo
+# necesita). Vacío/0 = sin límite (equipos con CPU de sobra, como el PC local).
+# En una VM de pocos núcleos, lanzar los ~9 providers con navegador a la vez
+# satura la CPU y varios acaban con timeout aunque cada uno por separado
+# funcione bien - ver engine/scan.py:_fetch.
+MAX_CONCURRENT_FETCHES = int(os.getenv("MAX_CONCURRENT_FETCHES", "0")) or None
 
 # Betfair Exchange API oficial (ver providers/betfair_exchange.py), aparte del
 # scraper DOM de la web de apuestas fijas (providers/betfair.py). Opcional: sin

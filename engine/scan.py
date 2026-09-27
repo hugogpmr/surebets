@@ -118,7 +118,9 @@ def _stamp(provider: OddsProvider, markets: list) -> None:
                 outcome.fetched_at = market.fetched_at
 
 
-async def _fetch(provider: OddsProvider, sports: list[str], logger) -> list | None:
+async def _fetch(
+    provider: OddsProvider, sports: list[str], logger, sem: asyncio.Semaphore | None = None
+) -> list | None:
     try:
         # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
         # provider lanza su propio Playwright); como run_scan_cycle ya corre
@@ -126,7 +128,17 @@ async def _fetch(provider: OddsProvider, sports: list[str], logger) -> list | No
         # directamente aquí chocaría con ese loop en marcha ("asyncio.run()
         # cannot be called from a running event loop"). Se ejecuta en un hilo
         # aparte para darle un loop propio.
-        fetched = await asyncio.to_thread(provider.fetch_markets, sports)
+        # `sem` limita cuántos navegadores Chromium se lanzan a la vez (ver
+        # `max_concurrency` en run_scan_cycle): sin límite, una máquina con
+        # pocos núcleos satura la CPU con ~9 Chromium simultáneos y varios
+        # providers acaban con timeout aunque cada uno por separado funcione
+        # bien (confirmado en la VM de 2vCPU: load average >10 y timeouts en
+        # Sportium/Betfair/Versus que no fallan en local).
+        if sem is None:
+            fetched = await asyncio.to_thread(provider.fetch_markets, sports)
+        else:
+            async with sem:
+                fetched = await asyncio.to_thread(provider.fetch_markets, sports)
     except Exception:
         logger.exception("Fallo obteniendo datos de %s", provider.name)
         return None
@@ -280,6 +292,7 @@ async def run_scan_cycle(
     max_margin: float = MAX_MARGIN,
     verify_margin: float = VERIFY_MARGIN,
     verify_cycles: int = 3,
+    max_concurrency: int | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -298,7 +311,11 @@ async def run_scan_cycle(
     # Las fuentes se leen A LA VEZ (cada una en su hilo, con su propio navegador si lo
     # necesita): en serie, sumar bwin y Winamax a Altenar/Kambi/Sportium/Betfair
     # alargaba el ciclo por encima de lo que aguanta un escaneo cada pocos minutos.
-    fetched_all = await asyncio.gather(*(_fetch(provider, sports, logger) for provider in providers))
+    # max_concurrency limita cuántos Chromium corren a la vez cuando la máquina
+    # tiene pocos núcleos (ver docstring de _fetch); None = sin límite, igual
+    # que siempre.
+    sem = asyncio.Semaphore(max_concurrency) if max_concurrency else None
+    fetched_all = await asyncio.gather(*(_fetch(provider, sports, logger, sem) for provider in providers))
     for provider, fetched in zip(providers, fetched_all):
         if fetched is not None:
             raw_by_provider[provider.name] = fetched
@@ -355,10 +372,14 @@ async def run_scan_cycle(
         should_notify = confirmed and (
             not notified or abs(comparison.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
         )
+        # "notified" solo se marca True cuando el aviso de verdad sale (ver más abajo):
+        # si `notify` falla (p.ej. timeout de red hacia Telegram), la surebet ya está
+        # guardada en la base de datos, pero hay que seguir intentando avisar en el
+        # próximo ciclo en vez de darla por avisada sin que el usuario la haya visto.
         active_state[key] = {
             "margin": comparison.margin,
             "cycles": cycles,
-            "notified": notified or should_notify,
+            "notified": notified,
         }
 
         if not should_notify:
@@ -374,7 +395,20 @@ async def run_scan_cycle(
             market.event,
             comparison.margin * 100,
         )
-        await notify(format_alert(comparison))
+        # Un fallo mandando el aviso (red, Telegram caído...) no debe tumbar el resto
+        # del ciclo: la surebet ya quedó guardada arriba, y `save_comparisons`/el
+        # volcado de estado que hace scan_once_action.py después de esta función
+        # también deben ejecutarse pase lo que pase con este aviso concreto.
+        try:
+            await notify(format_alert(comparison))
+        except Exception:
+            logger.warning(
+                "Fallo mandando el aviso de Telegram de la surebet #%s (ya guardada; se reintentará avisar en el próximo ciclo)",
+                row_id,
+                exc_info=True,
+            )
+        else:
+            active_state[key]["notified"] = True
 
     if discarded:
         logger.info("Descartadas %d falsas surebets por error de datos (ver engine/quality.py)", discarded)

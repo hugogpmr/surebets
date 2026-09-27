@@ -83,6 +83,31 @@ def test_surebet_is_only_notified_after_confirm_cycles(db):
     assert third == []  # ya avisada, mismo margen: sin repetir
 
 
+def test_notify_failure_does_not_crash_the_cycle_and_retries_next_time(db):
+    # Un fallo de red mandando el aviso (Telegram caído, timeout...) no debe tumbar el
+    # resto del ciclo: la surebet ya se guarda en la base de datos, y como el aviso no
+    # llegó de verdad, no se marca "notified" - debe reintentarse en el próximo ciclo.
+    async def failing_notify(text):
+        raise TimeoutError("simulated Telegram timeout")
+
+    state = {}
+    asyncio.run(
+        run_scan_cycle(
+            surebet_providers(), ["futbol"], 250.0, 0.01, db, state,
+            notify=failing_notify, logger=LOGGER, confirm_cycles=1,
+        )
+    )
+    key = next(iter(state))
+    assert state[key]["notified"] is False  # el aviso falló: no se da por avisada
+    row = export_snapshot(db)["comparisons"][0]
+    assert row["is_surebet"]  # pero sí quedó guardada en la base de datos
+
+    # Un ciclo posterior con un notify que sí funciona debe reintentar el aviso.
+    sent = run(surebet_providers(), db, state, confirm_cycles=1)
+    assert len(sent) == 1
+    assert state[key]["notified"] is True
+
+
 def test_surebet_that_disappears_must_be_confirmed_again(db):
     state = {}
     run(surebet_providers(), db, state, confirm_cycles=2)

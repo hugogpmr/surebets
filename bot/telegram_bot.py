@@ -1,5 +1,7 @@
+import asyncio
 import json
 import os
+import time
 from datetime import datetime, timedelta, timezone
 
 from telegram import Bot, Update
@@ -109,8 +111,20 @@ async def _notify_thread_id(bot: Bot) -> int | None:
     return topic.message_thread_id
 
 
+# Cuándo se mandó el último aviso (time.monotonic()), para espaciarlos - ver
+# config.NOTIFY_MIN_INTERVAL_SECONDS. Basado en el tiempo transcurrido desde el
+# anterior, no en un sleep fijo: si ya ha pasado suficiente (p.ej. por el resto del
+# ciclo entre dos surebets) no espera de más.
+_last_sent_at: float = 0.0
+
+
 async def notify_opportunity(bot: Bot, text: str) -> None:
+    global _last_sent_at
     if not config.TELEGRAM_CHAT_ID:
         return
+    wait = config.NOTIFY_MIN_INTERVAL_SECONDS - (time.monotonic() - _last_sent_at)
+    if wait > 0:
+        await asyncio.sleep(wait)
     thread_id = await _notify_thread_id(bot)
     await bot.send_message(chat_id=config.TELEGRAM_CHAT_ID, text=text, message_thread_id=thread_id)
+    _last_sent_at = time.monotonic()
