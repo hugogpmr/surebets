@@ -1,0 +1,10 @@
+[Unit]
+Description=Surebets - ciclo rapido de escaneo
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/surebets
+ExecStart=/root/surebets/deploy/vm_fast_scan.sh

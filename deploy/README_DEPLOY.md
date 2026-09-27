@@ -149,3 +149,18 @@ journalctl -u surebets -f                # logs en vivo del bot
 journalctl -u surebets-relay -f          # logs en vivo del relay
 sudo systemctl restart surebets surebets-relay   # reiniciar tras un cambio de código
 ```
+
+### Migración pendiente a dos velocidades (empezada, sin terminar)
+
+`deploy/surebets-bot.service` + `surebets-fast.service`/`.timer` + `surebets-slow.service`/`.timer`
+(más `scripts/run_telegram_bot.py` y `deploy/vm_fast_scan.sh`/`vm_slow_scan.sh`) son el equivalente en
+systemd del modelo de dos velocidades que ya usa Windows (`scripts/local_scan.ps1` +
+`scripts/local_slow_scan.ps1`, ver su documentación en `scripts/scan_once_action.py`): un proceso
+ligero solo para `/hoy`/`/ahora`/`/stats` más dos timers (`--mode fast` cada 12 min, `--mode slow` cada
+30 min para refrescar la caché de comparadores) en vez de un único proceso continuo.
+
+**No está wireado a `deploy/setup_vm.sh`** (que sigue registrando solo `deploy/surebets.service`, el
+modelo de proceso único con `main.py`) **ni activado en ninguna VM todavía** - si llegas a habilitar
+los nuevos timers a la vez que el `surebets.service` viejo en la misma VM, escanearán por duplicado.
+Antes de activarlos: parar/deshabilitar `surebets.service` (`sudo systemctl disable --now surebets`),
+copiar los `.service`/`.timer` a `/etc/systemd/system/`, y `systemctl enable --now` los tres nuevos.

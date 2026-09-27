@@ -1,0 +1,16 @@
+[Unit]
+Description=Surebets - bot de Telegram (/hoy /ahora /stats)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/surebets
+Environment=PYTHONPATH=/root/surebets
+ExecStart=/root/surebets/.venv/bin/python scripts/run_telegram_bot.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

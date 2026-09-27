@@ -1,0 +1,10 @@
+[Unit]
+Description=Surebets - ciclo lento (refresca cache de comparadores)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/surebets
+ExecStart=/root/surebets/deploy/vm_slow_scan.sh

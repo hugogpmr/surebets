@@ -1,0 +1,10 @@
+[Unit]
+Description=Dispara el ciclo rapido de escaneo cada 12 min
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=12min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target
