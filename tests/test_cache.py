@@ -1,4 +1,5 @@
 import asyncio
+import itertools
 import logging
 from datetime import datetime, timedelta, timezone
 
@@ -119,6 +120,79 @@ def test_only_competitions_a_provider_supports_are_read(cache):
     refresh_cache([only_futbol], ["futbol", "baloncesto_nba"], cache, timedelta(hours=1), LOGGER)
     assert only_futbol.calls == [["futbol"]]
     assert supported_keys(only_futbol) == ["futbol"]
+
+
+class FakeDynamicComparator(OddsProvider):
+    """Como CasasDeApuestasProvider: descubre sus competiciones solo, sin `league_urls`
+    - ofrece unidades de caché por competición vía `cache_units`. `competitions` es
+    {deporte base: [rutas de competición]}; cada unidad devuelve un mercado propio
+    (`mt` = la ruta, para distinguirlos en las aserciones)."""
+
+    def __init__(self, name, competitions):
+        self.name = name
+        self._competitions = competitions
+        self.fetch_calls = []  # (deporte, ruta) de cada unidad realmente invocada
+
+    def fetch_markets(self, sports):  # modos full/fast en vivo: no lo ejercitan estos tests
+        raise NotImplementedError
+
+    def cache_units(self, sports):
+        requested = {key.split("_", 1)[0] for key in sports} & set(self._competitions)
+        units = []
+        for sport in sorted(requested):
+            for comp_path in self._competitions[sport]:
+                units.append((f"{sport}::{comp_path}", self._fetcher(sport, comp_path)))
+        return units
+
+    def _fetcher(self, sport, comp_path):
+        def fetch():
+            self.fetch_calls.append((sport, comp_path))
+            return [market(mt=comp_path)]
+
+        return fetch
+
+
+def test_dynamic_provider_gets_one_cache_unit_per_competition(cache):
+    # baloncesto tiene varias claves compuestas en la lista global (acb/nba); un
+    # provider que descubre solo debe recibir una unidad por CADA competición real
+    # que descubra, no una sola por deporte ni una redundante por clave compuesta -
+    # así el presupuesto del ciclo lento se reparte en trozos pequeños, como con
+    # CuotasAhora (ver docstring de cache_units en providers/casasdeapuestas.py).
+    provider = FakeDynamicComparator(
+        "casasdeapuestas", {"futbol": ["/liga1", "/liga2"], "baloncesto": ["/acb"]}
+    )
+    sports = ["baloncesto_acb", "baloncesto_nba", "futbol_champions", "tenis_atp"]
+    refresh_cache([provider], sports, cache, timedelta(hours=1), LOGGER)
+    # tenis no está entre las competiciones del provider: fuera. 3 unidades reales
+    # (2 fútbol + 1 baloncesto), cada una leída una sola vez.
+    assert sorted(provider.fetch_calls) == [("baloncesto", "/acb"), ("futbol", "/liga1"), ("futbol", "/liga2")]
+
+
+def test_dynamic_provider_cache_round_trips_through_slow_and_fast_cycles(cache):
+    provider = FakeDynamicComparator("casasdeapuestas", {"baloncesto": ["/acb", "/nba"]})
+    sports = ["baloncesto_acb", "baloncesto_nba"]
+
+    refresh_cache([provider], sports, cache, timedelta(hours=1), LOGGER)
+    assert len(provider.fetch_calls) == 2  # una llamada por competición, no una por clave compuesta
+
+    # El ciclo rápido pide con la lista COMPLETA de claves compuestas (como hace
+    # engine/scan.py de verdad): debe encontrar lo guardado bajo las dos claves
+    # dinámicas ("baloncesto::/acb", "baloncesto::/nba") igualmente, aunque ninguna
+    # coincida por texto exacto con "baloncesto_acb"/"baloncesto_nba".
+    cached_provider = CachedProvider("casasdeapuestas", cache, timedelta(hours=1))
+    markets = cached_provider.fetch_markets(sports)
+    assert {m.market_type for m in markets} == {"/acb", "/nba"}
+
+
+def test_dynamic_provider_only_budgets_one_competition_at_a_time(cache):
+    # El motivo real de todo esto: un ciclo lento con presupuesto para UNA sola unidad
+    # no debe intentar leer un deporte entero de golpe (eso es justo lo que se rompió
+    # antes de este fix) - debe parar tras la primera competición y dejar el resto
+    # para la siguiente pasada, igual que ya hacía con CuotasAhora.
+    provider = FakeDynamicComparator("casasdeapuestas", {"futbol": ["/liga1", "/liga2", "/liga3"]})
+    ticks = iter(itertools.count(start=0.0, step=0.5))  # agota el presupuesto tras la primera unidad
+    refresh_cache([provider], ["futbol"], cache, timedelta(seconds=1), LOGGER, clock=lambda: next(ticks))
+    assert len(provider.fetch_calls) == 1
 
 
 # --- ciclo rápido: caché + directas en un mismo escaneo ------------------------------------------------------------

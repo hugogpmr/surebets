@@ -31,8 +31,18 @@ DIRECT_SOURCES = frozenset(
     }
 )
 # Comparadores: agregan casas ajenas y pueden ir desfasados (verificado hasta
-# ~7 % en 1X2 en la hora previa al partido, ver README).
-COMPARATOR_SOURCES = frozenset({"cuotasahora", "betexplorer"})
+# ~7 % en 1X2 en la hora previa al partido, ver README). "casasdeapuestas"
+# (2026-09-27) también agrega casas ajenas -entre ellas varias con provider directo
+# propio en este proyecto (betfair, sportium, winamax, bwin, 888sport, versus, bet777)-
+# así que necesita el mismo trato que CuotasAhora/BetExplorer: sin esto, sus lecturas no
+# se contaban como "solo comparador" (rebaja de fiabilidad), no pasaban por la detección
+# de tabla-de-otra-pestaña de `find_mirrored`, y una casa cuyo provider directo falla
+# ese ciclo (p.ej. Betfair bloqueado por Cloudflare) quedaba con su lectura de
+# casasdeapuestas tratada como si fuera tan fiable como una lectura directa - detectado
+# en vivo el 2026-09-27: 26 "surebets" de margen 16-25 % en mercados AH/AH_HT con
+# betfair/888sport/bwin como pata, marcadas "fiabilidad alta" sin la rebaja que les
+# correspondía.
+COMPARATOR_SOURCES = frozenset({"cuotasahora", "betexplorer", "casasdeapuestas"})
 
 # Un margen por encima de esto es raro (BetBurger recomienda 0,5-5 %): se avisa
 # pero se deja pasar tal cual.

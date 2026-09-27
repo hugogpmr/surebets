@@ -23,7 +23,7 @@ Modos (`--mode`):
 - `fast`: lee solo las fuentes directas (Sportium, Betfair, Winamax, bwin, Altenar,
   Kambi, en paralelo; ~1-2 min) y le suma los comparadores desde la caché en disco. Es el
   que corre cada pocos minutos en local (scripts/local_scan.ps1).
-- `slow`: lee los comparadores (CuotasAhora, BetExplorer) por rotación de
+- `slow`: lee los comparadores (BetExplorer, CasasDeApuestas) por rotación de
   competiciones durante un presupuesto de tiempo y actualiza la caché; no
   calcula surebets ni avisa (scripts/local_slow_scan.ps1). Ver engine/cache.py.
 """
@@ -48,7 +48,7 @@ from providers.bet777 import Bet777Provider
 from providers.betfair import BetfairProvider
 from providers.betfair_exchange import BetfairExchangeProvider
 from providers.bwin import BwinProvider
-from providers.cuotasahora import CuotasAhoraProvider
+from providers.casasdeapuestas import CasasDeApuestasProvider
 from providers.kambi import KambiProvider
 from providers.marcaapuestas import MarcaApuestasProvider
 from providers.pokerstars import PokerStarsProvider
@@ -134,11 +134,29 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
 
 def comparator_providers(max_matches: int | None = None) -> list[OddsProvider]:
     return [
-        CuotasAhoraProvider(max_matches=max_matches),
+        # CuotasAhoraProvider retirado 2026-09-27 (decisión del usuario, ver
+        # conversación): CasasDeApuestasProvider (abajo) ya cubre las mismas 12 casas de
+        # su ALLOWED_BOOKMAKERS más 14 casas adicionales, muchas más competiciones
+        # (descubiertas solas, no una lista a mano de ~30) y más mercados por partido, sin
+        # el coste ni la fragilidad de Playwright (el fallo constante de "Más"/"Resultado
+        # sin empate"/"Par/Impar" en sesión nueva, ya documentado en el propio
+        # providers/cuotasahora.py, y ~30 s de navegador por partido vs. ~2.5 s de httpx
+        # plano) - por eso un ciclo `full` con CuotasAhora tardaba horas. Único hueco real
+        # de cobertura al quitarlo: beisbol_mlb y balonmano_champions (EHF), que
+        # CasasDeApuestasProvider no tiene cableados todavía - pendiente si se echan en
+        # falta. `CuotasAhoraProvider` sigue implementado en providers/cuotasahora.py por
+        # si hace falta reactivarlo, solo se quita de aquí.
         # Segundo comparador (empresa distinta a CuotasAhora/OddsPortal),
         # verificado en vivo 2026-09-17 - ver providers/betexplorer.py. Solo cubre
-        # LaLiga y Champions League, no todas las competiciones de CuotasAhora.
+        # LaLiga y Champions League.
         BetExplorerProvider(),
+        # Tercer comparador (verificado en vivo 2026-09-27): HTML plano sin navegador,
+        # descubre TODAS las competiciones de cada deporte solo (no hace falta lista a
+        # mano) y trae casas que ningún otro proveedor de aquí cubre en directo (bet365,
+        # Codere, William Hill, Retabet, Kirolbet, Marca Apuestas, Casino Barcelona) más
+        # dos deportes nuevos (hockey hielo, tenis de mesa) - ver
+        # providers/casasdeapuestas.py.
+        CasasDeApuestasProvider(max_matches=max_matches),
     ]
 
 
@@ -188,6 +206,11 @@ SPORTS = [
     "balonmano_champions",
     "beisbol_mlb",
     "americano_nfl",
+    # Deportes nuevos (2026-09-27), solo cubiertos por CasasDeApuestasProvider: ver su
+    # docstring para por qué no llevan sufijo de competición (descubre solas todas las
+    # que haya, no hace falta una clave por liga como con CuotasAhora).
+    "hockey",
+    "tenismesa",
 ]
 
 STATE_PATH = pathlib.Path("data/active_opportunities.json")
@@ -242,6 +265,7 @@ async def run_scan(mode: str) -> None:
         max_margin=config.MAX_MARGIN,
         verify_margin=config.VERIFY_MARGIN,
         verify_cycles=config.VERIFY_CYCLES,
+        max_concurrency=config.MAX_CONCURRENT_FETCHES,
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en

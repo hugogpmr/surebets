@@ -18,6 +18,8 @@ SPORT_NAMES = {
     "balonmano": "Balonmano",
     "beisbol": "Béisbol",
     "americano": "Fútbol americano",
+    "hockey": "Hockey hielo",
+    "tenismesa": "Tenis de mesa",
 }
 
 # Qué se cuenta en los mercados de más/menos y hándicap según el deporte.
@@ -28,6 +30,8 @@ _SPORT_UNIT = {
     "americano": "puntos",
     "tenis": "juegos",
     "beisbol": "carreras",
+    "hockey": "goles",
+    "tenismesa": "puntos",
 }
 
 _METRIC_NOUNS = {

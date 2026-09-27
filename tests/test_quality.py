@@ -34,6 +34,16 @@ def test_comparator_only_is_low_reliability():
     assert reliability == "baja"
 
 
+def test_casasdeapuestas_only_is_low_reliability():
+    # casasdeapuestas es un comparador (agrega casas ajenas, algunas con provider
+    # directo propio en este proyecto) y debe recibir el mismo trato que
+    # cuotasahora/betexplorer - ver engine/quality.py COMPARATOR_SOURCES.
+    m = market([leg("Over", "bet365", 2.2, "casasdeapuestas"), leg("Under", "betfair", 2.1, "casasdeapuestas")])
+    flags, reliability = assess(m, 0.02, NOW)
+    assert "solo_comparador" in flags
+    assert reliability == "baja"
+
+
 def test_mixed_sources_are_medium_reliability():
     m = market([leg("Over", "bet365", 2.2, "cuotasahora"), leg("Under", "paf", 2.1, "kambi")])
     flags, reliability = assess(m, 0.02, NOW)

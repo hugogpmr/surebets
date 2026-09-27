@@ -21,6 +21,7 @@ import dataclasses
 import json
 import os
 import time
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 
 from providers.base import OddsProvider
@@ -87,12 +88,22 @@ def _load_market(raw: dict) -> Market:
     )
 
 
+def _sport_of(key: str) -> str:
+    """Deporte base de una clave de caché: "futbol_champions" -> "futbol" (claves
+    fijas de CuotasAhora/BetExplorer, `league_urls`) o
+    "futbol::/cuotas/futbol/espana/primera-division" -> "futbol" (claves dinámicas
+    por competición de un provider con `cache_units`, ver providers/casasdeapuestas.py:
+    el deporte va siempre delante del "::" porque la ruta de competición por sí sola
+    no dice a qué deporte pertenece)."""
+    return key.split("::", 1)[0].split("_", 1)[0]
+
+
 def refresh_interval(key: str, rank: int) -> timedelta:
     """Intervalo objetivo de refresco de una competición según su prioridad
     (`rank` = posición de la clave en la lista de competiciones)."""
     if rank < TOP_LEAGUES:
         return TOP_INTERVAL
-    return FOOTBALL_INTERVAL if key.split("_", 1)[0] == "futbol" else OTHER_INTERVAL
+    return FOOTBALL_INTERVAL if _sport_of(key) == "futbol" else OTHER_INTERVAL
 
 
 def retry_delay(empty_streak: int, interval: timedelta) -> timedelta:
@@ -101,8 +112,26 @@ def retry_delay(empty_streak: int, interval: timedelta) -> timedelta:
 
 
 def supported_keys(provider: OddsProvider) -> list[str]:
-    """Claves de competición que un proveedor sabe leer (las que tienen URL)."""
+    """Claves de competición que un proveedor de lista fija sabe leer (las que tienen
+    URL en `league_urls`: CuotasAhora/BetExplorer). Para un proveedor que descubre sus
+    competiciones solo (tiene `cache_units` en vez de `league_urls`, ver
+    providers/casasdeapuestas.py) no hay lista fija que devolver aquí - usa
+    `_cache_units`, que sabe pedirle sus unidades reales."""
     return list(getattr(provider, "league_urls", {}) or {})
+
+
+def _cache_units(provider: OddsProvider, sports: list[str]) -> list[tuple[str, Callable[[], list[Market]]]]:
+    """(clave de caché, función que la lee) de un proveedor para las `sports` pedidas.
+
+    Dos formas de conseguirlas: `cache_units(sports)` (un provider que descubre sus
+    competiciones solo, como CasasDeApuestasProvider, devuelve directamente una unidad
+    por competición) o `league_urls` (CuotasAhora/BetExplorer: una URL fija por
+    competición, se envuelve `provider.fetch_markets([key])` en una función sin
+    argumentos para que el llamador no tenga que distinguir los dos casos)."""
+    dynamic = getattr(provider, "cache_units", None)
+    if dynamic is not None:
+        return dynamic(sports)
+    return [(key, (lambda p=provider, k=key: p.fetch_markets([k]))) for key in supported_keys(provider) if key in sports]
 
 
 class ComparatorCache:
@@ -195,9 +224,19 @@ class ComparatorCache:
         markets: list[Market] = []
         ages = []
         wanted = set(sports)
+        wanted_base_sports = {_sport_of(s) for s in sports}
         for name, entry in self._read()["entries"].items():
             prov, key = name.split("|", 1)
-            if prov != provider or key not in wanted or not entry["saved_at"]:
+            if prov != provider or not entry["saved_at"]:
+                continue
+            # Clave fija ("futbol_champions", CuotasAhora/BetExplorer): coincidencia
+            # exacta con lo pedido. Clave dinámica por competición ("futbol::/cuotas/...",
+            # CasasDeApuestas): coincide si el deporte pedido es el suyo, sea cual sea la
+            # competición concreta - lo pedido son claves compuestas tipo
+            # "futbol_champions", no rutas de competición, así que no puede haber
+            # coincidencia exacta con estas.
+            wanted_match = key in wanted if "::" not in key else _sport_of(key) in wanted_base_sports
+            if not wanted_match:
                 continue
             saved = datetime.fromisoformat(entry["saved_at"])
             if now - saved > max_age:
@@ -243,8 +282,11 @@ def refresh_cache(
     presupuesto de tiempo (se comprueba entre competiciones, así que una muy
     grande puede pasarse; la tarea programada no se solapa consigo misma).
     Devuelve {(proveedor, clave): nº de mercados leídos} de lo procesado."""
-    pairs = [(p.name, key) for p in providers for key in supported_keys(p) if key in sports]
-    by_name = {p.name: p for p in providers}
+    units: dict[tuple[str, str], Callable[[], list[Market]]] = {}
+    for p in providers:
+        for key, fetch_fn in _cache_units(p, sports):
+            units[(p.name, key)] = fetch_fn
+    pairs = list(units)
     deadline = clock() + budget.total_seconds()
     done: dict = {}
     for name, key in cache.stalest_first(pairs):
@@ -253,7 +295,7 @@ def refresh_cache(
             break
         started = clock()
         try:
-            markets = by_name[name].fetch_markets([key])
+            markets = units[(name, key)]()
         except Exception:
             logger.exception("Ciclo lento: fallo leyendo %s/%s", name, key)
             markets = []
