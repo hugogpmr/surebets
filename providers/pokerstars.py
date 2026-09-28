@@ -58,6 +58,18 @@ JSON, a diferencia de bet777/888sport/William Hill), la segunda pasada se
 limita a `extra_markets_max_matches` partidos (25 por defecto, sin horizonte
 porque el listado no da fecha exacta) leídos con concurrencia acotada sobre
 el mismo navegador.
+
+**Ampliado 2026-09-29 con Doble Oportunidad (DC)**: a diferencia de las 3 pestañas de
+arriba, vive en una 4ª pestaña, "Todos los mercados" (`#todos-los-mercados`), cuyo
+contenido SÍ necesita un clic - verificado en vivo, ver `EXTRA_TABS`/`_extract_double_chance`.
+Ese clic tropezó con un banner de cookies OneTrust que solo aparecía con Playwright headless
+real, no en el Browser pane (mismo patrón ya visto en este proyecto: el navegador interactivo
+no basta como señal, aquí al revés - lo que SÍ funcionaba en el pane fallaba en headless
+real por el banner, no por un bloqueo del sitio). El hándicap que también trae esa pestaña
+es el mismo patrón de 3 vías con notación de marcador ya rechazado 6 veces en este repo
+(ver `EXTRA_TABS`), así que no se implementa pese a estar disponible. Verificado en vivo
+end-to-end con Playwright real (no solo el Browser pane): 4 de 5 partidos de prueba, valores
+idénticos a los capturados a mano.
 """
 
 import asyncio
@@ -91,7 +103,28 @@ DEFAULT_EXTRA_MARKETS_BUDGET_SECONDS = 60.0
 MIN_TAB_BUDGET_MS = 3000
 # Fragmentos de URL de las pestañas de la ficha de partido que traen mercados
 # nuevos; "Populares" (sin fragmento) ya se cubre con el 1X2 del listado.
-EXTRA_TABS = ("goles", "corneres-y-tarjetas", "mitad")
+#
+# "todos-los-mercados" añadido 2026-09-29 (verificado en vivo con el Browser pane en 2
+# partidos reales): a diferencia de las otras 3 pestañas, aquí el contenido NO está en el
+# DOM hasta hacer clic (confirmado: el acordeón de "Doble oportunidad" pasa de
+# `hasTable/rows vacío` a sus 3 cuotas reales solo tras clicar su <summary>) - por eso esta
+# pestaña se trata aparte en `fetch_tab`/`_extract_double_chance`, en vez de con
+# `_EXTRACT_ACCORDIONS_JS` como las demás. De sus ~58-100 mercados (verificados en vivo:
+# "Marcador al descanso", "Goleadores", "Resultado correcto", combinadas...) solo Doble
+# Oportunidad tiene pareja con la que cruzar en este repo; el "hándicap" que también trae
+# esta pestaña ("Apuestas con hándicap"/"Hándicaps alternativos") es el mismo patrón de 3
+# vías con notación de marcador ya rechazado 6 veces en otras casas (Zebet/Versus/888sport/
+# William Hill/Sportium/PokerStars mismo, ver `_THREE_WAY_TITLES`), así que NO se implementa
+# pese a estar disponible - confirmado en vivo, no una suposición.
+EXTRA_TABS = ("goles", "corneres-y-tarjetas", "mitad", "todos-los-mercados")
+DC_TAB = "todos-los-mercados"
+DC_MARKET_TITLE = "Doble oportunidad"
+# El clic de Doble Oportunidad reveló un banner de cookies OneTrust (confirmado en vivo con
+# Playwright headless real el 2026-09-29, no visible en el Browser pane porque ya lo había
+# aceptado antes sin querer) que intercepta el clic: "element intercepts pointer events".
+# Las otras 3 pestañas nunca clican nada, por eso nunca lo tropezaron. Mismo patrón que
+# `_COOKIE_ACCEPT_SELECTOR` de providers/zebet.py.
+_COOKIE_ACCEPT_SELECTOR = "#onetrust-accept-btn-handler"
 
 # Un event-list puede en teoría no ser 1X2 (no se ha visto en las ~40
 # competiciones comprobadas en vivo, pero por si acaso): se valida el texto de
@@ -151,6 +184,26 @@ _EXTRACT_ACCORDIONS_JS = """() => {
         out.push({ title, headers, rows });
     }
     return out;
+}"""
+
+
+# Doble Oportunidad se renderiza como 3 botones `[data-testid="selection"]` (mismo
+# componente que el 1X2 del listado), no como <table> - por eso necesita su propia
+# extracción en vez de `_EXTRACT_ACCORDIONS_JS`. La etiqueta ("Moldavia y empate") y la
+# cuota ("1,40") viven en el mismo nodo concatenadas sin separador; se clona la fila y se
+# quita el botón para aislar la etiqueta, en vez de partir el texto por una expresión
+# regular (más frágil: un nombre de equipo con coma o número lo rompería).
+_EXTRACT_DC_JS = """() => {
+    const accs = document.querySelectorAll('[data-testid="sports-expandable-accordion"]');
+    const acc = Array.from(accs).find(a => a.querySelector('summary')?.textContent.trim() === '""" + DC_MARKET_TITLE + """');
+    if (!acc) return null;
+    return Array.from(acc.querySelectorAll('[data-testid="selection"]')).map(sel => {
+        const row = sel.parentElement.parentElement;
+        const clone = row.cloneNode(true);
+        const btn = clone.querySelector('[data-testid="selection"]');
+        if (btn) btn.remove();
+        return { label: clone.textContent.trim(), odds: sel.textContent.trim() };
+    });
 }"""
 
 
@@ -283,6 +336,29 @@ def _parse_three_way_table(
     return markets
 
 
+def _parse_double_chance(rows: list[dict] | None, home_name: str, away_name: str) -> Market | None:
+    """3 filas de `_EXTRACT_DC_JS` ({label, odds}) -> DC (1X/X2/12). El resultado se
+    identifica por qué nombres de equipo aparecen en la etiqueta ("Moldavia y empate" ->
+    local+empate -> 1X), no por su posición: verificado en vivo en 2 partidos que el orden
+    es siempre local+empate/visitante+empate/local+visitante, pero derivarlo del texto es
+    el mismo criterio de fallo seguro que el resto de este proveedor (ver
+    `_parse_three_way_table`) - una etiqueta inesperada descarta el mercado entero en vez
+    de adivinar."""
+    if not rows or len(rows) != 3:
+        return None
+    outcomes = []
+    for row in rows:
+        label, odds = row.get("label") or "", _parse_odds(row.get("odds") or "")
+        has_home, has_away = home_name in label, away_name in label
+        if odds is None or not (has_home or has_away):
+            return None  # ni local ni visitante en la etiqueta: formato inesperado
+        name = "12" if has_home and has_away else "1X" if has_home else "X2"
+        outcomes.append(Outcome(name=name, bookmaker=BOOKMAKER, odds=odds))
+    if {o.name for o in outcomes} != {"1X", "X2", "12"}:
+        return None  # dos filas con el mismo resultado: algo fue mal, no se adivina
+    return Market(event=f"{home_name} vs. {away_name}", sport="futbol", market_type="DC", outcomes=outcomes)
+
+
 def parse_extra_markets(raw_accordions: list[dict], home_name: str, away_name: str) -> list[Market]:
     """Convierte los `<details>` de una pestaña (`_EXTRACT_ACCORDIONS_JS`) en
     los mercados nuevos: DC y hándicap de gol a partido completo NO están en
@@ -323,7 +399,7 @@ def select_crossed_matches(
 class PokerStarsProvider(OddsProvider):
     """PokerStars Sports por DOM (ver docstring del módulo). 1X2 de fútbol
     dentro del horizonte que la propia web decide mostrar en `/matches/` (una
-    sola página, barato) más OU/BTTS/1X2_HT/CORNERS/CARDS leyendo 3 pestañas de
+    sola página, barato) más OU/BTTS/1X2_HT/CORNERS/CARDS/DC leyendo 4 pestañas de
     la ficha de cada partido (ver `EXTRA_TABS`), limitado a
     `extra_markets_max_matches` porque cada pestaña es una página de Playwright
     aparte (sin API JSON, a diferencia de bet777/888sport/William Hill)."""
@@ -380,7 +456,7 @@ class PokerStarsProvider(OddsProvider):
         return markets
 
     def refine(self, sports: list[str], peer_markets: list[Market]) -> list[Market]:
-        """Segunda pasada: OU/BTTS/1X2_HT/CORNERS/CARDS de las fichas, solo de los partidos
+        """Segunda pasada: OU/BTTS/1X2_HT/CORNERS/CARDS/DC de las fichas, solo de los partidos
         que alguna OTRA casa también lista (los únicos que pueden cruzarse), los más
         cubiertos primero y con un tope de tiempo. En la VM (2 vCPU) leer las fichas de los
         25 primeros partidos del listado, sin mirar si alguien más los lista, era el 90 % de
@@ -413,9 +489,9 @@ class PokerStarsProvider(OddsProvider):
         return hrefs
 
     async def _fetch_extra_markets(self, browser, matches: list[tuple[str, str, str]]) -> list[Market]:
-        """OU/BTTS/1X2_HT/CORNERS/CARDS de `matches` (ver `parse_extra_markets`),
-        cargando las 3 pestañas de `EXTRA_TABS` de cada ficha en paralelo con
-        concurrencia acotada. Un fallo en una pestaña suelta no descarta el
+        """OU/BTTS/1X2_HT/CORNERS/CARDS/DC de `matches` (ver `parse_extra_markets` y
+        `_parse_double_chance`), cargando las 4 pestañas de `EXTRA_TABS` de cada ficha en
+        paralelo con concurrencia acotada. Un fallo en una pestaña suelta no descarta el
         resto del partido, igual que el resto de proveedores concurrentes de
         este repo (Altenar, bwin, William Hill)."""
         if not matches:
@@ -444,6 +520,8 @@ class PokerStarsProvider(OddsProvider):
                     await page.wait_for_selector(
                         '[data-testid="sports-expandable-accordion"]', timeout=min(15000, remaining_ms)
                     )
+                    if tab == DC_TAB:
+                        return await self._extract_double_chance(page, remaining_ms)
                     return await page.evaluate(_EXTRACT_ACCORDIONS_JS)
                 except Exception:
                     logger.warning("PokerStars: fallo leyendo %s#%s", href, tab, exc_info=True)
@@ -453,17 +531,54 @@ class PokerStarsProvider(OddsProvider):
 
         async def fetch_match(home: str, away: str, href: str) -> list[Market]:
             tab_results = await asyncio.gather(*[fetch_tab(href, tab) for tab in EXTRA_TABS])
-            accordions = [acc for result in tab_results for acc in result]
-            return parse_extra_markets(accordions, home, away)
+            # DC va aparte: su resultado no es un acordeón de tabla (`{title, headers, rows}`
+            # como `_EXTRACT_ACCORDIONS_JS`) sino filas de botones (`_EXTRACT_DC_JS`), así
+            # que `parse_extra_markets` no sabría clasificarlo.
+            accordions, dc_rows = [], None
+            for tab, result in zip(EXTRA_TABS, tab_results):
+                if tab == DC_TAB:
+                    dc_rows = result or None
+                else:
+                    accordions.extend(result)
+            markets = parse_extra_markets(accordions, home, away)
+            dc_market = _parse_double_chance(dc_rows, home, away)
+            if dc_market is not None:
+                markets.append(dc_market)
+            return markets
 
         results = await asyncio.gather(*[fetch_match(home, away, href) for home, away, href in matches])
         markets = [market for sub in results for market in sub]
         logger.info(
-            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS) en %d partidos%s",
+            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS/DC) en %d partidos%s",
             len(markets), len(matches),
             f" ({skipped} pestañas saltadas por el tope de {self.extra_markets_budget_seconds:.0f}s)" if skipped else "",
         )
         return markets
+
+    @staticmethod
+    async def _extract_double_chance(page, remaining_ms: int) -> list[dict]:
+        """Doble Oportunidad, dentro de la pestaña `DC_TAB` ya cargada (ver `fetch_tab`):
+        a diferencia de las otras 3 pestañas, aquí SÍ hace falta un clic (verificado en
+        vivo, ver el comentario de `EXTRA_TABS`) antes de que sus cuotas aparezcan en el
+        DOM. `.filter(has=...)` localiza el acordeón por el texto EXACTO de su `<summary>`
+        para no confundirlo con "Doble oportunidad y más/menos de X,5 goles" (mismo
+        prefijo, MISMO texto si no fuera por `exact=True`)."""
+        try:
+            await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=2000)
+        except Exception:
+            pass  # ya aceptado en una página previa de esta misma sesión, o no apareció
+        locator = page.locator('[data-testid="sports-expandable-accordion"]').filter(
+            has=page.get_by_text(DC_MARKET_TITLE, exact=True)
+        )
+        if await locator.count() == 0:
+            return []
+        summary = locator.first.locator("summary")
+        await summary.click(timeout=min(5000, remaining_ms))
+        try:
+            await locator.first.locator('[data-testid="selection"]').first.wait_for(timeout=min(5000, remaining_ms))
+        except Exception:
+            return []  # el clic no abrió el mercado (cambio de sitio, mercado suspendido...)
+        return await page.evaluate(_EXTRACT_DC_JS) or []
 
     def _parse_groups(self, raw_groups: list[dict]) -> list[Market]:
         markets: list[Market] = []

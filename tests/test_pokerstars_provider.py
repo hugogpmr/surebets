@@ -2,6 +2,7 @@ from providers.pokerstars import (
     PokerStarsProvider,
     _extract_line,
     _parse_btts_table,
+    _parse_double_chance,
     _parse_odds,
     _parse_ou_table,
     _parse_three_way_table,
@@ -227,3 +228,55 @@ def test_select_crossed_matches_keeps_only_matches_another_house_lists_most_cove
     assert [h for _, _, h in select_crossed_matches(listing, peers, 25)] == ["/c", "/b", "/d"]  # empate: orden del listado
     assert [h for _, _, h in select_crossed_matches(listing, peers, 2)] == ["/c", "/b"]
     assert select_crossed_matches(listing, [], 25) == []
+
+
+def test_parse_double_chance_from_real_captured_rows():
+    # Filas reales capturadas en vivo el 2026-09-29 contra dos partidos distintos
+    # (Moldavia-Islas Feroe y España-Croacia) con el Browser pane, tras clicar el
+    # acordeón "Doble oportunidad" en la pestaña "Todos los mercados".
+    rows = [
+        {"label": "Moldavia y empate", "odds": "1,40"},
+        {"label": "Islas Feroe y empate", "odds": "1,36"},
+        {"label": "Moldavia y Islas Feroe", "odds": "1,36"},
+    ]
+    market = _parse_double_chance(rows, "Moldavia", "Islas Feroe")
+    assert market.market_type == "DC" and market.event == "Moldavia vs. Islas Feroe"
+    assert {o.name: o.odds for o in market.outcomes} == {"1X": 1.40, "X2": 1.36, "12": 1.36}
+
+
+def test_parse_double_chance_order_independent_and_real_second_sample():
+    # Mismas filas que arriba pero en otro orden: el resultado se identifica por el
+    # nombre de equipo en la etiqueta, no por la posición de la fila.
+    shuffled = [
+        {"label": "Moldavia y Islas Feroe", "odds": "1,36"},
+        {"label": "Moldavia y empate", "odds": "1,40"},
+        {"label": "Islas Feroe y empate", "odds": "1,36"},
+    ]
+    assert {o.name: o.odds for o in _parse_double_chance(shuffled, "Moldavia", "Islas Feroe").outcomes} == {
+        "1X": 1.40, "X2": 1.36, "12": 1.36,
+    }
+    espana = [
+        {"label": "España y empate", "odds": "1,03"},
+        {"label": "Croacia y empate", "odds": "4,50"},
+        {"label": "España y Croacia", "odds": "1,06"},
+    ]
+    assert {o.name: o.odds for o in _parse_double_chance(espana, "España", "Croacia").outcomes} == {
+        "1X": 1.03, "X2": 4.50, "12": 1.06,
+    }
+
+
+def test_parse_double_chance_rejects_missing_unexpected_or_incomplete_input():
+    good = [
+        {"label": "Moldavia y empate", "odds": "1,40"},
+        {"label": "Islas Feroe y empate", "odds": "1,36"},
+        {"label": "Moldavia y Islas Feroe", "odds": "1,36"},
+    ]
+    assert _parse_double_chance(None, "Moldavia", "Islas Feroe") is None  # el clic no abrió nada
+    assert _parse_double_chance([], "Moldavia", "Islas Feroe") is None
+    assert _parse_double_chance(good[:2], "Moldavia", "Islas Feroe") is None  # solo 2 filas
+    sin_cuota = [{**good[0], "odds": "suspendido"}, good[1], good[2]]
+    assert _parse_double_chance(sin_cuota, "Moldavia", "Islas Feroe") is None
+    ninguno = [{"label": "Otro equipo y empate", "odds": "1,40"}, good[1], good[2]]
+    assert _parse_double_chance(ninguno, "Moldavia", "Islas Feroe") is None  # etiqueta inesperada
+    duplicado = [good[0], good[0], good[2]]  # dos filas "1X", ninguna "X2"
+    assert _parse_double_chance(duplicado, "Moldavia", "Islas Feroe") is None

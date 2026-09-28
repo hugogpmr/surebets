@@ -957,6 +957,32 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### PokerStars ampliado con Doble Oportunidad (2026-09-29)
+
+Repasados los proveedores buscando huecos de mercado ya documentados como "dejado para una
+futura sesión" (no los descartados a propósito por no tener con qué cruzar, esos se dejan
+tal cual). El único hueco real: PokerStars anotaba que Doble Oportunidad (DC) y el hándicap
+de gol a partido completo vivían detrás de la búsqueda "Todos los mercados", sin implementar.
+Verificado en vivo con el Browser pane contra 2 partidos reales antes de escribir código:
+
+- **El "hándicap" de esa pestaña es el mismo patrón de 3 vías con notación de marcador ya
+  rechazado 6 veces en este repo** (Zebet/Versus/888sport/William Hill/Sportium) - descartado,
+  no se implementa pese a estar disponible.
+- **Doble Oportunidad sí es limpio**: 3 resultados (1X/X2/12), pero a diferencia de las otras
+  3 pestañas de la ficha, su contenido **no está en el DOM hasta hacer clic** en el acordeón -
+  confirmado comparando antes/después del clic. Implementado como una 4ª pestaña
+  (`providers/pokerstars.py:EXTRA_TABS`/`_extract_double_chance`), dentro del mismo
+  presupuesto de tiempo y semáforo de concurrencia que las demás (no añade coste fuera de
+  control).
+- **El clic tropezó con un banner de cookies OneTrust que solo aparecía con Playwright
+  headless real, no en el Browser pane** (verificado: 0/5 partidos con DC hasta añadir el
+  clic de aceptar cookies, `#onetrust-accept-btn-handler`, mismo patrón ya usado en
+  `providers/zebet.py` para su propio banner de Cookiebot) - la primera vez en este proyecto
+  que el fallo va al REVÉS de lo habitual (algo que sí funcionaba en el pane fallaba en
+  headless real por un banner, no por un bloqueo del sitio).
+- Verificado en vivo end-to-end con Playwright real (no solo el Browser pane): 4 de 5
+  partidos de prueba trajeron DC, con las mismas cuotas capturadas a mano en el navegador.
+
 ### Ciclo lento: más cobertura ahora que ya no está al límite de tiempo (2026-09-28)
 
 Con BetExplorer fuera (sección de arriba), un ciclo lento completo tardó 13 min 18 s de los 20
