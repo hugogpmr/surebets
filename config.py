@@ -51,11 +51,21 @@ VERIFY_CYCLES = int(os.getenv("VERIFY_CYCLES", "3"))
 # directas y suma los comparadores desde una caché en disco; el ciclo lento
 # (otra tarea programada) rota por competiciones de los comparadores durante
 # SLOW_BUDGET_MINUTES y actualiza esa caché. SLOW_MAX_MATCHES limita los partidos
-# leídos por competición (los más próximos; ~30 s de navegador cada uno).
-# Lo cacheado más viejo que COMPARATOR_MAX_AGE_HOURS deja de usarse.
+# leídos por competición (los más próximos primero; ~0,3 s cada uno con
+# CasasDeApuestasProvider, httpx sin navegador - medido en vivo el 2026-09-28,
+# ya no ~30 s de navegador como con la vieja CuotasAhoraProvider, retirada
+# 2026-09-27). Lo cacheado más viejo que COMPARATOR_MAX_AGE_HOURS deja de usarse.
 COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cache.json")
-SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "20"))
-SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "12"))
+# Subidos 2026-09-28 con margen real medido en la VM: un ciclo lento completo (todas las
+# competiciones, tope de 12 partidos) tardó 13 min 18 s de los 20 de presupuesto - de sobra
+# para el tope de 25 (algunas competiciones grandes, p.ej. la NBA con 39 partidos listados,
+# se quedaban cortando 27 partidos cada vez) más la sección de béisbol añadida el mismo día
+# (providers/casasdeapuestas.py:SPORT_SECTIONS). Si el presupuesto empieza a agotarse antes
+# de cubrir todas las competiciones (log "Presupuesto de tiempo agotado"), hay margen para
+# subirlo más; las TOP_LEAGUES (engine/cache.py) siguen teniendo prioridad, así que un
+# presupuesto corto nunca las deja sin refrescar, solo retrasa las últimas de la cola.
+SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "25"))
+SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "25"))
 COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
 
 # Máximo de proveedores CON NAVEGADOR (Chromium) leyéndose a la vez; las fuentes por httpx

@@ -150,10 +150,12 @@ def comparator_providers(max_matches: int | None = None) -> list[OddsProvider]:
         # el coste ni la fragilidad de Playwright (el fallo constante de "Más"/"Resultado
         # sin empate"/"Par/Impar" en sesión nueva, ya documentado en el propio
         # providers/cuotasahora.py, y ~30 s de navegador por partido vs. ~2.5 s de httpx
-        # plano) - por eso un ciclo `full` con CuotasAhora tardaba horas. Único hueco real
-        # de cobertura al quitarlo: beisbol_mlb y balonmano_champions (EHF), que
-        # CasasDeApuestasProvider no tiene cableados todavía - pendiente si se echan en
-        # falta. `CuotasAhoraProvider` sigue implementado en providers/cuotasahora.py por
+        # plano) - por eso un ciclo `full` con CuotasAhora tardaba horas. Los dos huecos de
+        # cobertura señalados al quitarlo ya están cerrados: balonmano_champions (EHF) ya
+        # salía solo desde el principio (CasasDeApuestasProvider descubre TODAS las
+        # competiciones de balonmano, incluida esa) y beisbol_mlb se cableó el 2026-09-28
+        # (providers/casasdeapuestas.py:SPORT_SECTIONS, sección `/cuotas/beisbol/` del
+        # sitio, verificada en vivo: MLB + KBO + NPB, mismo parser genérico). `CuotasAhoraProvider` sigue implementado en providers/cuotasahora.py por
         # si hace falta reactivarlo, solo se quita de aquí.
         # BetExplorerProvider retirado del ciclo lento 2026-09-28 (medido en la VM: 150 s de
         # sus 2 competiciones - LaLiga y Champions, por Playwright - de un ciclo de 14 min

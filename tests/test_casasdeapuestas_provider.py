@@ -263,6 +263,32 @@ def test_cache_units_yields_one_callable_per_real_competition(monkeypatch):
     assert len(markets) == 1 and markets[0].event == "Juve vs. Milan"
 
 
+def test_baseball_key_resolves_to_the_beisbol_section(monkeypatch):
+    # "beisbol_mlb" (clave de SPORTS en scripts/scan_once_action.py) debe colapsar a
+    # "beisbol" y descubrir esa sección - añadido 2026-09-28: SPORTS ya la pedía desde la
+    # retirada de CuotasAhoraProvider, pero SPORT_SECTIONS no tenía la clave y se ignoraba
+    # en silencio (ver el comentario de esa retirada en scripts/scan_once_action.py).
+    from providers.casasdeapuestas import SPORT_SECTIONS, CasasDeApuestasProvider
+
+    assert SPORT_SECTIONS["beisbol"] == "beisbol"
+
+    league_id = base64.b64encode(b"/cuotas/beisbol/estados-unidos/mlb/").decode()
+    sport_index_html = f'<div data-league-id="{league_id}">MLB</div>'
+    real_client = httpx.Client  # ver el comentario equivalente en el test de arriba
+
+    def fake_client_factory(*args, **kwargs):
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=sport_index_html) if request.url.path == "/cuotas/beisbol/" else httpx.Response(404, text="")
+
+        return real_client(transport=httpx.MockTransport(handler), base_url="https://www.casasdeapuestas.com")
+
+    monkeypatch.setattr("providers.casasdeapuestas.httpx.Client", fake_client_factory)
+
+    units = CasasDeApuestasProvider().cache_units(["beisbol_mlb"])
+    keys = {key.split("::", 1)[1] for key, _ in units}
+    assert "/cuotas/beisbol/estados-unidos/mlb" in keys
+
+
 def test_bookmaker_names_that_differ_from_the_direct_providers_are_normalized():
     # Confirmado en vivo el 2026-09-28 contra la caché real de la VM: el sitio identifica
     # estas dos casas con un data-bookie distinto del `name` que usa su proveedor directo

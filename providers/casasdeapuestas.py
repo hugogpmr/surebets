@@ -94,7 +94,14 @@ DEFAULT_HORIZON_HOURS = 48
 
 # Segmento de sección del sitio por cada deporte interno nuestro (ver docstring del
 # módulo). "hockey" y "tenismesa" son claves nuevas de este proyecto, sin fuente directa
-# hasta ahora.
+# hasta ahora. "beisbol" añadido 2026-09-28: `scripts/scan_once_action.py` ya pedía
+# "beisbol_mlb" en `SPORTS` desde que se retiró CuotasAhoraProvider (único hueco de
+# cobertura señalado en su momento, ver el comentario de esa retirada), pero
+# CasasDeApuestasProvider lo ignoraba en silencio al no tener esta clave - verificado en
+# vivo contra el sitio real: sección `/cuotas/beisbol/` existe, descubre MLB + KBO (Corea)
+# + NPB (Japón) solas (mismo mecanismo de descubrimiento que el resto), y sus mercados
+# (`ML`, `AH_...`) ya los entiende el mismo parser genérico que fútbol/baloncesto/tenis -
+# no hizo falta código nuevo, solo esta clave.
 SPORT_SECTIONS: dict[str, str] = {
     "futbol": "futbol",
     "baloncesto": "baloncesto",
@@ -103,6 +110,7 @@ SPORT_SECTIONS: dict[str, str] = {
     "americano": "futbol-americano",
     "hockey": "hockey-hielo",
     "tenismesa": "tenis-de-mesa",
+    "beisbol": "beisbol",
 }
 
 # "¿Quién gana?" (2 o 3 resultados según traiga o no "Empate", ver `_winner_market`).

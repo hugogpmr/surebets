@@ -957,6 +957,31 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### Ciclo lento: más cobertura ahora que ya no está al límite de tiempo (2026-09-28)
+
+Con BetExplorer fuera (sección de arriba), un ciclo lento completo tardó 13 min 18 s de los 20
+de presupuesto - margen real, no teórico. Comprobado en vivo contra el sitio de
+CasasDeApuestasProvider antes de tocar nada:
+
+- **El tope de 12 partidos por competición (`SLOW_MAX_MATCHES`) sí recortaba cobertura de
+  verdad**: muestreadas competiciones reales, varias superan el tope (NBA 39 partidos
+  listados, solo se leían 12; tenis 16-17; fútbol hasta 36) - entre un 25 y 40 % de las
+  competiciones de cada deporte lo superan. Medido el coste marginal en la competición más
+  grande encontrada (NBA, 39 partidos): ~0,33 s por partido añadido (concurrencia interna 5).
+  Subido a 25 (antes 12): cubre la inmensa mayoría de competiciones enteras, con un coste
+  extra estimado de ~4 min sobre el total del ciclo, dentro del margen medido.
+- **`beisbol_mlb` estaba pedido en `SPORTS` desde la retirada de CuotasAhora pero
+  `CasasDeApuestasProvider` lo ignoraba en silencio** (no tenía esa clave en
+  `SPORT_SECTIONS`) - el hueco de cobertura que quedó señalado en su momento. Comprobado en
+  vivo que el sitio SÍ tiene sección `/cuotas/beisbol/` (MLB + KBO + NPB, se descubren solas)
+  y que sus mercados (`ML`, `AH_...`) ya los entiende el mismo parser genérico que el resto de
+  deportes - añadida la clave, sin código nuevo. El otro hueco señalado entonces
+  (`balonmano_champions`/EHF) resulta que ya estaba cerrado desde el principio: CasasDeApuestasProvider
+  descubre TODAS las competiciones de balonmano, la de la EHF incluida.
+- **`SLOW_BUDGET_MINUTES` subido de 20 a 25** para dar margen a lo anterior sin arriesgarse a
+  dejar competiciones sin cubrir (el timer del ciclo lento dispara cada 30 min, así que 25 de
+  presupuesto sigue dejando aire antes del siguiente).
+
 ### Sportium: la ficha de cada partido nunca cargó en la VM real (2026-09-28)
 
 Con la memoria ya arreglada (sección siguiente), 8 ciclos rápidos consecutivos mostraron a
