@@ -241,3 +241,30 @@ def test_direct_reading_of_a_bookmaker_beats_the_comparator_reading_of_the_same_
     by_name = {o.name: (o.bookmaker, o.odds) for o in result.outcomes}
     assert by_name["1"] == ("bwin", 2.10)  # la directa manda aunque el comparador diga 2.40
     assert by_name["2"] == ("bet365", 2.0)  # sin lectura directa de bwin para "2", cuenta la del comparador
+
+
+def _peer(event, *bookmakers, sport="futbol"):
+    return Market(
+        event=event, sport=sport, market_type="1X2",
+        outcomes=[Outcome("1", b, 2.0) for b in bookmakers],
+    )
+
+
+def test_peer_coverage_uses_the_engine_matching_rule_across_languages():
+    from engine.matching import peer_coverage
+
+    peers = [_peer("Turkey vs. Italy", "paf", "leovegas"), _peer("Sweden vs. Poland", "bet777")]
+    coverage = peer_coverage(["Turquía vs. Italia", "Suecia vs. Polonia", "Surinam vs. Martinica"], peers, "futbol")
+    assert coverage == {"Turquía vs. Italia": 2, "Suecia vs. Polonia": 1}  # Surinam-Martinica no lo lista nadie
+
+
+def test_peer_coverage_ignores_own_bookmaker_other_sports_and_case():
+    from engine.matching import peer_coverage
+
+    peers = [
+        _peer("Real Madrid vs. Sevilla", "PokerStars"),  # solo él mismo (otra capitalización)
+        _peer("Real Madrid vs. Sevilla", "pokerstars", "paf"),
+        _peer("Ajax vs. Feyenoord", "paf", sport="tenis"),
+    ]
+    coverage = peer_coverage(["Real Madrid vs. Sevilla", "Ajax vs. Feyenoord"], peers, "futbol", "pokerstars")
+    assert coverage == {"Real Madrid vs. Sevilla": 1}

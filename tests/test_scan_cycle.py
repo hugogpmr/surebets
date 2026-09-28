@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sqlite3
+import time
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -332,3 +333,123 @@ def test_only_the_impossible_rows_are_dropped_and_the_coherent_ones_still_compar
     (row,) = export_snapshot(db)["comparisons"]
     assert {o["bookmaker"] for o in row["odds"]} == {"bet365", "paf"}  # retabet ya no cuenta
     assert not row["is_surebet"] and sent == []
+
+
+class SlowProvider(FakeProvider):
+    def __init__(self, name, delay, fail=False):
+        super().__init__(name, [])
+        self.delay = delay
+        self.fail = fail
+
+    def fetch_markets(self, sports):
+        time.sleep(self.delay)
+        if self.fail:
+            raise RuntimeError("boom")
+        return []
+
+
+def test_cycle_reports_read_time_per_source_and_phase_times(db):
+    async def notify(text):
+        pass
+
+    result = asyncio.run(
+        run_scan_cycle(
+            [SlowProvider("a", 0.3), SlowProvider("b", 0.3), SlowProvider("c", 0.05, fail=True)],
+            ["futbol"], 250.0, 0.01, db, {}, notify=notify, logger=LOGGER,
+            max_concurrency=1,
+        )
+    )
+    sources = result["sources"]
+    # Con un solo turno, la 2ª fuente en leer espera a la 1ª: su lectura dura lo mismo,
+    # pero el tiempo de espera lo separa (si no, parecería que esa fuente es lenta).
+    assert all(sources[n]["seconds"] >= 0.04 for n in "abc")
+    assert sources["a"]["seconds"] < 0.6 and sources["b"]["seconds"] < 0.6
+    assert max(sources[n]["wait_seconds"] for n in "abc") >= 0.3
+    assert sources["c"]["ok"] is False and sources["c"]["seconds"] >= 0.04  # el fallo también se mide
+    assert {"lectura", "cruce", "verificacion", "avisos", "guardado_bd", "total"} <= result["phases"].keys()
+    assert result["phases"]["lectura"] >= 0.6 and result["phases"]["total"] >= result["phases"]["lectura"]
+
+
+class RefiningProvider(FakeProvider):
+    refines = True
+
+    def __init__(self, name, markets, extra):
+        super().__init__(name, markets)
+        self._extra = extra
+        self.peer_books = None
+
+    def refine(self, sports, peer_markets):
+        self.peer_books = sorted({o.bookmaker for m in peer_markets for o in m.outcomes})
+        return self._extra
+
+
+def run_cycle(providers, db, **kwargs):
+    async def notify(text):
+        pass
+
+    return asyncio.run(
+        run_scan_cycle(providers, ["futbol"], 250.0, 0.01, db, {}, notify=notify, logger=LOGGER, **kwargs)
+    )
+
+
+def test_second_pass_gets_only_the_other_sources_and_its_markets_join_the_first(db):
+    refiner = RefiningProvider("pokerstars", [ou("pokerstars", 1.9, 1.9)], extra=[ou("pokerstars", 2.0, 2.0, event="Extra vs. Mercado")])
+    other = FakeProvider("paf", [ou("paf", 1.8, 2.1)])
+    result = run_cycle([refiner, other], db)
+    assert refiner.peer_books == ["paf"]  # no se ve a sí mismo
+    assert result["sources"]["pokerstars"]["markets"] == 2  # 1.ª pasada + extra
+    assert "segunda_pasada" in result["phases"]
+
+
+def test_failing_second_pass_keeps_the_first_pass_markets(db):
+    class Broken(RefiningProvider):
+        def refine(self, sports, peer_markets):
+            raise RuntimeError("boom")
+
+    broken = Broken("pokerstars", [ou("pokerstars", 1.9, 1.9)], extra=[])
+    result = run_cycle([broken, FakeProvider("paf", [ou("paf", 1.8, 2.1)])], db)
+    assert result["sources"]["pokerstars"]["ok"] is True and result["sources"]["pokerstars"]["markets"] == 1
+
+
+def test_second_pass_is_not_run_when_the_first_pass_failed(db):
+    class FailingFirstPass(RefiningProvider):
+        def fetch_markets(self, sports):
+            raise RuntimeError("bloqueado")
+
+    provider = FailingFirstPass("pokerstars", [], extra=[ou("pokerstars", 2.0, 2.0)])
+    result = run_cycle([provider, FakeProvider("paf", [ou("paf", 1.8, 2.1)])], db)
+    assert result["sources"]["pokerstars"]["ok"] is False
+    assert provider.peer_books is None  # refine() no llegó a llamarse
+
+
+def test_parkable_source_is_skipped_after_repeated_failures_and_reported_as_parked(db, tmp_path):
+    from engine.health import SourceHealth
+
+    class Blocked(FakeProvider):
+        parkable = True
+
+        def fetch_markets(self, sports):
+            self.calls += 1
+            return []  # bloqueada: vacía, sin excepción
+
+    blocked = Blocked("sportium", [])
+    health = SourceHealth(str(tmp_path / "h.json"), park_after=3)
+    for _ in range(3):
+        result = run_cycle([blocked, FakeProvider("paf", [ou("paf", 1.8, 2.1)])], db, health=health)
+        assert "parked" not in result["sources"]["sportium"]
+    assert blocked.calls == 3
+
+    result = run_cycle([blocked, FakeProvider("paf", [ou("paf", 1.8, 2.1)])], db, health=health)
+    assert blocked.calls == 3  # esta vez no se ha leído
+    assert result["sources"]["sportium"]["parked"] is True and result["sources"]["sportium"]["retry_in_minutes"] > 0
+    assert result["sources"]["paf"]["ok"] is True  # el resto sigue igual
+
+
+def test_non_parkable_source_is_never_parked_even_if_always_empty(db, tmp_path):
+    from engine.health import SourceHealth
+
+    quiet = FakeProvider("winamax", [])
+    health = SourceHealth(str(tmp_path / "h.json"), park_after=2)
+    for _ in range(5):
+        run_cycle([quiet], db, health=health)
+    assert quiet.calls == 5

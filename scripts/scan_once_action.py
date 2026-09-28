@@ -33,6 +33,7 @@ import asyncio
 import json
 import logging
 import pathlib
+import time
 from datetime import timedelta
 
 from telegram import Bot
@@ -40,6 +41,7 @@ from telegram import Bot
 import config
 from bot.telegram_bot import notify_opportunity
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
+from engine.health import SourceHealth
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
 from providers.base import OddsProvider
@@ -266,6 +268,7 @@ async def run_scan(mode: str) -> None:
         verify_margin=config.VERIFY_MARGIN,
         verify_cycles=config.VERIFY_CYCLES,
         max_concurrency=config.MAX_CONCURRENT_FETCHES,
+        health=SourceHealth(config.SOURCE_HEALTH_PATH, config.SOURCE_PARK_AFTER) if config.SOURCE_PARK_AFTER else None,
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en
@@ -278,10 +281,12 @@ async def run_scan(mode: str) -> None:
     STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
     STATE_PATH.write_text(json.dumps(active_state, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    export_started = time.perf_counter()
     snapshot = export_snapshot(
         config.DB_PATH,
         settings={
             "mode": mode,
+            "phases": result.get("phases", {}),
             "confirm_cycles": config.CONFIRM_CYCLES,
             "round_step": config.ROUND_STEP,
             "warn_margin": config.WARN_MARGIN,
@@ -293,16 +298,19 @@ async def run_scan(mode: str) -> None:
     )
     SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
     SNAPSHOT_PATH.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2), encoding="utf-8")
+    logger.info("Volcado del panel (snapshot + docs/data.json): %.1fs", time.perf_counter() - export_started)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--mode", choices=("full", "fast", "slow"), default="full")
     args = parser.parse_args()
+    started = time.perf_counter()
     if args.mode == "slow":
         run_slow()
     else:
         asyncio.run(run_scan(args.mode))
+    logger.info("Tiempo total del proceso (modo %s): %.1fs", args.mode, time.perf_counter() - started)
 
 
 if __name__ == "__main__":

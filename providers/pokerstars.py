@@ -63,9 +63,11 @@ el mismo navegador.
 import asyncio
 import logging
 import re
+import time
 
 from playwright.async_api import async_playwright
 
+from engine.matching import peer_coverage
 from engine.models import Market, Outcome
 from providers.altenar import _fmt_line
 from providers.base import OddsProvider
@@ -78,6 +80,10 @@ DEFAULT_URL = "https://www.pokerstars.es/sports/futbol/1/matches/"
 SITE_ORIGIN = "https://www.pokerstars.es"
 DEFAULT_EXTRA_MARKETS_MAX_MATCHES = 25
 DEFAULT_EXTRA_MARKETS_CONCURRENCY = 6
+# Tope de tiempo de TODA la lectura de fichas (ver `_fetch_extra_markets`), y lo mínimo que
+# debe quedar para que merezca la pena empezar otra pestaña.
+DEFAULT_EXTRA_MARKETS_BUDGET_SECONDS = 60.0
+MIN_TAB_BUDGET_MS = 3000
 # Fragmentos de URL de las pestañas de la ficha de partido que traen mercados
 # nuevos; "Populares" (sin fragmento) ya se cubre con el 1X2 del listado.
 EXTRA_TABS = ("goles", "corneres-y-tarjetas", "mitad")
@@ -297,6 +303,18 @@ def parse_extra_markets(raw_accordions: list[dict], home_name: str, away_name: s
     return list(found.values())
 
 
+def select_crossed_matches(
+    listing: list[tuple[str, str, str]], peer_markets: list[Market], limit: int
+) -> list[tuple[str, str, str]]:
+    """De los partidos del listado (local, visitante, enlace), los que otra casa también
+    lista (misma regla de cruce que el motor, `engine.matching.peer_coverage`), primero los
+    que cubren más casas distintas, hasta `limit`. Empate: se conserva el orden del listado."""
+    coverage = peer_coverage([f"{home} vs. {away}" for home, away, _ in listing], peer_markets, "futbol", BOOKMAKER)
+    crossed = [item for item in listing if f"{item[0]} vs. {item[1]}" in coverage]
+    crossed.sort(key=lambda item: -coverage[f"{item[0]} vs. {item[1]}"])  # sort estable
+    return crossed[:limit]
+
+
 class PokerStarsProvider(OddsProvider):
     """PokerStars Sports por DOM (ver docstring del módulo). 1X2 de fútbol
     dentro del horizonte que la propia web decide mostrar en `/matches/` (una
@@ -306,6 +324,7 @@ class PokerStarsProvider(OddsProvider):
     aparte (sin API JSON, a diferencia de bet777/888sport/William Hill)."""
 
     name = BOOKMAKER
+    refines = True
 
     def __init__(
         self,
@@ -314,14 +333,20 @@ class PokerStarsProvider(OddsProvider):
         exclude_women: bool | None = None,
         extra_markets_max_matches: int = DEFAULT_EXTRA_MARKETS_MAX_MATCHES,
         extra_markets_concurrency: int = DEFAULT_EXTRA_MARKETS_CONCURRENCY,
+        extra_markets_budget_seconds: float = DEFAULT_EXTRA_MARKETS_BUDGET_SECONDS,
     ):
         self.url = url
         self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
         self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.extra_markets_max_matches = extra_markets_max_matches
         self.extra_markets_concurrency = extra_markets_concurrency
+        self.extra_markets_budget_seconds = extra_markets_budget_seconds
+        # Partidos del listado (local, visitante, enlace a su ficha) para la 2ª pasada.
+        self._listing: list[tuple[str, str, str]] = []
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
+        """Primera pasada: SOLO el 1X2 del listado (una página, unos segundos). Los mercados
+        de cada ficha se leen en `refine`, cuando ya se sabe qué partidos lista otra casa."""
         if not any(key.split("_", 1)[0] == "futbol" for key in sports):
             return []
         return asyncio.run(self._fetch_markets_async())
@@ -337,19 +362,39 @@ class PokerStarsProvider(OddsProvider):
                 raw_groups = await page.evaluate(_EXTRACT_JS)
             finally:
                 await page.close()
+                await browser.close()
 
-            markets = self._parse_groups(raw_groups)
-            href_by_names = self._href_by_names(raw_groups)
-            matches = [
-                (home, away, href_by_names[(home, away)])
-                for home, away in (market.event.split(" vs. ", 1) for market in markets)
-                if (home, away) in href_by_names
-            ][: self.extra_markets_max_matches]
-
-            extra = await self._fetch_extra_markets(browser, matches)
-            await browser.close()
-        markets.extend(extra)
+        markets = self._parse_groups(raw_groups)
+        href_by_names = self._href_by_names(raw_groups)
+        self._listing = [
+            (home, away, href_by_names[(home, away)])
+            for home, away in (market.event.split(" vs. ", 1) for market in markets)
+            if (home, away) in href_by_names
+        ]
         return markets
+
+    def refine(self, sports: list[str], peer_markets: list[Market]) -> list[Market]:
+        """Segunda pasada: OU/BTTS/1X2_HT/CORNERS/CARDS de las fichas, solo de los partidos
+        que alguna OTRA casa también lista (los únicos que pueden cruzarse), los más
+        cubiertos primero y con un tope de tiempo. En la VM (2 vCPU) leer las fichas de los
+        25 primeros partidos del listado, sin mirar si alguien más los lista, era el 90 % de
+        un ciclo entero: medido el 2026-09-28, ~3 min 40 s de 3 min 55 s."""
+        matches = select_crossed_matches(self._listing, peer_markets, self.extra_markets_max_matches)
+        logger.info(
+            "PokerStars: %d de %d partidos del listado los lista otra casa%s",
+            len(matches), len(self._listing), "" if matches else " (no se lee ninguna ficha)",
+        )
+        if not matches:
+            return []
+        return asyncio.run(self._refine_async(matches))
+
+    async def _refine_async(self, matches: list[tuple[str, str, str]]) -> list[Market]:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            try:
+                return await self._fetch_extra_markets(browser, matches)
+            finally:
+                await browser.close()
 
     @staticmethod
     def _href_by_names(raw_groups: list[dict]) -> dict[tuple[str, str], str]:
@@ -370,13 +415,29 @@ class PokerStarsProvider(OddsProvider):
         if not matches:
             return []
         semaphore = asyncio.Semaphore(self.extra_markets_concurrency)
+        # Tope de tiempo de toda la fase: las pestañas que no hayan empezado al agotarse se
+        # saltan (el semáforo es FIFO, así que se pierden las de los partidos menos
+        # cubiertos, que van al final) y las que sí han empezado no esperan más que lo que
+        # queda. Sin tope, un puñado de pestañas que agotan su espera alargaba el ciclo.
+        deadline = time.monotonic() + self.extra_markets_budget_seconds
+        skipped = 0
 
         async def fetch_tab(href: str, tab: str) -> list[dict]:
+            nonlocal skipped
             async with semaphore:
+                remaining_ms = int((deadline - time.monotonic()) * 1000)
+                if remaining_ms < MIN_TAB_BUDGET_MS:
+                    skipped += 1
+                    return []
                 page = await browser.new_page()
                 try:
-                    await page.goto(f"{SITE_ORIGIN}{href}#{tab}", timeout=20000, wait_until="domcontentloaded")
-                    await page.wait_for_selector('[data-testid="sports-expandable-accordion"]', timeout=15000)
+                    await page.goto(
+                        f"{SITE_ORIGIN}{href}#{tab}", timeout=min(20000, remaining_ms), wait_until="domcontentloaded"
+                    )
+                    remaining_ms = max(int((deadline - time.monotonic()) * 1000), MIN_TAB_BUDGET_MS)
+                    await page.wait_for_selector(
+                        '[data-testid="sports-expandable-accordion"]', timeout=min(15000, remaining_ms)
+                    )
                     return await page.evaluate(_EXTRACT_ACCORDIONS_JS)
                 except Exception:
                     logger.warning("PokerStars: fallo leyendo %s#%s", href, tab, exc_info=True)
@@ -392,8 +453,9 @@ class PokerStarsProvider(OddsProvider):
         results = await asyncio.gather(*[fetch_match(home, away, href) for home, away, href in matches])
         markets = [market for sub in results for market in sub]
         logger.info(
-            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS) en %d partidos",
+            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS) en %d partidos%s",
             len(markets), len(matches),
+            f" ({skipped} pestañas saltadas por el tope de {self.extra_markets_budget_seconds:.0f}s)" if skipped else "",
         )
         return markets
 

@@ -204,3 +204,26 @@ def test_parse_extra_markets_deduplicates_by_market_type():
     descanso = {"title": "Descanso", "headers": [HOME, "Empate", AWAY], "rows": [["2,63", "2,30", "3,40"]]}
     markets = parse_extra_markets([descanso, descanso], HOME, AWAY)
     assert [m.market_type for m in markets] == ["1X2_HT"]
+
+
+def test_select_crossed_matches_keeps_only_matches_another_house_lists_most_covered_first():
+    from engine.models import Market, Outcome
+    from providers.pokerstars import select_crossed_matches
+
+    def peer(event, *books):
+        return Market(event=event, sport="futbol", market_type="1X2", outcomes=[Outcome("1", b, 2.0) for b in books])
+
+    listing = [
+        ("Surinam", "Martinica", "/a"),  # nadie más lo lista
+        ("Turquía", "Italia", "/b"),  # 1 casa
+        ("Real Madrid", "Sevilla", "/c"),  # 3 casas
+        ("Suecia", "Polonia", "/d"),  # 1 casa
+    ]
+    peers = [
+        peer("Turkey vs. Italy", "paf"),
+        peer("Real Madrid vs. Sevilla", "paf", "leovegas", "bet777"),
+        peer("Sweden vs. Poland", "paf"),
+    ]
+    assert [h for _, _, h in select_crossed_matches(listing, peers, 25)] == ["/c", "/b", "/d"]  # empate: orden del listado
+    assert [h for _, _, h in select_crossed_matches(listing, peers, 2)] == ["/c", "/b"]
+    assert select_crossed_matches(listing, [], 25) == []

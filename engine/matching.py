@@ -185,6 +185,31 @@ def group_by_event(raw_markets: list[Market]) -> list[Market]:
     return groups
 
 
+def peer_coverage(events: list[str], peer_markets: list[Market], sport: str, exclude_bookmaker: str = "") -> dict[str, int]:
+    """Para cada evento de `events`, con cuántas casas DISTINTAS de `peer_markets`
+    (mismo deporte) coincide según la misma regla que usa `group_by_event` para cruzar
+    (`_events_match`, no una clave exacta: "Turquía vs. Italia" y "Turkey vs. Italy" no
+    tienen la misma clave pero sí cruzan). Los que no coinciden con ninguna quedan fuera:
+    un partido que ninguna otra casa lista no puede dar una surebet, así que no compensa
+    leer sus mercados extra."""
+    books_by_event: dict[str, set[str]] = {}
+    for market in peer_markets:
+        if market.sport != sport:
+            continue
+        books = books_by_event.setdefault(market.event, set())
+        books.update(o.bookmaker.lower() for o in market.outcomes if o.bookmaker.lower() != exclude_bookmaker.lower())
+    peers = [(event, books) for event, books in books_by_event.items() if books]
+    coverage: dict[str, int] = {}
+    for event in events:
+        matched: set[str] = set()
+        for peer_event, books in peers:
+            if _events_match(event, peer_event):
+                matched |= books
+        if matched:
+            coverage[event] = len(matched)
+    return coverage
+
+
 def best_odds_per_outcome(market: Market) -> Market:
     """Cuando un mismo resultado (p.ej. "1") aparece en varias casas tras
     agrupar por evento, se queda con la cuota más alta de cada uno. Sin este

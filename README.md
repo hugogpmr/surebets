@@ -957,6 +957,32 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### Tiempos medidos en la VM y qué se cambió (2026-09-28)
+
+Medido con `journalctl -u surebets-fast` en la VM (2 vCPU / 3,8 GB), 87 ciclos en 24 h: el ciclo rápido dura
+**4-6,5 min** y consume ~7,5 min de CPU en ~4,5 de reloj (las 2 vCPU casi al 100 %, ~3 GB de RAM de pico). El
+timer lanza un ciclo cada ~12 min contados **desde el inicio** (no desde el final). El tiempo se iba en:
+PokerStars leyendo las fichas de 25 partidos (~3 min 40 s de 3 min 55 s), Altenar+Kambi (~2 min, ~3.800
+peticiones), y solo ~6 s de cruce de eventos y ~9 s de base de datos + `git push`.
+
+- **Tiempos por fuente y por fase**: cada ciclo registra `Fuente X: N mercados en Ns` (separando la espera de turno
+  de `MAX_CONCURRENT_FETCHES` de la lectura real), `Tiempos del ciclo: lectura, segunda_pasada, cruce, avisos,
+  guardado_bd, total`, y `deploy/vm_fast_scan.sh` añade el tiempo del escaneo frente al de `git`. También quedan en
+  `docs/data.json` (`settings.phases` y `settings.sources[*].seconds`).
+- **PokerStars en dos pasadas** (`refines` en `providers/base.py`, `_refine` en `engine/scan.py`): `fetch_markets` solo
+  lee el 1X2 del listado (~8 s); cuando el resto de fuentes ya están leídas, `refine` lee las fichas **solo de los
+  partidos que otra casa también lista** (misma regla de cruce que el motor, `engine.matching.peer_coverage`; los más
+  cubiertos primero) con un tope de 60 s para toda la fase. Un partido que nadie más lista no puede dar surebet.
+  Prueba en vivo con solo Bet777 como referencia: 13 de 97 partidos cruzados, 127 mercados nuevos en 32 s.
+- **Fuentes aparcadas** (`engine/health.py`, `SOURCE_PARK_AFTER`, por defecto 5): Sportium, Versus, Betfair y bwin
+  daban 0 mercados en 81-87 de 87 ciclos en la VM (la IP de datacenter no las deja pasar) pero lanzaban un Chromium
+  cada ciclo. Tras 5 lecturas malas seguidas se saltan y se reintentan a los 30 min, 1 h, 2 h, 4 h y 6 h (máximo);
+  una lectura buena las recupera. `SOURCE_PARK_AFTER=0` lo desactiva. El estado va en `cache/source_health.json`
+  (fuera de git, propio de cada máquina: en git la VM aparcaría también las del PC, donde sí funcionan). En
+  `settings.sources` aparecen con `parked: true` y `retry_in_minutes`.
+- Fuera de este cambio, y siguen leyéndose siempre: **Winamax** (0 partidos: podría ser legítimo, así que no se
+  aparca) y **William Hill** (403 desde la VM; es solo httpx, cuesta poco).
+
 El arbitraje deportivo no es ilegal en España (Ley 13/2011), pero cada casa de apuestas puede limitar o cerrar
 cuentas por sus propios términos y condiciones. El scraping debe hacerse de forma moderada y revisando los
 términos de servicio de cada operador. Ver el documento base para más detalle.

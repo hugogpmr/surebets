@@ -65,6 +65,13 @@ COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
 # funcione bien - ver engine/scan.py:_fetch.
 MAX_CONCURRENT_FETCHES = int(os.getenv("MAX_CONCURRENT_FETCHES", "0")) or None
 
+# "Aparcar" las fuentes de navegador que fallan o vienen vacías N ciclos seguidos (ver
+# engine/health.py): se saltan y se reintentan cada vez más espaciadas (30 min ... 6 h), y una
+# lectura buena las recupera. 0 = desactivado (se leen todas siempre). El estado va en cache/
+# (fuera de git), propio de cada máquina.
+SOURCE_PARK_AFTER = int(os.getenv("SOURCE_PARK_AFTER", "5"))
+SOURCE_HEALTH_PATH = os.getenv("SOURCE_HEALTH_PATH", "cache/source_health.json")
+
 # Betfair Exchange API oficial (ver providers/betfair_exchange.py), aparte del
 # scraper DOM de la web de apuestas fijas (providers/betfair.py). Opcional: sin
 # estas tres variables el provider se salta solo, sin romper el escaneo. La app

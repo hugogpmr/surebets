@@ -6,6 +6,7 @@ programada local, con el estado cargado/guardado en un JSON entre ejecuciones).
 """
 
 import asyncio
+import time
 from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
 
@@ -13,6 +14,7 @@ from providers.base import OddsProvider
 from storage.db import comparison_key, save_comparisons, save_opportunity
 
 from .arbitrage import compare_market
+from .health import SourceHealth
 from .labels import kickoff_line, market_title, outcome_label, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
 from .quality import (
@@ -119,8 +121,17 @@ def _stamp(provider: OddsProvider, markets: list) -> None:
 
 
 async def _fetch(
-    provider: OddsProvider, sports: list[str], logger, sem: asyncio.Semaphore | None = None
+    provider: OddsProvider,
+    sports: list[str],
+    logger,
+    sem: asyncio.Semaphore | None = None,
+    timings: dict[str, dict] | None = None,
 ) -> list | None:
+    # `timings[nombre]` = {"wait": s esperando turno del semáforo, "run": s leyendo de
+    # verdad}: sin separarlos, con max_concurrency una fuente que espera turno parece
+    # lenta cuando la lenta es otra. Se rellena también si la lectura falla.
+    requested = time.perf_counter()
+    started = requested
     try:
         # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
         # provider lanza su propio Playwright); como run_scan_cycle ya corre
@@ -138,12 +149,47 @@ async def _fetch(
             fetched = await asyncio.to_thread(provider.fetch_markets, sports)
         else:
             async with sem:
+                started = time.perf_counter()
                 fetched = await asyncio.to_thread(provider.fetch_markets, sports)
     except Exception:
         logger.exception("Fallo obteniendo datos de %s", provider.name)
         return None
+    finally:
+        if timings is not None:
+            finished = time.perf_counter()
+            timings[provider.name] = {"wait": started - requested, "run": finished - started}
     _stamp(provider, fetched)
     return fetched
+
+
+async def _refine(
+    provider: OddsProvider,
+    sports: list[str],
+    peer_markets: list,
+    logger,
+    sem: asyncio.Semaphore | None,
+    timings: dict[str, dict],
+) -> list:
+    """Segunda pasada de un proveedor con `refines` (ver providers/base.py): se ejecuta
+    cuando ya están leídas todas las fuentes, y aquí ya no hay nada más corriendo, así que
+    el navegador tiene la máquina para él. Un fallo se registra y deja la primera pasada
+    tal cual. Su tiempo se SUMA al de lectura de esa fuente."""
+    started = time.perf_counter()
+    try:
+        if sem is None:
+            extra = await asyncio.to_thread(provider.refine, sports, peer_markets)
+        else:
+            async with sem:
+                started = time.perf_counter()
+                extra = await asyncio.to_thread(provider.refine, sports, peer_markets)
+    except Exception:
+        logger.exception("Fallo en la segunda pasada de %s", provider.name)
+        return []
+    finally:
+        entry = timings.setdefault(provider.name, {"wait": 0.0, "run": 0.0})
+        entry["run"] += time.perf_counter() - started
+    _stamp(provider, extra)
+    return extra
 
 
 def _build_comparisons(
@@ -293,6 +339,7 @@ async def run_scan_cycle(
     verify_margin: float = VERIFY_MARGIN,
     verify_cycles: int = 3,
     max_concurrency: int | None = None,
+    health: SourceHealth | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -315,36 +362,114 @@ async def run_scan_cycle(
     # tiene pocos núcleos (ver docstring de _fetch); None = sin límite, igual
     # que siempre.
     sem = asyncio.Semaphore(max_concurrency) if max_concurrency else None
-    fetched_all = await asyncio.gather(*(_fetch(provider, sports, logger, sem) for provider in providers))
-    for provider, fetched in zip(providers, fetched_all):
+    fetch_timings: dict[str, dict] = {}
+    phases: dict[str, float] = {}
+    cycle_start = time.perf_counter()
+
+    # Fuentes aparcadas (engine/health.py): las de navegador que llevan ciclos seguidos
+    # fallando o vacías no se leen esta vez; se reintentan cada vez más espaciadas.
+    read_at = datetime.now(timezone.utc)
+    parked: dict[str, float] = {}  # nombre -> minutos hasta el próximo intento
+    to_read = []
+    for provider in providers:
+        wait = health.retry_in(provider.name, read_at) if health is not None and provider.parkable else None
+        if wait is None:
+            to_read.append(provider)
+        else:
+            parked[provider.name] = wait.total_seconds() / 60
+
+    fetched_all = await asyncio.gather(
+        *(_fetch(provider, sports, logger, sem, fetch_timings) for provider in to_read)
+    )
+    phases["lectura"] = time.perf_counter() - cycle_start
+    for provider, fetched in zip(to_read, fetched_all):
         if fetched is not None:
             raw_by_provider[provider.name] = fetched
+        if health is not None and provider.parkable:
+            health.record(provider.name, good=bool(fetched), now=read_at)
+    if health is not None:
+        try:
+            health.save()
+        except OSError:
+            logger.warning("No se pudo guardar el estado de las fuentes aparcadas", exc_info=True)
+
+    # Segunda pasada de los proveedores que la tienen (PokerStars): con todas las demás
+    # fuentes ya leídas se sabe qué partidos pueden cruzarse, y solo se gasta navegador en esos.
+    step = time.perf_counter()
+    refiners = [p for p in to_read if p.refines and p.name in raw_by_provider]
+    if refiners:
+        extras = await asyncio.gather(
+            *(
+                _refine(
+                    p, sports,
+                    [m for q in providers if q.name != p.name for m in raw_by_provider.get(q.name, [])],
+                    logger, sem, fetch_timings,
+                )
+                for p in refiners
+            )
+        )
+        for p, extra in zip(refiners, extras):
+            raw_by_provider[p.name].extend(extra)
+        phases["segunda_pasada"] = time.perf_counter() - step
+
     raw_markets = [m for p in providers for m in raw_by_provider.get(p.name, [])]
     sources = {
         p.name: {
             "ok": p.name in raw_by_provider,
             "markets": len(raw_by_provider.get(p.name, [])),
             "events": len({(m.sport, m.event) for m in raw_by_provider.get(p.name, [])}),
+            "seconds": round(fetch_timings.get(p.name, {}).get("run", 0.0), 1),
+            "wait_seconds": round(fetch_timings.get(p.name, {}).get("wait", 0.0), 1),
+            **({"parked": True, "retry_in_minutes": round(parked[p.name])} if p.name in parked else {}),
         }
         for p in providers
     }
     for name, info in sources.items():
-        logger.info("Fuente %s: %d mercados de %d partidos%s", name, info["markets"], info["events"], "" if info["ok"] else " (FALLÓ)")
+        if info.get("parked"):
+            logger.info(
+                "Fuente %s: aparcada (%d lecturas malas seguidas), próximo intento en %d min",
+                name, health.streak(name), info["retry_in_minutes"],
+            )
+            continue
+        logger.info(
+            "Fuente %s: %d mercados de %d partidos en %.1fs%s%s",
+            name,
+            info["markets"],
+            info["events"],
+            info["seconds"],
+            f" (esperó turno {info['wait_seconds']:.1f}s)" if info["wait_seconds"] >= 0.5 else "",
+            "" if info["ok"] else " (FALLÓ)",
+        )
+    slowest = max(sources.items(), key=lambda item: item[1]["seconds"] + item[1]["wait_seconds"], default=None)
+    if slowest is not None:
+        logger.info(
+            "Fuente más lenta: %s (%.1fs de lectura + %.1fs de espera de turno)",
+            slowest[0],
+            slowest[1]["seconds"],
+            slowest[1]["wait_seconds"],
+        )
 
     now = datetime.now(timezone.utc)
     args = (bankroll, min_margin, round_step, now, warn_margin, verify_margin, max_margin)
     stats: dict = {}
+    step = time.perf_counter()
     comparisons = _build_comparisons(raw_markets, *args, stats)
+    phases["cruce"] = time.perf_counter() - step
     if stats.get("dropped_rows"):
         logger.info(
             "Quitadas %d lecturas imposibles de comparadores (suma de probabilidades < %.2f: tabla de otra pestaña)",
             stats["dropped_rows"],
             COHERENCE_MIN,
         )
+    step = time.perf_counter()
     comparisons = await _verify_high_margins(comparisons, providers, raw_by_provider, sports, args, logger)
+    phases["verificacion"] = time.perf_counter() - step
 
     discarded = sum(1 for c in comparisons if c.margin > 0 and any(f in BLOCKING_FLAGS for f in c.flags))
     seen_keys: set[str] = set()
+    notify_seconds = 0.0
+    notified_count = 0
+    step = time.perf_counter()
 
     for comparison in comparisons:
         if not comparison.is_surebet:
@@ -399,6 +524,8 @@ async def run_scan_cycle(
         # del ciclo: la surebet ya quedó guardada arriba, y `save_comparisons`/el
         # volcado de estado que hace scan_once_action.py después de esta función
         # también deben ejecutarse pase lo que pase con este aviso concreto.
+        notify_started = time.perf_counter()
+        notified_count += 1
         try:
             await notify(format_alert(comparison))
         except Exception:
@@ -409,13 +536,20 @@ async def run_scan_cycle(
             )
         else:
             active_state[key]["notified"] = True
+        finally:
+            notify_seconds += time.perf_counter() - notify_started
+
+    phases["avisos"] = notify_seconds
+    phases["confirmacion"] = time.perf_counter() - step - notify_seconds
 
     if discarded:
         logger.info("Descartadas %d falsas surebets por error de datos (ver engine/quality.py)", discarded)
 
     # Registra el estado de *todas* las comparaciones (sean o no surebet)
     # para el panel web, aparte del dedupe de arriba que solo mira surebets.
+    step = time.perf_counter()
     save_comparisons(db_path, comparisons)
+    phases["guardado_bd"] = time.perf_counter() - step
 
     # Las que ya no aparecen en este scan se consideran cerradas: si vuelven a
     # aparecer más adelante, se tratan como nuevas (y hay que confirmarlas otra vez).
@@ -423,4 +557,16 @@ async def run_scan_cycle(
         if key not in seen_keys:
             del active_state[key]
 
-    return {"sources": sources, "dropped_rows": stats.get("dropped_rows", 0)}
+    phases["total"] = time.perf_counter() - cycle_start
+    logger.info(
+        "Tiempos del ciclo (%d mercados en bruto, %d comparaciones, %d avisos): %s",
+        len(raw_markets),
+        len(comparisons),
+        notified_count,
+        ", ".join(f"{name} {seconds:.1f}s" for name, seconds in phases.items()),
+    )
+    return {
+        "sources": sources,
+        "dropped_rows": stats.get("dropped_rows", 0),
+        "phases": {name: round(seconds, 1) for name, seconds in phases.items()},
+    }

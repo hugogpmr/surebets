@@ -15,8 +15,14 @@ cd "$APP_DIR"
 export PYTHONPATH="$APP_DIR"
 PYTHON="$APP_DIR/.venv/bin/python"
 
+# SECONDS es un contador de bash (segundos desde que arranco el script): sirve para
+# medir cuanto tarda el escaneo frente a la publicacion en git, que sube el .db
+# (decenas de MB) y el panel en cada ciclo. Se imprime al salir, sea por donde sea.
+trap 'echo "Tiempos del script: total ${SECONDS}s (escaneo ${scan_seconds:-?}s, git y resto $((SECONDS - ${scan_seconds:-0}))s)"' EXIT
+
 "$PYTHON" scripts/scan_once_action.py --mode fast
 scan_exit=$?
+scan_seconds=$SECONDS
 
 if [ "$scan_exit" -ne 0 ]; then
   echo "El escaneo fallo con codigo $scan_exit" >&2

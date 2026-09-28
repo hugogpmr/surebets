@@ -84,6 +84,7 @@ class BetfairProvider(OddsProvider):
     """
 
     name = "betfair"
+    parkable = True  # navegador; ver engine/health.py
 
     def __init__(self, competition_urls: dict[str, str] | None = None):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS

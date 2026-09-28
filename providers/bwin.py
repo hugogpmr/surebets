@@ -261,6 +261,7 @@ class BwinProvider(OddsProvider):
     """
 
     name = "bwin"
+    parkable = True  # navegador; ver engine/health.py
     fast_recheck = False  # necesita navegador: una segunda lectura cuesta ~1 min
 
     def __init__(

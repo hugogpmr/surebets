@@ -265,6 +265,7 @@ class SportiumProvider(OddsProvider):
     """
 
     name = "sportium"
+    parkable = True  # navegador; ver engine/health.py
 
     def __init__(
         self,
