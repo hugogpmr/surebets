@@ -1,351 +1,416 @@
 {
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-5.5||betfair,bwin": {
     "margin": 0.18253968253968256,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-4.5||betfair,bwin": {
     "margin": 0.19047619047619047,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-3.5||betfair,bwin": {
-    "margin": 0.2070175438596491,
-    "cycles": 68,
+    "margin": 0.21052631578947367,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_1.5||888sport,betfair": {
     "margin": 0.24285714285714288,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_2.5||betfair,interwetten": {
     "margin": 0.25,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_5.5||betfair,interwetten": {
     "margin": 0.20915032679738554,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_6.5||betfair,interwetten": {
     "margin": 0.18341307814992025,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_7.5||betfair,interwetten": {
     "margin": 0.17249218527990906,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_9.5||betfair,interwetten": {
     "margin": 0.1621966794380587,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_10.5||betfair,interwetten": {
     "margin": 0.13673965936739663,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_11.5||betfair,interwetten": {
     "margin": 0.125925925925926,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_12.5||betfair,interwetten": {
     "margin": 0.12312030075187974,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_13.5||betfair,interwetten": {
     "margin": 0.1014873140857393,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_14.5||betfair,bwin": {
-    "margin": 0.05254237288135588,
-    "cycles": 68,
+    "margin": 0.0596638655462185,
+    "cycles": 69,
     "notified": true
   },
   "Leganés vs. Castellón||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.18778280542986425,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Leganés vs. Castellón||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.17460317460317465,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Australia vs. Brasil||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.2333333333333334,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Georgia vs. Ucrania||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.14743589743589747,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Georgia vs. Ucrania||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.15384615384615397,
-    "cycles": 68,
+    "margin": 0.16478696741854637,
+    "cycles": 69,
     "notified": true
   },
   "Armenia vs. Montenegro||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.14743589743589747,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Armenia vs. Montenegro||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.1737967914438503,
-    "cycles": 68,
+    "margin": 0.1572112098427888,
+    "cycles": 69,
     "notified": true
   },
   "Letonia vs. Chipre||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.12307692307692308,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Letonia vs. Chipre||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.12857142857142856,
-    "cycles": 68,
+    "margin": 0.15337763012181627,
+    "cycles": 69,
     "notified": true
   },
   "Irlanda del Norte vs. Hungría||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.12307692307692308,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Irlanda del Norte vs. Hungría||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.15934065934065944,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Turquía vs. Italia||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.1428571428571429,
-    "cycles": 68,
+    "margin": 0.13700918964076858,
+    "cycles": 69,
     "notified": true
   },
   "Turquía vs. Italia||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.18045112781954886,
-    "cycles": 68,
+    "margin": 0.1594427244582044,
+    "cycles": 69,
     "notified": true
   },
   "Bélgica vs. Francia||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.2092111709946105,
-    "cycles": 68,
+    "margin": 0.19255907491201607,
+    "cycles": 69,
     "notified": true
   },
   "Rumanía vs. Bosnia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.14812030075187976,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Rumanía vs. Bosnia||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.13389711064129672,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Suecia vs. Polonia||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.04699453551912569,
-    "cycles": 68,
+    "margin": 0.0374707259953162,
+    "cycles": 69,
     "notified": true
   },
   "Moldavia vs. Islas Feroe||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.12307692307692308,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Moldavia vs. Islas Feroe||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.16410256410256419,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "Bulgaria vs. Estonia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.19255907491201607,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "San Marino vs. Albania||futbol||AH_HT_1||888sport,cgmapuestas": {
     "margin": 0.05180840664711628,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "San Marino vs. Albania||futbol||AH_HT_2||888sport,cgmapuestas": {
     "margin": 0.10833333333333339,
-    "cycles": 68,
+    "cycles": 69,
     "notified": true
   },
   "FC Osaka vs. Avispa Fukuoka||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.2063492063492064,
-    "cycles": 68,
+    "margin": 0.2222222222222222,
+    "cycles": 69,
     "notified": true
   },
   "Arsenal vs. Lille||futbol||OU_3.25||bet365,versus": {
     "margin": 0.04707884288145203,
-    "cycles": 67,
+    "cycles": 68,
     "notified": true
   },
   "Atl. Madrid vs. Manchester United||futbol||OU_3||bet365,retabet": {
     "margin": 0.024297375121962728,
-    "cycles": 67,
+    "cycles": 68,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-6.5||betfair,bwin": {
     "margin": 0.17500000000000004,
-    "cycles": 63,
+    "cycles": 64,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_8.5||888sport,betfair": {
     "margin": 0.17948717948717952,
-    "cycles": 60,
+    "cycles": 61,
     "notified": true
   },
   "Estados Unidos vs. Chile||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22705314009661826,
-    "cycles": 60,
+    "cycles": 61,
     "notified": true
   },
   "México vs. Perú||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22196531791907503,
-    "cycles": 58,
+    "cycles": 59,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_3.5||betfair,interwetten": {
     "margin": 0.2491694352159468,
-    "cycles": 41,
+    "cycles": 42,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_4.5||betfair,interwetten": {
     "margin": 0.1963015647226174,
-    "cycles": 41,
+    "cycles": 42,
     "notified": true
   },
   "New York Liberty vs. Minnesota Lynx||baloncesto||AH_-2.5||betfair,cgmapuestas": {
     "margin": 0.07803341607392422,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Maccabi Haifa (F) vs. Maccabi Karmiel (F)||baloncesto||ML||betway,daznbet": {
     "margin": 0.02661064425770321,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-2.5||betfair,bwin": {
-    "margin": 0.22222222222222232,
-    "cycles": 14,
+    "margin": 0.23297491039426532,
+    "cycles": 15,
     "notified": true
   },
   "Georgia vs. Ucrania||futbol||CARDS_OU_6.5||bet777,betinia": {
     "margin": 0.010025062656641603,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Georgia vs. Ucrania||futbol||CARDS_OU_HOME_2.5||bet777,paf": {
     "margin": 0.0474313493627645,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Zalgiris Kaunas vs. Olympiacos||baloncesto||AH_-2.5||betfair,paf": {
     "margin": 0.07484407484407496,
-    "cycles": 9,
+    "cycles": 10,
     "notified": true
   },
   "Etiopía vs. Senegal||futbol||CORNERS_OU_10.5||betway,jokerbet": {
     "margin": 0.038610038610038644,
-    "cycles": 9,
+    "cycles": 10,
     "notified": true
   },
   "Chicago Bears vs. Philadelphia Eagles||americano||AH_-1.5||betfair,bwin": {
-    "margin": 0.23245614035087714,
-    "cycles": 5,
+    "margin": 0.23490127758420443,
+    "cycles": 6,
     "notified": true
   },
   "Roasso Kumamoto vs. Kawasaki Frontale||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.2333333333333334,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Giravanz Kitakyushu vs. Nagoya Grampus||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.2455284552845528,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Sagan Tosu vs. Tokyo Verdy||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.17119722382880287,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Sagan Tosu vs. Tokyo Verdy||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.1594427244582044,
-    "cycles": 5,
+    "margin": 0.18045112781954886,
+    "cycles": 6,
     "notified": true
   },
   "Consadole Sapporo vs. Fagiano Okayama||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.19393939393939386,
-    "cycles": 5,
+    "margin": 0.20119760479041915,
+    "cycles": 6,
     "notified": true
   },
   "Fujieda vs. Cerezo Osaka||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.21937942297223723,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Kataller Toyama vs. Urawa Reds||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.19639065817409773,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Montedio Yamagata vs. Yokohama Marinos||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.20089786756453432,
-    "cycles": 5,
+    "margin": 0.21212121212121215,
+    "cycles": 6,
     "notified": true
   },
   "FC Gifu vs. Yokohama FC||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.2286324786324787,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "FC Gifu vs. Yokohama FC||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.17222222222222228,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Suecia vs. Polonia||futbol||CARDS_OU_4.5||paf,pokerstars": {
-    "margin": 0.028068705488060397,
-    "cycles": 3,
-    "notified": true
-  },
-  "Suecia vs. Polonia||futbol||CARDS_OU_5.5||paf,pokerstars": {
-    "margin": 0.03078024337866858,
-    "cycles": 3,
+    "margin": 0.023824583596879556,
+    "cycles": 4,
     "notified": true
   },
   "Etiopía vs. Senegal||futbol||1X2||1xbet_es,interwetten,luckia": {
     "margin": 0.03923177326123439,
-    "cycles": 2,
-    "notified": true
-  },
-  "San Marino vs. Albania||futbol||BTTS||ebingo,luckia": {
-    "margin": 0.010396877482643174,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Ehime FC vs. FC Tokyo||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.2455284552845528,
-    "cycles": 2,
-    "notified": false
+    "cycles": 3,
+    "notified": true
   },
   "Tochigi City vs. Sanfrecce Hiroshima||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.2264808362369337,
-    "cycles": 2,
-    "notified": false
+    "margin": 0.23809523809523814,
+    "cycles": 3,
+    "notified": true
   },
-  "Suecia vs. Polonia||futbol||CORNERS_OU_9.5||paf,pokerstars": {
-    "margin": 0.014860181360679903,
+  "Suecia vs. Polonia||futbol||CORNERS_OU_8.5||betfair,paf": {
+    "margin": 0.014955421340235864,
+    "cycles": 1,
+    "notified": true
+  },
+  "Suecia vs. Polonia||futbol||CORNERS_OU_9.5||betfair,paf": {
+    "margin": 0.021535580524344455,
+    "cycles": 1,
+    "notified": true
+  },
+  "Suecia vs. Polonia||futbol||CORNERS_OU_10.5||betfair,paf": {
+    "margin": 0.02129402129402136,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-17.5||1xbet_es,betfair": {
+    "margin": 0.023809523809523836,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-15.5||1xbet_es,betfair": {
+    "margin": 0.02280701754385961,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-14.5||1xbet_es,betfair": {
+    "margin": 0.03266787658802173,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-13.5||1xbet_es,betfair": {
+    "margin": 0.04901960784313719,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-12.5||1xbet_es,betfair": {
+    "margin": 0.0759013282732447,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-11.5||1xbet_es,betfair": {
+    "margin": 0.06666666666666665,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-10.5||1xbet_es,betfair": {
+    "margin": 0.08791208791208804,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-9.5||1xbet_es,betfair": {
+    "margin": 0.09259259259259267,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-8.5||1xbet_es,betfair": {
+    "margin": 0.11663216011042088,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_-7.5||1xbet_es,betfair": {
+    "margin": 0.11395646606914211,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_15.5||1xbet_es,betfair": {
+    "margin": 0.04529914529914525,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chicago Bears vs. Philadelphia Eagles||americano||AH_16.5||1xbet_es,betfair": {
+    "margin": 0.03189792663476865,
+    "cycles": 1,
+    "notified": true
+  },
+  "Suecia vs. Polonia||futbol||CORNERS_OU_11.5||betfair,paf": {
+    "margin": 0.020242914979757165,
     "cycles": 1,
     "notified": true
   }
