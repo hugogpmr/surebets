@@ -42,6 +42,7 @@ import config
 from bot.telegram_bot import notify_opportunity
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.health import SourceHealth
+from engine.peers import PeerEvents
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
 from providers.base import OddsProvider
@@ -269,6 +270,7 @@ async def run_scan(mode: str) -> None:
         verify_cycles=config.VERIFY_CYCLES,
         max_concurrency=config.MAX_CONCURRENT_FETCHES,
         health=SourceHealth(config.SOURCE_HEALTH_PATH, config.SOURCE_PARK_AFTER) if config.SOURCE_PARK_AFTER else None,
+        peers=PeerEvents(config.PEER_EVENTS_PATH),
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en

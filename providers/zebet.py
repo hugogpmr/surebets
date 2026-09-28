@@ -178,6 +178,7 @@ class ZebetProvider(OddsProvider):
     autenticación. Ver docstring del módulo para el detalle verificado en vivo."""
 
     name = "zebet"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
     def __init__(self, competition_urls: dict[str, str] | None = None):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS

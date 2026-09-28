@@ -336,10 +336,11 @@ def test_only_the_impossible_rows_are_dropped_and_the_coherent_ones_still_compar
 
 
 class SlowProvider(FakeProvider):
-    def __init__(self, name, delay, fail=False):
+    def __init__(self, name, delay, fail=False, browser=True):
         super().__init__(name, [])
         self.delay = delay
         self.fail = fail
+        self.uses_browser = browser
 
     def fetch_markets(self, sports):
         time.sleep(self.delay)
@@ -453,3 +454,97 @@ def test_non_parkable_source_is_never_parked_even_if_always_empty(db, tmp_path):
     for _ in range(5):
         run_cycle([quiet], db, health=health)
     assert quiet.calls == 5
+
+
+def _quiet_notify(text):
+    return asyncio.sleep(0)
+
+
+def test_http_sources_start_at_once_even_with_more_sources_than_default_pool_threads(db):
+    # El pool por defecto de asyncio tiene min(32, cpus + 4) hilos (6 en la VM de 2 vCPU):
+    # con 12 fuentes de 0,3 s, las 6 últimas empezaban tras las primeras (>= 0,6 s en total)
+    # y aparecían como "lentas" en el log. Con hilo propio para cada una, todas a la vez.
+    providers = [SlowProvider(f"http{i}", 0.3, browser=False) for i in range(12)]
+    started = time.perf_counter()
+    result = asyncio.run(
+        run_scan_cycle(providers, ["futbol"], 250.0, 0.01, db, {}, notify=_quiet_notify, logger=LOGGER,
+                       max_concurrency=1)  # el límite de navegadores no les afecta
+    )
+    assert time.perf_counter() - started < 0.55
+    assert all(info["wait_seconds"] < 0.15 and 0.28 <= info["seconds"] < 0.5 for info in result["sources"].values())
+
+
+def test_max_concurrency_only_limits_browser_sources(db):
+    providers = [SlowProvider(f"nav{i}", 0.3, browser=True) for i in range(4)] + [SlowProvider("http", 0.3, browser=False)]
+    result = asyncio.run(
+        run_scan_cycle(providers, ["futbol"], 250.0, 0.01, db, {}, notify=_quiet_notify, logger=LOGGER,
+                       max_concurrency=2)
+    )
+    waits = sorted(info["wait_seconds"] for info in result["sources"].values())
+    assert waits[2] < 0.15  # la fuente http y los 2 navegadores que entran no esperan
+    assert waits[-1] >= 0.28  # los otros 2 navegadores esperan turno
+    assert result["sources"]["http"]["wait_seconds"] < 0.15
+    assert result["phases"]["lectura"] >= 0.6
+
+
+class EarlyRefiner(RefiningProvider):
+    def __init__(self, name, markets, extra):
+        super().__init__(name, markets, extra)
+        self.refined_at = None
+
+    def refine(self, sports, peer_markets):
+        self.refined_at = time.perf_counter()
+        return super().refine(sports, peer_markets)
+
+
+class LateProvider(FakeProvider):
+    def __init__(self, name, markets, delay):
+        super().__init__(name, markets)
+        self.delay = delay
+        self.finished_at = None
+
+    def fetch_markets(self, sports):
+        time.sleep(self.delay)
+        self.finished_at = time.perf_counter()
+        return self._markets
+
+
+def test_second_pass_starts_early_from_previous_cycle_peers_and_falls_back_without_them(db, tmp_path):
+    from engine.peers import PeerEvents
+
+    events = [f"Equipo{i} vs. Rival{i}" for i in range(25)]
+    peers = PeerEvents(str(tmp_path / "peers.json"))
+    peers.save([ou("paf", 1.8, 2.1, event=e) for e in events], datetime.now(timezone.utc))
+
+    def cycle(peer_store):
+        refiner = EarlyRefiner("pokerstars", [ou("pokerstars", 1.9, 1.9)], extra=[ou("pokerstars", 2.0, 2.0, event="Nuevo vs. Mercado")])
+        slow = LateProvider("altenar", [ou("altenar", 1.8, 2.1)], delay=0.5)
+        result = asyncio.run(
+            run_scan_cycle([refiner, slow], ["futbol"], 250.0, 0.01, db, {}, notify=_quiet_notify,
+                           logger=LOGGER, peers=peer_store)
+        )
+        return refiner, slow, result
+
+    # Con datos del ciclo anterior: la 2.ª pasada corre MIENTRAS la fuente lenta sigue leyendo,
+    # y ve a las casas del ciclo anterior (no a las de este ciclo).
+    refiner, slow, result = cycle(peers)
+    assert refiner.refined_at < slow.finished_at
+    assert refiner.peer_books == ["paf"]
+    assert "segunda_pasada" not in result["phases"] and result["sources"]["pokerstars"]["markets"] == 2
+
+    # Sin ellos (primer ciclo): espera a las demás fuentes, como antes.
+    refiner, slow, result = cycle(PeerEvents(str(tmp_path / "no_existe.json")))
+    assert refiner.refined_at >= slow.finished_at
+    assert refiner.peer_books == ["altenar"] and "segunda_pasada" in result["phases"]
+
+
+def test_cycle_saves_what_the_other_sources_listed_but_not_the_refiner_itself(db, tmp_path):
+    from engine.peers import PeerEvents
+
+    store = PeerEvents(str(tmp_path / "peers.json"))
+    refiner = RefiningProvider("pokerstars", [ou("pokerstars", 1.9, 1.9, event="Solo PS vs. Nadie")], extra=[])
+    other = FakeProvider("paf", [ou("paf", 1.8, 2.1, event=f"A{i} vs. B{i}") for i in range(30)])
+    asyncio.run(run_scan_cycle([refiner, other], ["futbol"], 250.0, 0.01, db, {}, notify=_quiet_notify,
+                               logger=LOGGER, peers=store))
+    loaded = store.load(datetime.now(timezone.utc))
+    assert len(loaded) == 30 and all(m.event != "Solo PS vs. Nadie" for m in loaded)

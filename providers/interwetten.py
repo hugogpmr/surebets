@@ -58,6 +58,7 @@ class InterwettenProvider(OddsProvider):
     """
 
     name = "interwetten"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     fast_recheck = False  # necesita navegador, igual que Sportium/Betfair
 
     def __init__(self, competition_urls: dict[str, str] | None = None):

@@ -261,6 +261,7 @@ class BwinProvider(OddsProvider):
     """
 
     name = "bwin"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     parkable = True  # navegador; ver engine/health.py
     fast_recheck = False  # necesita navegador: una segunda lectura cuesta ~1 min
 

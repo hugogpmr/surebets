@@ -252,6 +252,7 @@ class WinamaxProvider(OddsProvider):
     """
 
     name = "winamax"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     fast_recheck = False
 
     def __init__(

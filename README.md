@@ -970,10 +970,20 @@ peticiones), y solo ~6 s de cruce de eventos y ~9 s de base de datos + `git push
   guardado_bd, total`, y `deploy/vm_fast_scan.sh` añade el tiempo del escaneo frente al de `git`. También quedan en
   `docs/data.json` (`settings.phases` y `settings.sources[*].seconds`).
 - **PokerStars en dos pasadas** (`refines` en `providers/base.py`, `_refine` en `engine/scan.py`): `fetch_markets` solo
-  lee el 1X2 del listado (~8 s); cuando el resto de fuentes ya están leídas, `refine` lee las fichas **solo de los
-  partidos que otra casa también lista** (misma regla de cruce que el motor, `engine.matching.peer_coverage`; los más
-  cubiertos primero) con un tope de 60 s para toda la fase. Un partido que nadie más lista no puede dar surebet.
-  Prueba en vivo con solo Bet777 como referencia: 13 de 97 partidos cruzados, 127 mercados nuevos en 32 s.
+  lee el 1X2 del listado (~8 s); `refine` lee las fichas **solo de los partidos que otra casa también lista** (misma
+  regla de cruce que el motor, `engine.matching.peer_coverage`; los más cubiertos primero) con un tope de 60 s para
+  toda la fase. Un partido que nadie más lista no puede dar surebet. La segunda pasada usa los partidos que
+  listaban las demás casas **en el ciclo anterior** (`engine/peers.py`, `cache/peer_events.json`, fuera de git) y
+  arranca nada más terminar el listado, mientras Altenar y Kambi siguen leyendo; sin ese fichero (primer ciclo) o con
+  datos de más de 6 h espera a las demás fuentes, como al principio. Un partido que aparece por primera vez se queda
+  sin mercados extra un ciclo. Primera medición en la VM (18:33): la segunda pasada esperaba a Altenar (222 s) y
+  sumaba 62 s al final. Prueba en vivo con una fuente lenta simulada: 74 s sin datos previos, 42 s con ellos.
+- **Pool de hilos propio y semáforo solo para navegadores** (`_call` en `engine/scan.py`): `asyncio.to_thread` usa
+  `min(32, cpus + 4)` hilos, 6 en la VM de 2 vCPU, y las 16 fuentes hacían cola: Altenar y Kambi (las más lentas)
+  empezaban ~30 s tarde, y una fuente que no hace nada marcaba 44 s. Ahora cada fuente tiene su hilo; el
+  `MAX_CONCURRENT_FETCHES` (por defecto nº de CPUs + 1, 3 en la VM; negativo = sin límite) solo limita a las que
+  lanzan Chromium (`uses_browser`). Los tiempos por fuente se miden dentro del hilo: `seconds` es lectura real y
+  `wait_seconds` lo que esperó para empezar (turno de navegador).
 - **Fuentes aparcadas** (`engine/health.py`, `SOURCE_PARK_AFTER`, por defecto 5): Sportium, Versus, Betfair y bwin
   daban 0 mercados en 81-87 de 87 ciclos en la VM (la IP de datacenter no las deja pasar) pero lanzaban un Chromium
   cada ciclo. Tras 5 lecturas malas seguidas se saltan y se reintentan a los 30 min, 1 h, 2 h, 4 h y 6 h (máximo);

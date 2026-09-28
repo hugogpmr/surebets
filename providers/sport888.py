@@ -158,6 +158,7 @@ class Sport888Provider(OddsProvider):
     módulo."""
 
     name = "888sport"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
     def __init__(self, tournaments: dict[str, list[tuple[str, str, str]]] | None = None, lobby_url: str = LOBBY_URL):
         self.tournaments = tournaments or DEFAULT_TOURNAMENTS

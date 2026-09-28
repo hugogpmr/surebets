@@ -20,6 +20,7 @@ class KirolbetProvider(OddsProvider):
     """
 
     name = "kirolbet"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
     def __init__(self, competition_ids: dict[str, int]):
         self.competition_ids = competition_ids

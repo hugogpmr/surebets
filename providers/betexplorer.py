@@ -123,6 +123,7 @@ class BetExplorerProvider(OddsProvider):
     """
 
     name = "betexplorer"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
     def __init__(self, league_urls: dict[str, str] | None = None):
         self.league_urls = league_urls or DEFAULT_LEAGUE_URLS

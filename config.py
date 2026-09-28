@@ -58,12 +58,14 @@ SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "20"))
 SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "12"))
 COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
 
-# Máximo de providers leyéndose a la vez (cada uno con su propio Chromium si lo
-# necesita). Vacío/0 = sin límite (equipos con CPU de sobra, como el PC local).
-# En una VM de pocos núcleos, lanzar los ~9 providers con navegador a la vez
-# satura la CPU y varios acaban con timeout aunque cada uno por separado
-# funcione bien - ver engine/scan.py:_fetch.
-MAX_CONCURRENT_FETCHES = int(os.getenv("MAX_CONCURRENT_FETCHES", "0")) or None
+# Máximo de proveedores CON NAVEGADOR (Chromium) leyéndose a la vez; las fuentes por httpx
+# (Altenar, Kambi, Bet777...) no cuentan y arrancan siempre todas a la vez. Vacío/0 = automático:
+# nº de CPUs + 1 (3 en la VM de 2 vCPU). Lanzar los ~10 navegadores a la vez satura la CPU y
+# varios acaban con timeout aunque cada uno por separado funcione bien (VM: load average >10);
+# hasta el 2026-09-28 lo limitaba, sin querer, el pool de hilos por defecto de asyncio (6 hilos,
+# compartidos con las fuentes por httpx). Un valor negativo = sin límite. Ver engine/scan.py:_call.
+_fetches = int(os.getenv("MAX_CONCURRENT_FETCHES", "0"))
+MAX_CONCURRENT_FETCHES = _fetches if _fetches > 0 else None if _fetches < 0 else (os.cpu_count() or 2) + 1
 
 # "Aparcar" las fuentes de navegador que fallan o vienen vacías N ciclos seguidos (ver
 # engine/health.py): se saltan y se reintentan cada vez más espaciadas (30 min ... 6 h), y una
@@ -71,6 +73,9 @@ MAX_CONCURRENT_FETCHES = int(os.getenv("MAX_CONCURRENT_FETCHES", "0")) or None
 # (fuera de git), propio de cada máquina.
 SOURCE_PARK_AFTER = int(os.getenv("SOURCE_PARK_AFTER", "5"))
 SOURCE_HEALTH_PATH = os.getenv("SOURCE_HEALTH_PATH", "cache/source_health.json")
+# Partidos que listaban las demás casas en el ciclo anterior, para adelantar la segunda pasada de
+# PokerStars (engine/peers.py). Fuera de git, propio de cada máquina.
+PEER_EVENTS_PATH = os.getenv("PEER_EVENTS_PATH", "cache/peer_events.json")
 
 # Betfair Exchange API oficial (ver providers/betfair_exchange.py), aparte del
 # scraper DOM de la web de apuestas fijas (providers/betfair.py). Opcional: sin

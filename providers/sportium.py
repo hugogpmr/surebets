@@ -265,6 +265,7 @@ class SportiumProvider(OddsProvider):
     """
 
     name = "sportium"
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     parkable = True  # navegador; ver engine/health.py
 
     def __init__(

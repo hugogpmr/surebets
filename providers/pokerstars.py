@@ -324,6 +324,7 @@ class PokerStarsProvider(OddsProvider):
     aparte (sin API JSON, a diferencia de bet777/888sport/William Hill)."""
 
     name = BOOKMAKER
+    uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     refines = True
 
     def __init__(

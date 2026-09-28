@@ -8,7 +8,8 @@ programada local, con el estado cargado/guardado en un JSON entre ejecuciones).
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
-from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 
 from providers.base import OddsProvider
 from storage.db import comparison_key, save_comparisons, save_opportunity
@@ -17,6 +18,7 @@ from .arbitrage import compare_market
 from .health import SourceHealth
 from .labels import kickoff_line, market_title, outcome_label, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
+from .peers import PeerEvents
 from .quality import (
     BLOCKING_FLAGS,
     FLAG_DESCRIPTIONS,
@@ -120,44 +122,71 @@ def _stamp(provider: OddsProvider, markets: list) -> None:
                 outcome.fetched_at = market.fetched_at
 
 
+async def _call(
+    provider: OddsProvider,
+    method,
+    args: tuple,
+    sem: asyncio.Semaphore | None,
+    executor: ThreadPoolExecutor | None,
+    timings: dict[str, dict] | None,
+):
+    """Ejecuta `method(*args)` (síncrono) de un proveedor en un hilo y anota en
+    `timings[nombre]` {"wait": lo que tardó en EMPEZAR (turno del semáforo + hilo libre),
+    "run": lo que tardó de verdad}. Se mide dentro del propio hilo: medirlo desde fuera
+    contaba la cola como si fuera lectura (medido en la VM el 2026-09-28: un proveedor que no
+    hace nada marcaba 44 s). Se anota también si la lectura falla.
+
+    Los métodos hacen asyncio.run() por dentro (cada proveedor lanza su propio Playwright);
+    como run_scan_cycle ya corre dentro de un event loop, llamarlos directamente chocaría con
+    él, así que van en un hilo con su propio loop.
+
+    Solo los proveedores con navegador (`uses_browser`) pasan por `sem`: sin límite, una
+    máquina de pocos núcleos satura la CPU con ~9 Chromium a la vez y varios acaban con
+    timeout aunque cada uno por separado funcione bien (VM de 2 vCPU: load average >10).
+    Las fuentes por httpx no esperan a nadie. `executor` es un pool con hilo para cada
+    fuente: el pool por defecto de asyncio (min(32, cpus + 4) = 6 en la VM) dejaba a las
+    demás en cola, y Altenar/Kambi, las más lentas, empezaban unos 30 s tarde."""
+    box: dict[str, float] = {}
+    requested = time.perf_counter()
+
+    def call():
+        box["start"] = time.perf_counter()
+        try:
+            return method(*args)
+        finally:
+            box["end"] = time.perf_counter()
+
+    async def run():
+        if executor is None:
+            return await asyncio.to_thread(call)
+        return await asyncio.get_running_loop().run_in_executor(executor, call)
+
+    try:
+        if sem is not None and provider.uses_browser:
+            async with sem:
+                return await run()
+        return await run()
+    finally:
+        if timings is not None:
+            start = box.get("start", requested)
+            entry = timings.setdefault(provider.name, {"wait": 0.0, "run": 0.0})
+            entry["wait"] += start - requested
+            entry["run"] += box.get("end", time.perf_counter()) - start
+
+
 async def _fetch(
     provider: OddsProvider,
     sports: list[str],
     logger,
     sem: asyncio.Semaphore | None = None,
     timings: dict[str, dict] | None = None,
+    executor: ThreadPoolExecutor | None = None,
 ) -> list | None:
-    # `timings[nombre]` = {"wait": s esperando turno del semáforo, "run": s leyendo de
-    # verdad}: sin separarlos, con max_concurrency una fuente que espera turno parece
-    # lenta cuando la lenta es otra. Se rellena también si la lectura falla.
-    requested = time.perf_counter()
-    started = requested
     try:
-        # fetch_markets es síncrono y hace asyncio.run() por dentro (cada
-        # provider lanza su propio Playwright); como run_scan_cycle ya corre
-        # dentro de un event loop (main.py o scan_once_action.py), llamarlo
-        # directamente aquí chocaría con ese loop en marcha ("asyncio.run()
-        # cannot be called from a running event loop"). Se ejecuta en un hilo
-        # aparte para darle un loop propio.
-        # `sem` limita cuántos navegadores Chromium se lanzan a la vez (ver
-        # `max_concurrency` en run_scan_cycle): sin límite, una máquina con
-        # pocos núcleos satura la CPU con ~9 Chromium simultáneos y varios
-        # providers acaban con timeout aunque cada uno por separado funcione
-        # bien (confirmado en la VM de 2vCPU: load average >10 y timeouts en
-        # Sportium/Betfair/Versus que no fallan en local).
-        if sem is None:
-            fetched = await asyncio.to_thread(provider.fetch_markets, sports)
-        else:
-            async with sem:
-                started = time.perf_counter()
-                fetched = await asyncio.to_thread(provider.fetch_markets, sports)
+        fetched = await _call(provider, provider.fetch_markets, (sports,), sem, executor, timings)
     except Exception:
         logger.exception("Fallo obteniendo datos de %s", provider.name)
         return None
-    finally:
-        if timings is not None:
-            finished = time.perf_counter()
-            timings[provider.name] = {"wait": started - requested, "run": finished - started}
     _stamp(provider, fetched)
     return fetched
 
@@ -169,25 +198,15 @@ async def _refine(
     logger,
     sem: asyncio.Semaphore | None,
     timings: dict[str, dict],
+    executor: ThreadPoolExecutor | None = None,
 ) -> list:
-    """Segunda pasada de un proveedor con `refines` (ver providers/base.py): se ejecuta
-    cuando ya están leídas todas las fuentes, y aquí ya no hay nada más corriendo, así que
-    el navegador tiene la máquina para él. Un fallo se registra y deja la primera pasada
-    tal cual. Su tiempo se SUMA al de lectura de esa fuente."""
-    started = time.perf_counter()
+    """Segunda pasada de un proveedor con `refines` (ver providers/base.py). Un fallo se
+    registra y deja la primera pasada tal cual. Su tiempo se SUMA al de esa fuente."""
     try:
-        if sem is None:
-            extra = await asyncio.to_thread(provider.refine, sports, peer_markets)
-        else:
-            async with sem:
-                started = time.perf_counter()
-                extra = await asyncio.to_thread(provider.refine, sports, peer_markets)
+        extra = await _call(provider, provider.refine, (sports, peer_markets), sem, executor, timings)
     except Exception:
         logger.exception("Fallo en la segunda pasada de %s", provider.name)
         return []
-    finally:
-        entry = timings.setdefault(provider.name, {"wait": 0.0, "run": 0.0})
-        entry["run"] += time.perf_counter() - started
     _stamp(provider, extra)
     return extra
 
@@ -260,6 +279,7 @@ async def _verify_high_margins(
     sports: list[str],
     args: tuple,
     logger,
+    executor: ThreadPoolExecutor | None = None,
 ) -> list:
     """Verifica en el mismo escaneo las surebets de margen muy alto
     (`margen_a_verificar`): vuelve a leer las fuentes directas y baratas
@@ -290,7 +310,7 @@ async def _verify_high_margins(
         for provider in rechecked:
             if provider.name not in involved:
                 continue
-            fresh = await _fetch(provider, sports, logger)
+            fresh = await _fetch(provider, sports, logger, executor=executor)
             if fresh is not None:
                 raw_by_provider[provider.name] = fresh
                 refreshed = True
@@ -323,7 +343,7 @@ async def _verify_high_margins(
     return comparisons
 
 
-async def run_scan_cycle(
+async def _run_scan_cycle(
     providers: list[OddsProvider],
     sports: list[str],
     bankroll: float,
@@ -340,6 +360,8 @@ async def run_scan_cycle(
     verify_cycles: int = 3,
     max_concurrency: int | None = None,
     health: SourceHealth | None = None,
+    peers: PeerEvents | None = None,
+    executor: ThreadPoolExecutor | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -359,8 +381,8 @@ async def run_scan_cycle(
     # necesita): en serie, sumar bwin y Winamax a Altenar/Kambi/Sportium/Betfair
     # alargaba el ciclo por encima de lo que aguanta un escaneo cada pocos minutos.
     # max_concurrency limita cuántos Chromium corren a la vez cuando la máquina
-    # tiene pocos núcleos (ver docstring de _fetch); None = sin límite, igual
-    # que siempre.
+    # tiene pocos núcleos (solo cuenta para las fuentes con navegador, ver docstring de
+    # _call); None = sin límite.
     sem = asyncio.Semaphore(max_concurrency) if max_concurrency else None
     fetch_timings: dict[str, dict] = {}
     phases: dict[str, float] = {}
@@ -378,9 +400,26 @@ async def run_scan_cycle(
         else:
             parked[provider.name] = wait.total_seconds() / 60
 
-    fetched_all = await asyncio.gather(
-        *(_fetch(provider, sports, logger, sem, fetch_timings) for provider in to_read)
-    )
+    # Los proveedores con segunda pasada (PokerStars) necesitan saber qué partidos lista otra
+    # casa. Si hay datos del ciclo anterior (engine/peers.py) la hacen YA, nada más terminar
+    # su primera pasada y mientras Altenar y Kambi siguen leyendo; si no, esperan a que
+    # terminen las demás fuentes (más abajo).
+    previous_peers = peers.load(read_at) if peers is not None and any(p.refines for p in to_read) else None
+    refined_early: set[str] = set()
+
+    async def read(provider: OddsProvider) -> list | None:
+        fetched = await _fetch(provider, sports, logger, sem, fetch_timings, executor)
+        if fetched is None or not provider.refines or previous_peers is None:
+            return fetched
+        logger.info(
+            "%s: segunda pasada adelantada con los partidos del ciclo anterior (hace %.0f min)",
+            provider.name, (peers.age(read_at) or timedelta(0)).total_seconds() / 60,
+        )
+        fetched.extend(await _refine(provider, sports, previous_peers, logger, sem, fetch_timings, executor))
+        refined_early.add(provider.name)
+        return fetched
+
+    fetched_all = await asyncio.gather(*(read(provider) for provider in to_read))
     phases["lectura"] = time.perf_counter() - cycle_start
     for provider, fetched in zip(to_read, fetched_all):
         if fetched is not None:
@@ -393,17 +432,18 @@ async def run_scan_cycle(
         except OSError:
             logger.warning("No se pudo guardar el estado de las fuentes aparcadas", exc_info=True)
 
-    # Segunda pasada de los proveedores que la tienen (PokerStars): con todas las demás
-    # fuentes ya leídas se sabe qué partidos pueden cruzarse, y solo se gasta navegador en esos.
+    # Segunda pasada de los que no pudieron adelantarla (primer ciclo o datos viejos): con todas
+    # las demás fuentes ya leídas se sabe qué partidos pueden cruzarse. Aquí ya no hay nada más
+    # corriendo, así que el navegador tiene la máquina para él.
     step = time.perf_counter()
-    refiners = [p for p in to_read if p.refines and p.name in raw_by_provider]
+    refiners = [p for p in to_read if p.refines and p.name in raw_by_provider and p.name not in refined_early]
     if refiners:
         extras = await asyncio.gather(
             *(
                 _refine(
                     p, sports,
                     [m for q in providers if q.name != p.name for m in raw_by_provider.get(q.name, [])],
-                    logger, sem, fetch_timings,
+                    logger, sem, fetch_timings, executor,
                 )
                 for p in refiners
             )
@@ -411,6 +451,12 @@ async def run_scan_cycle(
         for p, extra in zip(refiners, extras):
             raw_by_provider[p.name].extend(extra)
         phases["segunda_pasada"] = time.perf_counter() - step
+
+    if peers is not None:
+        try:
+            peers.save([m for p in providers if not p.refines for m in raw_by_provider.get(p.name, [])], read_at)
+        except OSError:
+            logger.warning("No se pudo guardar los partidos de este ciclo para el siguiente", exc_info=True)
 
     raw_markets = [m for p in providers for m in raw_by_provider.get(p.name, [])]
     sources = {
@@ -462,7 +508,7 @@ async def run_scan_cycle(
             COHERENCE_MIN,
         )
     step = time.perf_counter()
-    comparisons = await _verify_high_margins(comparisons, providers, raw_by_provider, sports, args, logger)
+    comparisons = await _verify_high_margins(comparisons, providers, raw_by_provider, sports, args, logger, executor)
     phases["verificacion"] = time.perf_counter() - step
 
     discarded = sum(1 for c in comparisons if c.margin > 0 and any(f in BLOCKING_FLAGS for f in c.flags))
@@ -570,3 +616,15 @@ async def run_scan_cycle(
         "dropped_rows": stats.get("dropped_rows", 0),
         "phases": {name: round(seconds, 1) for name, seconds in phases.items()},
     }
+
+
+async def run_scan_cycle(providers: list[OddsProvider], sports: list[str], *args, **kwargs) -> dict:
+    """Ejecuta un ciclo de escaneo (parámetros y resultado: ver `_run_scan_cycle`). Crea el
+    pool de hilos del ciclo con hilo de sobra para cada fuente y su segunda pasada: el pool por
+    defecto de asyncio tiene solo min(32, cpus + 4) hilos (6 en una VM de 2 vCPU) y dejaba a
+    Altenar y Kambi, las más lentas, ~30 s en cola detrás de los navegadores."""
+    executor = ThreadPoolExecutor(max_workers=max(2 * len(providers), 8), thread_name_prefix="fuente")
+    try:
+        return await _run_scan_cycle(providers, sports, *args, executor=executor, **kwargs)
+    finally:
+        executor.shutdown(wait=False)
