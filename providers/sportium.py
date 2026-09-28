@@ -14,7 +14,13 @@ DEFAULT_COMPETITION_URLS = {
     "futbol": "https://www.sportium.es/apuestas/sports/soccer/competitions/45211/matches",
 }
 DEFAULT_EXTRA_MARKETS_MAX_MATCHES = 25
-DEFAULT_EXTRA_MARKETS_CONCURRENCY = 6
+# Cada hueco de concurrencia es una PESTAÑA de Chromium abierta a la vez (memoria real, no
+# CPU). Bajado de 6 a 3 el 2026-09-28: la VM (2 vCPU/3,8 GB, sin swap hasta ese día) tuvo 10
+# ciclos matados por el OOM killer del kernel en 24 h - con la 2ª pasada de PokerStars ahora
+# adelantada (engine/scan.py:_refine), esta fuente puede coincidir con ella a la vez, sumando
+# más pestañas simultáneas de las que había antes. Confirmado con journalctl + dmesg en la VM,
+# no es una suposición.
+DEFAULT_EXTRA_MARKETS_CONCURRENCY = 3
 
 # Mercados adicionales del mismo desplegable .ta-DropdownControl que ya usa "Goles
 # Totales" (ta-item-GolesTotales): misma estructura simple que 1X2 (un botón de cuota

@@ -32,6 +32,21 @@ echo "== Instalando dependencias del sistema =="
 sudo apt-get update -y
 sudo apt-get install -y python3 python3-venv python3-pip
 
+# Swap de 2 GB si no existe ya: añadido a mano el 2026-09-28 tras 10 ciclos rápidos matados
+# por el OOM killer del kernel en 24h en una VM de 2 vCPU/3,8 GB sin swap (varios proveedores
+# lanzan Chromium con varias pestañas a la vez, ver providers/sportium.py y
+# providers/pokerstars.py). Sin esto, un pico de memoria mata el ciclo entero en vez de solo
+# ir más lento. Idempotente: si ya hay swap activo (de esta VM o de otra con más RAM que no lo
+# necesita) no hace nada.
+if ! sudo swapon --show | grep -q .; then
+  echo "== Creando swapfile de 2 GB (no había ninguno) =="
+  sudo fallocate -l 2G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  sudo swapon /swapfile
+  grep -q "^/swapfile" /etc/fstab || echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab >/dev/null
+fi
+
 echo "== Creando entorno virtual =="
 cd "$APP_DIR"
 python3 -m venv .venv

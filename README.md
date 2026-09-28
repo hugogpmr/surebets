@@ -957,6 +957,32 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### El ciclo rápido moría por falta de memoria (2026-09-28)
+
+Investigando por qué PokerStars y Marca Apuestas fallaban en un ciclo, `journalctl -u
+surebets-fast --since "24 hours ago"` mostró algo más grave: **10 de los ciclos rápidos de las
+últimas 24 h murieron matados por el OOM killer del kernel** (`dmesg` confirma `chrome-headless`
+como la víctima cada vez), sin llegar a actualizar el panel ni avisar. La VM (2 vCPU/3,8 GB) no
+tenía **nada de swap** (`swapon --show` vacío): un pico de memoria mataba el proceso en seco en
+vez de ir más lento. Pasaba ya antes de la sesión de este día (primer caso detectado: 27-09
+23:48), así que no lo causó ningún cambio de hoy, aunque adelantar la 2ª pasada de PokerStars
+(sección anterior) probablemente lo empeoró: ahora esa fase puede coincidir con Sportium
+abriendo pestañas a la vez, cuando antes esperaba a que todas las demás fuentes terminaran (y
+soltaran su memoria) primero. (Las otras 13 fallidas de ese mismo periodo eran otra cosa ya
+resuelta esa misma madrugada: el bit de ejecución de `deploy/vm_fast_scan.sh`, commit
+`f1a5c98`.)
+
+- **Swap de 2 GB añadido a la VM** (`fallocate`/`mkswap`/`swapon` + entrada en `/etc/fstab`,
+  autorizado explícitamente por el usuario por ser una escritura de sistema): un pico de
+  memoria ahora se ralentiza en vez de matar el ciclo. Documentado también en
+  `deploy/setup_vm.sh` (idempotente: si ya hay swap, no hace nada) para que una VM nueva lo
+  lleve de fábrica.
+- **Concurrencia de pestañas de Sportium y PokerStars bajada de 6 a 3**
+  (`DEFAULT_EXTRA_MARKETS_CONCURRENCY` en `providers/sportium.py`/`providers/pokerstars.py`):
+  son los dos únicos proveedores que abren varias pestañas de Chromium a la vez dentro de un
+  mismo navegador (memoria real, no CPU) - reduce el pico de memoria en el origen,
+  independientemente de si su fase adelantada coincide o no con otra fuente.
+
 ### Ciclo lento: BetExplorer retirado y nombres de casa normalizados (2026-09-28)
 
 Medido en la VM (ciclo lento del ciclo de las 18:39, 14 min 30 s, 135 competiciones): `BetExplorerProvider`

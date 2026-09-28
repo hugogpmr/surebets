@@ -79,7 +79,12 @@ BOOKMAKER = "pokerstars"
 DEFAULT_URL = "https://www.pokerstars.es/sports/futbol/1/matches/"
 SITE_ORIGIN = "https://www.pokerstars.es"
 DEFAULT_EXTRA_MARKETS_MAX_MATCHES = 25
-DEFAULT_EXTRA_MARKETS_CONCURRENCY = 6
+# Cada hueco de concurrencia es una PESTAÑA de Chromium abierta a la vez (memoria real, no
+# CPU). Bajado de 6 a 3 el 2026-09-28 (mismo motivo que providers/sportium.py:
+# DEFAULT_EXTRA_MARKETS_CONCURRENCY, ver ese comentario) - aquí pesa más porque desde el mismo
+# día esta fase puede arrancar YA (`refines`/`_refine` en engine/scan.py) mientras Sportium y
+# otras fuentes con navegador todavía están leyendo, en vez de esperar a que todas terminen.
+DEFAULT_EXTRA_MARKETS_CONCURRENCY = 3
 # Tope de tiempo de TODA la lectura de fichas (ver `_fetch_extra_markets`), y lo mínimo que
 # debe quedar para que merezca la pena empezar otra pestaña.
 DEFAULT_EXTRA_MARKETS_BUDGET_SECONDS = 60.0
