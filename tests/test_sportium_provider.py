@@ -179,3 +179,10 @@ def test_deduplicates_by_market_type_keeping_first():
     markets = parse_match_markets(raw, HOME, AWAY, "futbol", "sportium")
     assert len(markets) == 1
     assert [o.odds for o in markets[0].outcomes] == [2.45, 1.50]
+
+
+def test_fetch_extra_markets_defaults_to_true_but_can_be_turned_off():
+    # scripts/scan_once_action.py lo pone a False en producción (ver su comentario): la ficha
+    # de cada partido nunca cargó en la VM real, 0 mercados nuevos en el 100% de los ciclos.
+    assert SportiumProvider().fetch_extra_markets is True
+    assert SportiumProvider(fetch_extra_markets=False).fetch_extra_markets is False

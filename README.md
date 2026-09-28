@@ -957,6 +957,27 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### Sportium: la ficha de cada partido nunca cargó en la VM real (2026-09-28)
+
+Con la memoria ya arreglada (sección siguiente), 8 ciclos rápidos consecutivos mostraron a
+Sportium tardando 90-152 s (media 137 s) pese a que su listado 1X2/DC/BTTS/1X2_HT (100
+mercados, 20 partidos) tarda solo unos segundos. `journalctl` mostró **160 timeouts de "fallo
+leyendo ficha" en esos 8 ciclos - exactamente 20 por ciclo, los 20 partidos, siempre** (`text=
+/^Handicap/` nunca aparece en 15 s). Revisando el histórico completo del journal: **0 % de
+éxito desde que esta fase se activó el 2026-09-27** (primer intento 22:56, ni uno solo de los
+intentos posteriores trajo mercados) - `INFO:providers.sportium:Sportium: 0 mercados nuevos
+(AH/DC_HT/DNB_HT/BTTS_HT/OU_HT)` en todos los ciclos revisados, no solo los de hoy. Esta fase
+sí se había verificado con Playwright headless real el día que se implementó (ver README
+"Sportium ampliado..." 2026-09-25), pero desde el sandbox de desarrollo, no desde la VM -
+mismo patrón que otras casas de este proyecto donde una red/IP distinta cambia el resultado.
+
+Con ~20 partidos / 3 de concurrencia × 15 s de timeout, esos intentos siempre fallidos
+representan **~100 s de los 137 s de media de Sportium por nada** (0 mercados). Apagado en
+producción (`SportiumProvider(fetch_extra_markets=False)` en
+`scripts/scan_once_action.py`; el flag por defecto sigue en `True` y el código intacto para
+quien lo revise más adelante desde la propia VM, con más tiempo o capturando una imagen de la
+página real). El listado base (1X2/DC/BTTS/1X2_HT), que sí funciona, no se toca.
+
 ### El ciclo rápido moría por falta de memoria (2026-09-28)
 
 Investigando por qué PokerStars y Marca Apuestas fallaban en un ciclo, `journalctl -u

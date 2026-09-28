@@ -96,7 +96,13 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
         # de ítem del desplegable) - 1X2, Goles Totales, Ambos Marcan y Resultado al
         # descanso. Ver providers/versus.py.
         [
-            SportiumProvider(),
+            # fetch_extra_markets=False desde 2026-09-28: en la VM real la ficha de cada
+            # partido (Hándicap/Mitades) da 0 mercados nuevos en el 100 % de los ciclos desde
+            # que se activó (confirmado por journalctl: ~166 fichas, 0 éxitos) - ~100 s
+            # tirados por ciclo (timeout de 15 s x 20 partidos / 3 de concurrencia) por nada.
+            # El 1X2/DC/BTTS/1X2_HT del listado, que sí funciona, no se toca. Ver
+            # providers/sportium.py y README "Sportium: la ficha de cada partido...".
+            SportiumProvider(fetch_extra_markets=False),
             BetfairProvider(),
             WinamaxProvider(),
             BwinProvider(),

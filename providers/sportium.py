@@ -268,6 +268,12 @@ class SportiumProvider(OddsProvider):
     exige un clic (no cambia la URL, a diferencia de PokerStars), así que es
     una página de Playwright + 2 clics por partido, mismo orden de coste que
     PokerStars.
+
+    **Apagado en producción desde 2026-09-28** (`fetch_extra_markets=False`, ver
+    `scripts/scan_once_action.py`): esta ficha nunca cargó en la VM real, 0 mercados nuevos
+    en el 100 % de los ciclos desde que se activó, ver el comentario en `__init__`. Sigue
+    disponible (`fetch_extra_markets=True`, el valor por defecto) y probado para quien lo
+    revise más adelante.
     """
 
     name = "sportium"
@@ -279,10 +285,20 @@ class SportiumProvider(OddsProvider):
         competition_urls: dict[str, str] | None = None,
         extra_markets_max_matches: int = DEFAULT_EXTRA_MARKETS_MAX_MATCHES,
         extra_markets_concurrency: int = DEFAULT_EXTRA_MARKETS_CONCURRENCY,
+        fetch_extra_markets: bool = True,
     ):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS
         self.extra_markets_max_matches = extra_markets_max_matches
         self.extra_markets_concurrency = extra_markets_concurrency
+        # `False` en producción desde 2026-09-28 (ver scripts/scan_once_action.py): la ficha de
+        # cada partido nunca cargó en la VM real - confirmado con datos, no una suposición:
+        # 0 mercados nuevos en TODOS los ciclos desde que esta fase se activó el 2026-09-27
+        # (~166 fichas, 100 % timeout en `text=/^Handicap/`), pese a haberse verificado con
+        # headless Playwright real en el sandbox de desarrollo (otra red/IP) el día que se
+        # implementó. Sale por defecto en `True` (y sigue probado) para no romper nada que
+        # dependa del comportamiento por defecto ni perder el código si alguien lo revisa desde
+        # la propia VM con más tiempo (pantallazo, timeout más largo, etc.).
+        self.fetch_extra_markets = fetch_extra_markets
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         return asyncio.run(self._fetch_markets_async(sports))
@@ -308,8 +324,9 @@ class SportiumProvider(OddsProvider):
                     raw_events = await self._fetch_simple_market(page, item_class, code)
                     markets.extend(self._parse_simple_market(raw_events, sport, market_type, outcome_names))
 
-                matches = self._matches_with_href(raw_1x2_events)[: self.extra_markets_max_matches]
-                markets.extend(await self._fetch_match_extra_markets(browser, matches, sport))
+                if self.fetch_extra_markets:
+                    matches = self._matches_with_href(raw_1x2_events)[: self.extra_markets_max_matches]
+                    markets.extend(await self._fetch_match_extra_markets(browser, matches, sport))
             await browser.close()
         return markets
 
