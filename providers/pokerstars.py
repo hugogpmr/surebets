@@ -125,6 +125,12 @@ DC_MARKET_TITLE = "Doble oportunidad"
 # Las otras 3 pestañas nunca clican nada, por eso nunca lo tropezaron. Mismo patrón que
 # `_COOKIE_ACCEPT_SELECTOR` de providers/zebet.py.
 _COOKIE_ACCEPT_SELECTOR = "#onetrust-accept-btn-handler"
+# En la VM (no en el sandbox de desarrollo, donde el primer clic bastó - mismo tipo de
+# diferencia por red/IP ya visto con Sportium/William Hill en esta sesión) el primer clic a
+# veces abre el panel detallado "Centro de preferencias de privacidad" en vez de cerrar el
+# banner sin más: confirmado en producción por `onetrust-pc-dark-filter`/`onetrust-policy-text`
+# interceptando el clic de Doble Oportunidad. Su propio botón de aceptar todo.
+_COOKIE_CONFIRM_PREFERENCES_SELECTOR = "#accept-recommended-btn-handler"
 
 # Un event-list puede en teoría no ser 1X2 (no se ha visto en las ~40
 # competiciones comprobadas en vivo, pero por si acaso): se valida el texto de
@@ -567,6 +573,19 @@ class PokerStarsProvider(OddsProvider):
             await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=2000)
         except Exception:
             pass  # ya aceptado en una página previa de esta misma sesión, o no apareció
+        try:
+            await page.wait_for_selector("#onetrust-consent-sdk", state="hidden", timeout=3000)
+        except Exception:
+            # El banner sigue encima: en la VM a veces el primer clic abre el panel
+            # detallado en vez de cerrar directamente (ver el comentario de
+            # `_COOKIE_CONFIRM_PREFERENCES_SELECTOR`). Se intenta su propio botón antes de
+            # seguir; si tampoco funciona, el clic de Doble Oportunidad de más abajo
+            # fallará igual que cualquier otra pestaña y quedará registrado como tal.
+            try:
+                await page.click(_COOKIE_CONFIRM_PREFERENCES_SELECTOR, timeout=2000)
+                await page.wait_for_selector("#onetrust-consent-sdk", state="hidden", timeout=3000)
+            except Exception:
+                pass
         locator = page.locator('[data-testid="sports-expandable-accordion"]').filter(
             has=page.get_by_text(DC_MARKET_TITLE, exact=True)
         )
