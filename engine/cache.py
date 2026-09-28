@@ -108,7 +108,11 @@ def refresh_interval(key: str, rank: int) -> timedelta:
 
 def retry_delay(empty_streak: int, interval: timedelta) -> timedelta:
     """Espera antes de reintentar tras `empty_streak` lecturas vacías seguidas."""
-    return min(interval, RETRY_BASE * 2 ** max(empty_streak - 1, 0))
+    # El exponente se limita: una competición fuera de temporada suma una lectura vacía en
+    # cada ciclo lento y, tras ~43 (~21 h), `RETRY_BASE * 2 ** n` desbordaba el timedelta
+    # (OverflowError) y tumbaba el ciclo lento entero - visto en la VM el 2026-09-28. Con 2**20
+    # la espera ya supera de largo cualquier `interval`, así que el resultado no cambia.
+    return min(interval, RETRY_BASE * 2 ** min(max(empty_streak - 1, 0), 20))
 
 
 def supported_keys(provider: OddsProvider) -> list[str]:

@@ -306,6 +306,16 @@ def test_retry_delay_doubles_and_never_exceeds_the_normal_interval():
     ]
 
 
+def test_retry_delay_does_not_overflow_with_a_very_long_empty_streak():
+    # Una competición fuera de temporada acumula una lectura vacía por ciclo lento: con
+    # ~43 seguidas `2 ** n` desbordaba el timedelta y el ciclo lento moría (VM, 2026-09-28).
+    from engine.cache import FOOTBALL_INTERVAL, OTHER_INTERVAL, TOP_INTERVAL, retry_delay
+
+    for streak in (43, 60, 10_000):
+        for interval in (TOP_INTERVAL, FOOTBALL_INTERVAL, OTHER_INTERVAL):
+            assert retry_delay(streak, interval) == interval
+
+
 def test_a_good_read_resets_the_empty_streak(cache):
     now = datetime.now(timezone.utc)
     cache.update("cuotasahora", "futbol", [], now)
