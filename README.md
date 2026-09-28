@@ -957,6 +957,31 @@ pendientes de `estudio_tecnicas_otros_bots.md`:
 Ninguna de las tres se implementa (mismo criterio de siempre: sin evasión de anti-bot). Quedan cubiertas solo
 indirectamente vía CuotasAhora/BetExplorer, como hasta ahora.
 
+### Ciclo lento: BetExplorer retirado y nombres de casa normalizados (2026-09-28)
+
+Medido en la VM (ciclo lento del ciclo de las 18:39, 14 min 30 s, 135 competiciones): `BetExplorerProvider`
+(Playwright) se llevaba **150 s (~17 % del ciclo) en solo 2 de esas 135 unidades** (LaLiga y Champions League),
+mientras las ~130 de `CasasDeApuestasProvider` (httpx, sin navegador) costaban 2-9 s cada una. Se retiró de
+`comparator_providers()` (`scripts/scan_once_action.py`, mismo patrón que la retirada de `CuotasAhoraProvider` el
+2026-09-27: el módulo sigue implementado, solo se quita de la lista activa) porque `CasasDeApuestasProvider` ya
+cubre esas 2 competiciones con las 12 casas de `ALLOWED_BOOKMAKERS` de BetExplorer (comprobado contra la lista:
+1xbet, 888sport, bet365, betway, bwin, codere, luckia, paf, retabet, speedybet, versus, williamhill - las 12
+presentes en la caché real de la VM), más otras ~13 casas, sin coste de navegador. El presupuesto de tiempo libre
+lo usa el ciclo lento para refrescar más competiciones de `CasasDeApuestasProvider`.
+
+De paso, comprobando en vivo qué casas trae `CasasDeApuestasProvider` (la respuesta a "¿ya cubre en el comparador
+las casas que fallan en directo?"): de las 14 casas de `DIRECT_SOURCES`, el comparador ya usa exactamente el mismo
+nombre que su proveedor directo en 12 de ellas (betfair, bwin, sportium, versus, winamax, bet777, pokerstars,
+zebet, 888sport, kirolbet - confirmado contra la caché real), así que cuando el proveedor directo de una de estas
+falla, la lectura de `CasasDeApuestasProvider` para esa misma casa ya entra sola en el cruce (`engine/matching.py`
+solo excluye una lectura de comparador cuando SÍ hay una lectura directa de esa misma casa en ese mercado) - no
+hacía falta ningún cambio de código para eso. Pero **`williamhill`/`marcaapuestas` usaban `william_hill`/
+`marca_apuestas` en el comparador** (guion bajo, distinto del nombre del proveedor directo): sin normalizar, el
+motor las trataba como DOS casas distintas en vez de una con dos lecturas, con el riesgo de fabricar una "surebet"
+entre "williamhill" y "william_hill" en un ciclo donde llegaran datos de ambas fuentes a la vez - en la realidad la
+misma cuenta, donde no se puede apostar dos veces. `providers/casasdeapuestas.py` normaliza ahora esos dos nombres
+al leer `data-bookie` (`_canonical_bookie`).
+
 ### Tiempos medidos en la VM y qué se cambió (2026-09-28)
 
 Medido con `journalctl -u surebets-fast` en la VM (2 vCPU / 3,8 GB), 87 ciclos en 24 h: el ciclo rápido dura

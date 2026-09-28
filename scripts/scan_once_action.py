@@ -23,9 +23,10 @@ Modos (`--mode`):
 - `fast`: lee solo las fuentes directas (Sportium, Betfair, Winamax, bwin, Altenar,
   Kambi, en paralelo; ~1-2 min) y le suma los comparadores desde la caché en disco. Es el
   que corre cada pocos minutos en local (scripts/local_scan.ps1).
-- `slow`: lee los comparadores (BetExplorer, CasasDeApuestas) por rotación de
-  competiciones durante un presupuesto de tiempo y actualiza la caché; no
-  calcula surebets ni avisa (scripts/local_slow_scan.ps1). Ver engine/cache.py.
+- `slow`: lee el comparador (CasasDeApuestas; BetExplorer retirado 2026-09-28, ver
+  `comparator_providers`) por rotación de competiciones durante un presupuesto de
+  tiempo y actualiza la caché; no calcula surebets ni avisa
+  (scripts/local_slow_scan.ps1). Ver engine/cache.py.
 """
 
 import argparse
@@ -46,7 +47,6 @@ from engine.peers import PeerEvents
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
 from providers.base import OddsProvider
-from providers.betexplorer import BetExplorerProvider
 from providers.bet777 import Bet777Provider
 from providers.betfair import BetfairProvider
 from providers.betfair_exchange import BetfairExchangeProvider
@@ -149,10 +149,16 @@ def comparator_providers(max_matches: int | None = None) -> list[OddsProvider]:
         # CasasDeApuestasProvider no tiene cableados todavía - pendiente si se echan en
         # falta. `CuotasAhoraProvider` sigue implementado en providers/cuotasahora.py por
         # si hace falta reactivarlo, solo se quita de aquí.
-        # Segundo comparador (empresa distinta a CuotasAhora/OddsPortal),
-        # verificado en vivo 2026-09-17 - ver providers/betexplorer.py. Solo cubre
-        # LaLiga y Champions League.
-        BetExplorerProvider(),
+        # BetExplorerProvider retirado del ciclo lento 2026-09-28 (medido en la VM: 150 s de
+        # sus 2 competiciones - LaLiga y Champions, por Playwright - de un ciclo de 14 min
+        # 30 s, ~17 % del tiempo). CasasDeApuestasProvider (abajo) ya cubre esas mismas 2
+        # competiciones, con TODAS las mismas casas de su ALLOWED_BOOKMAKERS (comprobado
+        # contra su lista: 1xbet, 888sport, bet365, betway, bwin, codere, luckia, paf,
+        # retabet, speedybet, versus, williamhill - las 12 presentes en la caché real de
+        # casasdeapuestas), más otras ~13 casas y sin navegador. Ese tiempo libre lo usa
+        # el ciclo lento para refrescar más competiciones de CasasDeApuestasProvider, la
+        # misma lógica que ya se aplicó a CuotasAhoraProvider. `BetExplorerProvider` sigue
+        # implementado en providers/betexplorer.py por si hace falta reactivarlo.
         # Tercer comparador (verificado en vivo 2026-09-27): HTML plano sin navegador,
         # descubre TODAS las competiciones de cada deporte solo (no hace falta lista a
         # mano) y trae casas que ningún otro proveedor de aquí cubre en directo (bet365,

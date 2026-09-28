@@ -161,6 +161,25 @@ def _price(text: str) -> float | None:
     return value if value > 1.0 else None
 
 
+# El sitio identifica algunas casas con un `data-bookie` distinto del `name` que usa el
+# proveedor DIRECTO de este repo para la misma casa (engine/quality.py:DIRECT_SOURCES):
+# sin normalizar, engine/matching.py:best_odds_per_outcome las trataría como dos casas
+# DISTINTAS en vez de una sola con dos lecturas - si algún ciclo llegan datos de ambas
+# fuentes a la vez, podría fabricar una "surebet" entre "williamhill" y "william_hill",
+# que en la realidad es la misma cuenta (no se puede apostar dos veces ahí). Comprobado
+# en vivo el 2026-09-28 contra la caché real de la VM: de las 14 casas de DIRECT_SOURCES,
+# solo estas dos difieren (el resto - betfair, bwin, sportium, versus, winamax, bet777,
+# pokerstars, zebet, 888sport, kirolbet - ya coinciden tal cual).
+_BOOKMAKER_ALIASES = {
+    "william_hill": "williamhill",
+    "marca_apuestas": "marcaapuestas",
+}
+
+
+def _canonical_bookie(bookie: str) -> str:
+    return _BOOKMAKER_ALIASES.get(bookie, bookie)
+
+
 class _Odd:
     __slots__ = ("mercado", "nombre", "bookie", "price")
 
@@ -191,7 +210,7 @@ def _extract_odds(soup: BeautifulSoup) -> list[_Odd]:
         price = _price(span.get_text() if span else div.get_text())
         if price is None:
             continue
-        odds.append(_Odd(mercado, nombre, bookie_div["data-bookie"], price))
+        odds.append(_Odd(mercado, nombre, _canonical_bookie(bookie_div["data-bookie"]), price))
     return odds
 
 

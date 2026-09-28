@@ -261,3 +261,35 @@ def test_cache_units_yields_one_callable_per_real_competition(monkeypatch):
     fetch_serie_b = next(fn for key, fn in units if key == "futbol::/cuotas/futbol/italia/serie-b")
     markets = fetch_serie_b()
     assert len(markets) == 1 and markets[0].event == "Juve vs. Milan"
+
+
+def test_bookmaker_names_that_differ_from_the_direct_providers_are_normalized():
+    # Confirmado en vivo el 2026-09-28 contra la caché real de la VM: el sitio identifica
+    # estas dos casas con un data-bookie distinto del `name` que usa su proveedor directo
+    # (providers/williamhill.py, providers/marcaapuestas.py) - sin normalizar, el motor las
+    # trataría como dos casas distintas y podría fabricar una "surebet" entre ellas.
+    html = page(
+        "Real Madrid", "Sevilla",
+        [
+            odd("Final del partido (1X2)", "Real Madrid", "william_hill", "2.10"),
+            odd("Final del partido (1X2)", "Empate", "william_hill", "3.40"),
+            odd("Final del partido (1X2)", "Sevilla", "marca_apuestas", "2.72"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "futbol"))
+    bookmakers = {o.bookmaker for o in markets["1X2"].outcomes}
+    assert bookmakers == {"williamhill", "marcaapuestas"}
+    assert "william_hill" not in bookmakers and "marca_apuestas" not in bookmakers
+
+
+def test_bookmaker_names_that_already_match_are_left_untouched():
+    html = page(
+        "Real Madrid", "Sevilla",
+        [
+            odd("Final del partido (1X2)", "Real Madrid", "betfair", "2.10"),
+            odd("Final del partido (1X2)", "Empate", "betfair", "3.40"),
+            odd("Final del partido (1X2)", "Sevilla", "bwin", "2.72"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "futbol"))
+    assert {o.bookmaker for o in markets["1X2"].outcomes} == {"betfair", "bwin"}
