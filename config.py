@@ -64,8 +64,15 @@ COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cac
 # de cubrir todas las competiciones (log "Presupuesto de tiempo agotado"), hay margen para
 # subirlo más; las TOP_LEAGUES (engine/cache.py) siguen teniendo prioridad, así que un
 # presupuesto corto nunca las deja sin refrescar, solo retrasa las últimas de la cola.
+# SLOW_MAX_MATCHES subido 25->40 el 2026-09-29: con el tope de 25 el ciclo lento real en la
+# VM terminaba las 137 competiciones en 18m33s de los 25 de presupuesto (de sobra, nunca
+# llegó a agotarlo) pero seguía cortando partidos reales - comprobado en vivo contra el
+# sitio: /cuotas/futbol (raíz) 36, Argentina Liga Profesional 32, UEFA Nations League 26,
+# /cuotas/baloncesto (raíz) y NBA 39 cada una (tenis no tenía ninguna por encima de 25). 40
+# cubre las 5 con margen; coste extra estimado ~15-20s totales (~0.3s/partido, misma medida
+# que el cambio 12->25), sigue dejando de sobra los 25 min de presupuesto.
 SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "25"))
-SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "25"))
+SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "40"))
 COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
 
 # Máximo de proveedores CON NAVEGADOR (Chromium) leyéndose a la vez; las fuentes por httpx

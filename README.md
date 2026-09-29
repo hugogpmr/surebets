@@ -983,6 +983,34 @@ Verificado en vivo con el Browser pane contra 2 partidos reales antes de escribi
 - Verificado en vivo end-to-end con Playwright real (no solo el Browser pane): 4 de 5
   partidos de prueba trajeron DC, con las mismas cuotas capturadas a mano en el navegador.
 
+**Seguimiento el mismo día**: el arreglo de cookies funcionó en el sandbox local pero NO en la
+VM real - un panel OneTrust distinto y más detallado ("Centro de preferencias",
+`onetrust-pc-dark-filter`/`#accept-recommended-btn-handler`), que solo aparece en la red de la
+VM, seguía bloqueando el clic. Un segundo intento (añadir el botón de ese panel + esperar a que
+el overlay desaparezca) tampoco lo resolvió: confirmado con ~19 h de ciclos reales tras el
+segundo arreglo, siempre el mismo `Timeout 5000ms exceeded` en el clic, **0 mercados DC de
+pokerstars** en `data/surebets.db` (de 359 filas `DC` totales, todas de otras casas vía el
+comparador). De paso se encontró que el log `"...CORNERS/CARDS/DC) en %d partidos"` era un
+texto fijo del formato, no calculado de verdad - por eso parecía que "sí salía DC" en cada
+ciclo cuando en realidad nunca llegaba a la base de datos. Desactivado en producción
+(`PokerStarsProvider(fetch_dc=False)` en `scripts/scan_once_action.py`, flag por defecto
+`True`, mismo patrón que `SportiumProvider.fetch_extra_markets`) para no seguir gastando tiempo
+de ciclo en un clic que nunca tiene éxito en esa máquina; código y tests intactos por si una
+futura sesión quiere investigar el panel de cookies específico de la VM.
+
+### Ciclo lento: tope de partidos por competición subido de 25 a 40 (2026-09-29)
+
+Con la caché ya barata (ver más abajo), un ciclo lento real en la VM terminaba las 137
+competiciones en **18 min 33 s de los 25 de presupuesto** (nunca llegó a agotarlo) - margen real
+para investigar si el tope de 25 partidos por competición seguía recortando cobertura.
+Comprobado en vivo contra el sitio (no supuesto): tenis, ninguna competición por encima de 25;
+fútbol sí (`/cuotas/futbol` raíz 36, Liga Profesional Argentina 32, UEFA Nations League 26);
+baloncesto también (`/cuotas/baloncesto` raíz y NBA, 39 cada una). Subido a 40 (cubre los 5
+casos encontrados con margen), coste extra estimado ~15-20 s totales con el mismo ratio
+~0,3 s/partido ya medido el 2026-09-28 - sigue dejando de sobra el presupuesto de 25 min.
+`.env.example` también actualizado (tenía valores `SLOW_BUDGET_MINUTES=20`/`SLOW_MAX_MATCHES=12`
+ya desfasados desde antes de este cambio, sin relación con este hallazgo).
+
 ### Ciclo lento: más cobertura ahora que ya no está al límite de tiempo (2026-09-28)
 
 Con BetExplorer fuera (sección de arriba), un ciclo lento completo tardó 13 min 18 s de los 20
