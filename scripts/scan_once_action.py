@@ -106,7 +106,13 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             BetfairProvider(),
             WinamaxProvider(),
             BwinProvider(),
-            PokerStarsProvider(),
+            # fetch_dc=False desde 2026-09-29: la pestaña de Doble Oportunidad necesita un
+            # clic que el panel de cookies OneTrust bloquea de forma consistente en la VM
+            # real pese a 2 intentos de arreglo - confirmado por la base de datos: 0
+            # mercados DC de pokerstars en ~19 h de ciclos tras el 2º arreglo. El resto de
+            # pestañas (OU/BTTS/1X2_HT/CORNERS/CARDS), que sí funcionan, no se tocan. Ver
+            # providers/pokerstars.py.
+            PokerStarsProvider(fetch_dc=False),
             MarcaApuestasProvider(),
             ZebetProvider(),
             Sport888Provider(),

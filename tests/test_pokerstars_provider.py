@@ -280,3 +280,11 @@ def test_parse_double_chance_rejects_missing_unexpected_or_incomplete_input():
     assert _parse_double_chance(ninguno, "Moldavia", "Islas Feroe") is None  # etiqueta inesperada
     duplicado = [good[0], good[0], good[2]]  # dos filas "1X", ninguna "X2"
     assert _parse_double_chance(duplicado, "Moldavia", "Islas Feroe") is None
+
+
+def test_fetch_dc_defaults_to_true_but_can_be_turned_off():
+    # scripts/scan_once_action.py lo pone a False en producción (ver su comentario): el
+    # panel de cookies OneTrust bloquea el clic de esta pestaña de forma consistente en la
+    # VM real, 0 mercados DC en ~19h de ciclos tras 2 intentos de arreglo.
+    assert PokerStarsProvider().fetch_dc is True
+    assert PokerStarsProvider(fetch_dc=False).fetch_dc is False

@@ -408,7 +408,17 @@ class PokerStarsProvider(OddsProvider):
     sola página, barato) más OU/BTTS/1X2_HT/CORNERS/CARDS/DC leyendo 4 pestañas de
     la ficha de cada partido (ver `EXTRA_TABS`), limitado a
     `extra_markets_max_matches` porque cada pestaña es una página de Playwright
-    aparte (sin API JSON, a diferencia de bet777/888sport/William Hill)."""
+    aparte (sin API JSON, a diferencia de bet777/888sport/William Hill).
+
+    `fetch_dc`: la pestaña de Doble Oportunidad necesita un clic (ver
+    `_extract_double_chance`) que el panel de cookies OneTrust bloquea de forma
+    consistente en la VM de producción pese a 2 intentos de arreglo (2026-09-29:
+    banner simple + panel detallado "Centro de preferencias") - confirmado en
+    vivo: 0 mercados DC de pokerstars en la base de datos en ~19h de ciclos tras
+    el 2º arreglo, siempre el mismo timeout con "onetrust-pc-dark-filter...
+    intercepts pointer events". Se desactiva en producción (ver
+    `scripts/scan_once_action.py`) para no gastar tiempo de ciclo en un intento
+    que nunca produce mercados, igual que `SportiumProvider.fetch_extra_markets`."""
 
     name = BOOKMAKER
     uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
@@ -422,6 +432,7 @@ class PokerStarsProvider(OddsProvider):
         extra_markets_max_matches: int = DEFAULT_EXTRA_MARKETS_MAX_MATCHES,
         extra_markets_concurrency: int = DEFAULT_EXTRA_MARKETS_CONCURRENCY,
         extra_markets_budget_seconds: float = DEFAULT_EXTRA_MARKETS_BUDGET_SECONDS,
+        fetch_dc: bool = True,
     ):
         self.url = url
         self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
@@ -429,6 +440,12 @@ class PokerStarsProvider(OddsProvider):
         self.extra_markets_max_matches = extra_markets_max_matches
         self.extra_markets_concurrency = extra_markets_concurrency
         self.extra_markets_budget_seconds = extra_markets_budget_seconds
+        # Ver `fetch_dc` en el docstring de la clase: en producción (VM) el panel de
+        # cookies OneTrust bloquea el clic de esta pestaña de forma consistente pese a
+        # 2 intentos de arreglo (2026-09-29), así que se desactiva ahí manteniendo el
+        # código/tests intactos por si se retoma (mismo patrón que
+        # `SportiumProvider.fetch_extra_markets`).
+        self.fetch_dc = fetch_dc
         # Partidos del listado (local, visitante, enlace a su ficha) para la 2ª pasada.
         self._listing: list[tuple[str, str, str]] = []
 
@@ -509,6 +526,7 @@ class PokerStarsProvider(OddsProvider):
         # queda. Sin tope, un puñado de pestañas que agotan su espera alargaba el ciclo.
         deadline = time.monotonic() + self.extra_markets_budget_seconds
         skipped = 0
+        tabs = EXTRA_TABS if self.fetch_dc else tuple(t for t in EXTRA_TABS if t != DC_TAB)
 
         async def fetch_tab(href: str, tab: str) -> list[dict]:
             nonlocal skipped
@@ -536,12 +554,12 @@ class PokerStarsProvider(OddsProvider):
                     await page.close()
 
         async def fetch_match(home: str, away: str, href: str) -> list[Market]:
-            tab_results = await asyncio.gather(*[fetch_tab(href, tab) for tab in EXTRA_TABS])
+            tab_results = await asyncio.gather(*[fetch_tab(href, tab) for tab in tabs])
             # DC va aparte: su resultado no es un acordeón de tabla (`{title, headers, rows}`
             # como `_EXTRACT_ACCORDIONS_JS`) sino filas de botones (`_EXTRACT_DC_JS`), así
             # que `parse_extra_markets` no sabría clasificarlo.
             accordions, dc_rows = [], None
-            for tab, result in zip(EXTRA_TABS, tab_results):
+            for tab, result in zip(tabs, tab_results):
                 if tab == DC_TAB:
                     dc_rows = result or None
                 else:
@@ -555,8 +573,8 @@ class PokerStarsProvider(OddsProvider):
         results = await asyncio.gather(*[fetch_match(home, away, href) for home, away, href in matches])
         markets = [market for sub in results for market in sub]
         logger.info(
-            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS/DC) en %d partidos%s",
-            len(markets), len(matches),
+            "PokerStars: %d mercados nuevos (OU/BTTS/1X2_HT/CORNERS/CARDS%s) en %d partidos%s",
+            len(markets), "/DC" if self.fetch_dc else "", len(matches),
             f" ({skipped} pestañas saltadas por el tope de {self.extra_markets_budget_seconds:.0f}s)" if skipped else "",
         )
         return markets
