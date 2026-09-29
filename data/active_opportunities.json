@@ -1,187 +1,182 @@
 {
   "Bulgaria vs. Estonia||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.19047619047619047,
-    "cycles": 205,
+    "margin": 0.17222222222222228,
+    "cycles": 206,
     "notified": true
   },
   "San Marino vs. Albania||futbol||AH_HT_2||888sport,cgmapuestas": {
     "margin": 0.161904761904762,
-    "cycles": 205,
+    "cycles": 206,
     "notified": true
   },
   "Estados Unidos vs. Chile||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.21717171717171713,
-    "cycles": 197,
+    "cycles": 198,
     "notified": true
   },
   "México vs. Perú||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.21937942297223723,
-    "cycles": 195,
+    "cycles": 196,
     "notified": true
   },
   "República Checa vs. Inglaterra||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.23441734417344162,
-    "cycles": 129,
+    "cycles": 130,
     "notified": true
   },
   "Escocia vs. Suiza||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.20833333333333337,
-    "cycles": 114,
+    "cycles": 115,
     "notified": true
   },
   "Luxemburgo vs. Islandia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.18778280542986425,
-    "cycles": 114,
+    "cycles": 115,
     "notified": true
   },
   "Luxemburgo vs. Islandia||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.18045112781954886,
-    "cycles": 114,
+    "cycles": 115,
     "notified": true
   },
   "New York Red Bulls vs. St. Louis City||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.1797385620915033,
-    "cycles": 93,
+    "cycles": 94,
     "notified": true
   },
   "San Marino vs. Albania||futbol||AH_HT_1||888sport,cgmapuestas": {
-    "margin": 0.08456843940714909,
-    "cycles": 71,
+    "margin": 0.10472972972972983,
+    "cycles": 72,
     "notified": true
   },
   "Somalia vs. Costa de Marfil||futbol||CORNERS_OU_11.5||betway,jokerbet": {
     "margin": 0.010752688172043001,
-    "cycles": 51,
+    "cycles": 52,
     "notified": true
   },
   "Lituania vs. Andorra||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22020018198362146,
-    "cycles": 43,
+    "cycles": 44,
     "notified": true
   },
   "Fiyi vs. Nueva Caledonia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.18271604938271602,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true
   },
   "Papúa Nueva Guinea vs. Islas Salomón||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.16478696741854637,
-    "cycles": 31,
+    "cycles": 32,
     "notified": true
   },
   "Papúa Nueva Guinea vs. Islas Salomón||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.1572112098427888,
-    "cycles": 31,
+    "cycles": 32,
     "notified": true
   },
   "Arthur Fils vs. Luca Van Assche||tenis||OU_24.5||betinia,williamhill": {
     "margin": 0.021643109540635974,
-    "cycles": 25,
+    "cycles": 26,
     "notified": true
   },
   "New York Liberty vs. Minnesota Lynx||baloncesto||AH_-3.5||betfair,cgmapuestas": {
     "margin": 0.0935672514619883,
-    "cycles": 23,
+    "cycles": 24,
     "notified": true
   },
   "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.2411420708634331,
-    "cycles": 23,
+    "cycles": 24,
     "notified": true
   },
   "New York Red Bulls vs. St. Louis City||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.24640522875816995,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true
   },
   "Seychelles vs. Sri Lanka||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22689075630252098,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Seychelles vs. Sri Lanka||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.2055555555555556,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Malta Sub21 vs. Alemania Sub21||futbol||OU_6||jokerbet,winamax": {
     "margin": 0.013605442176870763,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Cienciano vs. Los Chankas||futbol||CORNERS_OU_8.5||888sport,betway": {
     "margin": 0.013712359345815717,
-    "cycles": 14,
+    "cycles": 15,
     "notified": true
   },
   "Cienciano vs. Los Chankas||futbol||CORNERS_OU_9.5||888sport,betway": {
     "margin": 0.012195121951219523,
-    "cycles": 14,
+    "cycles": 15,
     "notified": true
   },
   "Deportivo Pereira vs. Santa Fe||futbol||CORNERS_OU_8.5||goldenbull,retabet": {
     "margin": 0.017925247902364605,
-    "cycles": 8,
-    "notified": true
-  },
-  "San Marino vs. Albania||futbol||BTTS||interwetten,paston": {
-    "margin": 0.052681688352903766,
-    "cycles": 6,
+    "cycles": 9,
     "notified": true
   },
   "Eritrea vs. Sudáfrica||futbol||OU_4.5||retabet,winamax": {
     "margin": 0.010232192050373845,
-    "cycles": 5,
-    "notified": true
-  },
-  "Deportivo Pereira vs. Santa Fe||futbol||1X2||1xbet_es,enracha,interwetten": {
-    "margin": 0.010718908620213075,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Deportivo Pereira vs. Santa Fe||futbol||CORNERS_OU_9.5||goldenbull,retabet": {
     "margin": 0.019399853852862914,
-    "cycles": 5,
-    "notified": true
-  },
-  "Panathinaikos vs. ASVEL||baloncesto||OU_HT_81.5||888sport,jokerbet": {
-    "margin": 0.010695187165775444,
-    "cycles": 4,
-    "notified": true
-  },
-  "Learner Tien vs. Hubert Hurkacz||tenis||AH_-1.5||1xbet_es,goldenpark": {
-    "margin": 0.14478734838016272,
-    "cycles": 3,
-    "notified": true
-  },
-  "Seychelles vs. Sri Lanka||futbol||1X2||1xbet_es,jokerbet": {
-    "margin": 0.01402933092131331,
-    "cycles": 1,
+    "cycles": 6,
     "notified": true
   },
   "Eslovenia vs. Macedonia del Norte||futbol||CARDS_OU_3.5||betinia,pokerstars": {
     "margin": 0.0633187772925764,
-    "cycles": 1,
-    "notified": true
-  },
-  "Eslovenia vs. Macedonia del Norte||futbol||CARDS_OU_4.5||botemania,pokerstars": {
-    "margin": 0.11764705882352944,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Eslovenia vs. Macedonia del Norte||futbol||CARDS_OU_5.5||betinia,pokerstars": {
     "margin": 0.08145363408521311,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Seychelles vs. Sri Lanka||futbol||AH_0||bet365,jokerbet": {
     "margin": 0.02980845517397701,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Eslovenia vs. Macedonia del Norte||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.24014713610089333,
+    "cycles": 2,
+    "notified": false
+  },
+  "Seychelles vs. Sri Lanka||futbol||1X2||1xbet_es,pokerstars": {
+    "margin": 0.01402933092131331,
+    "cycles": 1,
+    "notified": true
+  },
+  "Eslovenia vs. Macedonia del Norte||futbol||CARDS_OU_4.5||paf,pokerstars": {
+    "margin": 0.10873440285204983,
+    "cycles": 1,
+    "notified": true
+  },
+  "San Marino vs. Albania||futbol||BTTS||codere,interwetten": {
+    "margin": 0.013377926421404673,
+    "cycles": 1,
+    "notified": true
+  },
+  "Kei Nishikori vs. Frances Tiafoe||tenis||AH_-1.5||goldenpark,olybet": {
+    "margin": 0.22503583373148595,
     "cycles": 1,
     "notified": false
+  },
+  "Isabella Maria Serban vs. Madelief Hageman||tenis||ML||betway,paf": {
+    "margin": 0.01717341853478971,
+    "cycles": 1,
+    "notified": true
   }
 }
