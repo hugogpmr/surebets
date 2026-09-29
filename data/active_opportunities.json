@@ -1,202 +1,197 @@
 {
   "México vs. Perú||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.21937942297223723,
-    "cycles": 209,
+    "margin": 0.22196531791907503,
+    "cycles": 210,
     "notified": true
   },
   "New York Red Bulls vs. St. Louis City||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.1797385620915033,
-    "cycles": 107,
+    "cycles": 108,
     "notified": true
   },
   "Lituania vs. Andorra||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.22020018198362146,
-    "cycles": 57,
+    "margin": 0.20354808590102702,
+    "cycles": 58,
     "notified": true
   },
   "Fiyi vs. Nueva Caledonia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.18271604938271602,
-    "cycles": 50,
+    "cycles": 51,
     "notified": true
   },
   "Papúa Nueva Guinea vs. Islas Salomón||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.14743589743589747,
-    "cycles": 45,
+    "cycles": 46,
     "notified": true
   },
   "Papúa Nueva Guinea vs. Islas Salomón||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.16478696741854637,
-    "cycles": 45,
+    "margin": 0.1572112098427888,
+    "cycles": 46,
     "notified": true
   },
   "New York Red Bulls vs. St. Louis City||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.24640522875816995,
-    "cycles": 32,
+    "cycles": 33,
     "notified": true
   },
   "Seychelles vs. Sri Lanka||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22689075630252098,
-    "cycles": 30,
+    "cycles": 31,
     "notified": true
   },
   "Seychelles vs. Sri Lanka||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.18571428571428572,
-    "cycles": 30,
+    "cycles": 31,
     "notified": true
   },
   "Eritrea vs. Sudáfrica||futbol||OU_4.5||retabet,winamax": {
     "margin": 0.010232192050373845,
-    "cycles": 19,
-    "notified": true
-  },
-  "Seychelles vs. Sri Lanka||futbol||AH_0||bet365,jokerbet": {
-    "margin": 0.010442684174219119,
-    "cycles": 15,
+    "cycles": 20,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.20238095238095233,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.18055555555555558,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Gales vs. Noruega||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.1997430956968529,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.2286324786324787,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.20833333333333337,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||CORNERS_OU_9.5||888sport,retabet": {
     "margin": 0.012731203459043883,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Irlanda vs. Austria||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.20588235294117652,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Irlanda vs. Austria||futbol||AH_HT_1||888sport,betfair": {
     "margin": 0.18571428571428572,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Israel vs. Kosovo||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.20879120879120872,
-    "cycles": 12,
+    "margin": 0.18778280542986425,
+    "cycles": 13,
     "notified": true
   },
   "Israel vs. Kosovo||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.17460317460317465,
-    "cycles": 12,
+    "margin": 0.18045112781954886,
+    "cycles": 13,
     "notified": true
   },
   "Malta vs. Gibraltar||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.22643979057591623,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Daniil Medvédev vs. Pablo Carreño||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.22503583373148595,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Islas Vírgenes Británicas vs. Montserrat||futbol||AH_HT_1||888sport,interwetten": {
     "margin": 0.09502262443438902,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Paris vs. Zalgiris Kaunas||baloncesto||AH_-2.5||1xbet_es,betfair": {
     "margin": 0.07335907335907343,
-    "cycles": 9,
-    "notified": true
-  },
-  "Seychelles vs. Sri Lanka||futbol||DNB||bet365,betfair": {
-    "margin": 0.016582220175034523,
-    "cycles": 4,
+    "cycles": 10,
     "notified": true
   },
   "New York Liberty vs. Minnesota Lynx||baloncesto||AH_-3.5||betfair,paston": {
     "margin": 0.12186379928315416,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_9.5||betway,jokerbet": {
     "margin": 0.05701754385964919,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Arthur Fils vs. Luca Van Assche||tenis||OU_24.5||betinia,williamhill": {
     "margin": 0.021643109540635974,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Learner Tien vs. Hubert Hurkacz||tenis||AH_-1.5||1xbet_es,goldenpark": {
     "margin": 0.14118010503552658,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_9.5||betfair,casumo": {
     "margin": 0.02714932126696834,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||CORNERS_OU_10.5||888sport,retabet": {
     "margin": 0.015167699209570618,
-    "cycles": 2,
-    "notified": true
-  },
-  "México vs. Perú||futbol||1X2||1xbet_es,jokerbet,pokerstars": {
-    "margin": 0.019257703081232536,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Estados Unidos vs. Chile||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.2222222222222222,
-    "cycles": 1,
+    "margin": 0.2134975622273544,
+    "cycles": 2,
     "notified": false
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.06862745098039214,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_8.5||betway,jokerbet": {
     "margin": 0.08273900317434146,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||betfair,casumo": {
     "margin": 0.010060362173038184,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_11.5||betfair,leovegas": {
     "margin": 0.018181818181818077,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.24242424242424243,
-    "cycles": 1,
+    "cycles": 2,
     "notified": false
   },
   "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.2438411261940674,
-    "cycles": 1,
+    "cycles": 2,
     "notified": false
+  },
+  "México vs. Perú||futbol||1X2||1xbet_es,jokerbet,paf": {
+    "margin": 0.01938807419476951,
+    "cycles": 1,
+    "notified": true
+  },
+  "Dominica vs. Guyana||futbol||AH_HT_1||888sport,interwetten": {
+    "margin": 0.11821705426356588,
+    "cycles": 1,
+    "notified": true
   }
 }
