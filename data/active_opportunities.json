@@ -1,97 +1,107 @@
 {
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 35,
+    "cycles": 36,
     "notified": true
   },
   "Alex De Minaur vs. Mariano Navone||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.016862170087976636,
-    "cycles": 13,
-    "notified": true
-  },
-  "Arda Azkara vs. Rohan Mehra||tenis||ML||888sport,paf": {
-    "margin": 0.011868707538675638,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||DNB||cgmapuestas,retabet": {
     "margin": 0.014768192850384665,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||1X2||1xbet_es,cgmapuestas,luckia": {
     "margin": 0.01534859368289776,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 10,
-    "notified": true
-  },
-  "Kei Nishikori vs. Frances Tiafoe||tenis||AH_-1.5||goldenpark,olybet": {
-    "margin": 0.20354808590102702,
-    "cycles": 8,
+    "cycles": 11,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||1X2||1xbet_es,bet365,betfair": {
-    "margin": 0.012208855196660151,
-    "cycles": 5,
+    "margin": 0.024708855196660218,
+    "cycles": 6,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||AH_-2.5||1xbet_es,bet365": {
     "margin": 0.026679613446155326,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||OU_4||bet365,jokerbet": {
     "margin": 0.013539651837524147,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||AH_-3.5||bet365,jokerbet": {
     "margin": 0.01658090337335616,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||AH_-3||bet365,jokerbet": {
     "margin": 0.052843708016121704,
-    "cycles": 5,
-    "notified": true
-  },
-  "Sao Paulo FC vs. Santos||futbol||AH_-0.5||betway,winamax": {
-    "margin": 0.03263403263403264,
-    "cycles": 3,
+    "cycles": 6,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2||jokerbet,winamax": {
     "margin": 0.014146772767462457,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Soles de Mexicali vs. Diablos Rojos||baloncesto||ML||betway,bwin": {
     "margin": 0.03693181818181812,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||cgmapuestas,enracha": {
     "margin": 0.016908212560386437,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.021505376344086002,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||casumo,pokerstars": {
     "margin": 0.012204424103737566,
+    "cycles": 2,
+    "notified": true
+  },
+  "Sao Paulo FC vs. Santos||futbol||AH_-0.5||interwetten,winamax": {
+    "margin": 0.05764966740576494,
     "cycles": 1,
     "notified": true
   },
-  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,paf": {
+  "Argentina vs. Bolivia||futbol||BTTS||pokerstars,williamhill": {
+    "margin": 0.01583510261854215,
+    "cycles": 1,
+    "notified": true
+  },
+  "Scott Jones vs. Shintaro Imai||tenis||ML||888sport,betway": {
+    "margin": 0.02857142857142858,
+    "cycles": 1,
+    "notified": true
+  },
+  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.0129749768303985,
     "cycles": 1,
     "notified": true
+  },
+  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,leovegas": {
+    "margin": 0.013002364066193817,
+    "cycles": 1,
+    "notified": true
+  },
+  "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
+    "margin": 0.1768707482993197,
+    "cycles": 1,
+    "notified": false
   }
 }
