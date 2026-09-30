@@ -1,91 +1,86 @@
 {
   "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.21653622315873966,
-    "cycles": 66,
+    "cycles": 67,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 56,
+    "cycles": 57,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||BTTS||interwetten,retabet": {
     "margin": 0.011323511506148742,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||1X2||goldenbull,interwetten,sportium": {
     "margin": 0.010989010989011061,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-1.5||casumo,interwetten": {
     "margin": 0.015259895088221231,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Brooklyn vs. Detroit City||futbol||AH_1||interwetten,jokerbet": {
     "margin": 0.02083333333333337,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
     "margin": 0.024676850763807323,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||bet365,enracha": {
     "margin": 0.03488372093023262,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3.5||bet365,goldenbull": {
     "margin": 0.022197761878554267,
-    "cycles": 6,
-    "notified": true
-  },
-  "Leones de Quilpué vs. Valdivia||baloncesto||ML||betway,bwin": {
-    "margin": 0.029833215879727426,
-    "cycles": 5,
-    "notified": true
-  },
-  "Puente Alto vs. Español de Osorno||baloncesto||ML||888sport,enracha": {
-    "margin": 0.03292181069958855,
-    "cycles": 2,
+    "cycles": 7,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||bet365,cgmapuestas": {
     "margin": 0.010011123470522798,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.0129749768303985,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,leovegas": {
     "margin": 0.013002364066193817,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_11.5||betfair,leovegas": {
     "margin": 0.02608695652173909,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Kei Nishikori vs. Frances Tiafoe||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.23835491933651443,
-    "cycles": 1,
+    "cycles": 2,
     "notified": false
   },
   "Álex de Miñaur vs. Mariano Navone||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.014705882352941235,
+    "cycles": 2,
+    "notified": true
+  },
+  "Leones de Quilpué vs. Valdivia||baloncesto||ML||888sport,bwin": {
+    "margin": 0.029833215879727426,
     "cycles": 1,
     "notified": true
   }
