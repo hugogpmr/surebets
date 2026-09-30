@@ -15,6 +15,7 @@ from providers.base import OddsProvider
 from storage.db import comparison_key, save_comparisons, save_opportunity
 
 from .arbitrage import compare_market
+from .alerts import SourceAlerts
 from .health import SourceHealth
 from .labels import kickoff_line, market_title, outcome_label, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
@@ -361,6 +362,8 @@ async def _run_scan_cycle(
     max_concurrency: int | None = None,
     health: SourceHealth | None = None,
     peers: PeerEvents | None = None,
+    source_alerts: SourceAlerts | None = None,
+    notify_admin: NotifyFn | None = None,
     executor: ThreadPoolExecutor | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
@@ -486,6 +489,13 @@ async def _run_scan_cycle(
             f" (esperó turno {info['wait_seconds']:.1f}s)" if info["wait_seconds"] >= 0.5 else "",
             "" if info["ok"] else " (FALLÓ)",
         )
+    if source_alerts is not None and notify_admin is not None:
+        alert = source_alerts.update(sources)
+        if alert:
+            try:
+                await notify_admin(alert)
+            except Exception:
+                logger.warning("No se pudo enviar el aviso de fuentes", exc_info=True)
     slowest = max(sources.items(), key=lambda item: item[1]["seconds"] + item[1]["wait_seconds"], default=None)
     if slowest is not None:
         logger.info(

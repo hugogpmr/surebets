@@ -200,8 +200,8 @@ def test_live_or_out_of_horizon_events_are_ignored():
 
 def test_returns_nothing_when_no_supported_sport_requested():
     # baloncesto/tenis sí están soportados (ver test_basketball_and_tennis_provider.py);
-    # balonmano no, así que no debe intentar red alguna.
-    assert AltenarProvider().fetch_markets(["balonmano_champions"]) == []
+    # el rugby no, así que no debe intentar red alguna.
+    assert AltenarProvider().fetch_markets(["rugby_top14"]) == []
 
 
 TEAM_NAME_STYLE = {

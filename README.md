@@ -1147,3 +1147,16 @@ peticiones), y solo ~6 s de cruce de eventos y ~9 s de base de datos + `git push
 El arbitraje deportivo no es ilegal en España (Ley 13/2011), pero cada casa de apuestas puede limitar o cerrar
 cuentas por sus propios términos y condiciones. El scraping debe hacerse de forma moderada y revisando los
 términos de servicio de cada operador. Ver el documento base para más detalle.
+
+### Más deportes, más ligas y más mercados (2026-09-29)
+
+Todo verificado en vivo (APIs y webs reales) y con tests; ver los docstrings de cada proveedor para el detalle.
+
+- **Deportes nuevos en Altenar y Kambi** (`SPORT_IDS`/`SPORT_PATHS`): hockey hielo (Altenar 70, Kambi `ice_hockey`), balonmano (73 / `handball`), béisbol (76 / `baseball`) y voleibol (solo Altenar, 69: Kambi no lo lista). Bet777 añade hockey, béisbol y voleibol (Sportify no devuelve nada para balonmano). Clave nueva `voleibol` en `SPORTS`.
+- **Hockey: prórroga contra tiempo reglamentario.** El partido completo ("incl. prórroga y penaltis") usa los prefijos sin sufijo (`ML`, `AH`, `OU`...) y el de 60 minutos lleva `_REG` (`OU_REG`, `AH_REG`, `BTTS_REG`, `1X2_REG`), de modo que NUNCA cruzan entre sí. Por periodo: `_P1`/`_P2`/`_P3`. Béisbol: `_F5` (5 primeros innings) y `_I1` (primer inning).
+- **Franquicias de EE. UU.** (`engine/team_aliases.py`): NHL y MLB con ciudad y códigos ("TOR Maple Leafs" en Altenar = "Toronto Maple Leafs" en Kambi). El mote a secas no vale ("Nottingham Panthers" no es Florida). Con esto la NHL pasó de no cruzar a cruzar Altenar, Kambi y Bet777. En balonmano cruzan ~8 de 15 partidos (abreviaturas distintas por plataforma: `Flensburg-H.` / `Flensburg-Handewitt SG`); no se ha tocado.
+- **888sport: todas las ligas más baloncesto y tenis** con el listado por día `getUpcomingEvents/<deporte>/<today|tomorrow>` (antes solo LaLiga). Las fichas se piden de 40 en 40 para acotar la memoria. Medido: 104 partidos de fútbol en 23 s, 35 de baloncesto y 230 de tenis en 20 s; con Altenar/Kambi/Bet777 cruzan ~1100 grupos de mercado de tenis y baloncesto.
+- **Zebet**: 1X2 de 11 ligas más (solo el listado, una carga por liga) y de la NHL (`1X2_REG`); la ficha completa sigue siendo solo de LaLiga. Mercados nuevos de la ficha sin coste extra: goles por equipo (`OU_HOME`/`OU_AWAY`, también por mitad), primer equipo en marcar (`FIRST_GOAL`, `_HT`, `_2H`) y `BTTS_HT`. Baloncesto y tenis en Zebet NO: sus listados no traen las cuotas en las clases del fútbol.
+- **Marca Apuestas y Versus**: 9 ligas más cada una (ids de las páginas de competiciones), leídas solo si la primera cargó bien. ~63 s por casa en total.
+- **Bet777**: `FIRST_GOAL` (`Home`/`NoGoal`/`Away`), que cruza con Altenar y Zebet.
+- **Pendiente / no hecho**: PokerStars baloncesto y tenis (DOM pesado y ya es lo más lento de la VM). Más peticiones a Kambi por los deportes nuevos: vigilar 429 en la VM.

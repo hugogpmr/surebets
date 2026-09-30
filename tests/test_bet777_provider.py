@@ -402,3 +402,89 @@ def test_get_json_retries_rate_limits(monkeypatch):
     client = Client([Response(429), Response(503), Response(200, {"tree": []})])
     assert Bet777Provider()._get_json(client, "events", sport="football") == {"tree": []}
     assert all(p["bookmaker"] == "bet777es" for p in client.params) and len(client.params) == 3
+
+
+# --- Hockey hielo, béisbol y voleibol (añadidos 2026-09-29) ---------------------------------
+
+HOCKEY_DETAILS = {
+    "markets": [
+        mk("Match Winner (Including Overtime)", [out("W1", "Home", 1.79), out("W2", "Away", 1.87)]),
+        mk("Goals Handicap (Including Overtime)", [out("Home", "Home (-1.5)", 3.05), out("Away", "Away (1.5)", 1.3)]),
+        mk("Total Goals (Including Overtime)", [out("Over", "Over (5.5)", 1.54), out("Under", "Under (5.5)", 2.38)]),
+        mk("Total Goals (Regular Time)", [out("Over", "Over (5.5)", 1.7), out("Under", "Under (5.5)", 2.1)]),
+        mk("Team 1 Total Goals (Regular Time)", [out("Over", "Over (2.5)", 1.9), out("Under", "Under (2.5)", 1.9)]),
+        mk("Both Teams To Score (Regular Time)", [out("Yes", "Yes", 1.1), out("No", "No", 5.4)]),
+        mk("Match Result (Regular Time)", [out("W1", "Home", 2.3), out("X", "Draw", 3.66), out("W2", "Away", 2.47)]),
+        mk("1st Period Result", [out("W1", "Home", 2.72), out("X", "Draw", 2.57), out("W2", "Away", 2.83)]),
+        mk("1st Period Winner", [out("W1", "Home", 1.79), out("W2", "Away", 1.87)]),
+        mk("2nd Period Total Goals", [out("Over", "Over (1.5)", 1.7), out("Under", "Under (1.5)", 2.0)]),
+        mk("Correct Score (Regular Time)", [out("Home-Away", "0-0", 31.0), out("Home-Away", "0-1", 23.0)]),  # se ignora
+        mk("Anytime Goalscorer (Regular Time)", [out("", "Cole Caufield", 5.2)]),  # se ignora
+    ]
+}
+
+
+def test_hockey_keeps_overtime_and_regulation_time_apart_and_matches_altenar_kambi_naming():
+    markets = by_type(parse_event_markets(HOCKEY_DETAILS, "A vs. B", "hockey"))
+    assert odds(markets["ML"]) == {"1": 1.79, "2": 1.87}
+    assert odds(markets["AH_-1.5"]) == {"1": 3.05, "2": 1.3}
+    assert odds(markets["OU_5.5"]) == {"Over": 1.54, "Under": 2.38}  # incl. prórroga: sin sufijo
+    assert odds(markets["OU_REG_5.5"]) == {"Over": 1.7, "Under": 2.1}  # reglamentario
+    assert odds(markets["OU_HOME_REG_2.5"]) == {"Over": 1.9, "Under": 1.9}
+    assert odds(markets["BTTS_REG"]) == {"Yes": 1.1, "No": 5.4}
+    assert odds(markets["1X2_REG"]) == {"1": 2.3, "X": 3.66, "2": 2.47}
+    assert odds(markets["1X2_P1"]) == {"1": 2.72, "X": 2.57, "2": 2.83}
+    assert odds(markets["DNB_P1"]) == {"1": 1.79, "2": 1.87}
+    assert odds(markets["OU_P2_1.5"]) == {"Over": 1.7, "Under": 2.0}
+    assert len(markets) == 10
+
+
+def test_baseball_markets_use_the_shared_naming_including_first_five_innings():
+    details = {
+        "markets": [
+            mk("Money Line", [out("W1", "Home", 1.6), out("W2", "Away", 2.3)]),
+            mk("Run Line", [out("Home", "Home (-1.5)", 2.2), out("Away", "Away (1.5)", 1.65)]),
+            mk("Total Runs", [out("Over", "Over (8.5)", 1.9), out("Under", "Under (8.5)", 1.9)]),
+            mk("1st 5 Innings Total Runs", [out("Over", "Over (4.5)", 1.8), out("Under", "Under (4.5)", 2.0)]),
+            mk("1st 5 Innings Run Line", [out("Home", "Home (-0.5)", 2.3), out("Away", "Away (0.5)", 1.6)]),
+            mk("1st Inning Total Runs", [out("Over", "Over (0.5)", 2.07), out("Under", "Under (0.5)", 1.7)]),
+            mk("Total Runs Odd/Even", [out("Even", "Even", 2.09), out("Odd", "Odd", 1.75)]),
+            mk("1st 5 Innings Result", [out("W1", "Home", 2.19), out("X", "X", 4.0), out("W2", "Away", 2.48)]),  # se ignora
+        ]
+    }
+    markets = by_type(parse_event_markets(details, "A vs. B", "beisbol"))
+    assert set(markets) == {"ML", "AH_-1.5", "OU_8.5", "OU_F5_4.5", "AH_F5_-0.5", "OU_I1_0.5", "OE"}
+
+
+def test_volleyball_winner_and_points_for_the_match_and_the_first_set():
+    details = {
+        "markets": [
+            mk("Match Winner", [out("W1", "Home", 1.26), out("W2", "Away", 3.6)]),
+            mk("1st Set Winner", [out("W1", "Home", 3.1), out("W2", "Away", 1.3)]),
+            mk("Total Points", [out("Over", "Over (151.5)", 1.72), out("Under", "Under (151.5)", 2.0)]),
+            mk("1st Set Total Points", [out("Over", "Over (44.5)", 1.64), out("Under", "Under (44.5)", 2.1)]),
+            mk("1st Set Total Points Odd/Even", [out("Even", "Even", 1.58), out("Odd", "Odd", 2.2)]),
+            mk("Correct Score", [out("3-0", "3-0", 2.2)]),  # se ignora
+        ]
+    }
+    markets = by_type(parse_event_markets(details, "A vs. B", "voleibol"))
+    assert set(markets) == {"ML", "ML_SET1", "OU_151.5", "OU_SET1_44.5", "OE_SET1"}
+
+
+def test_hockey_names_do_not_leak_into_other_sports():
+    assert parse_event_markets(HOCKEY_DETAILS, "A vs. B", "futbol") == []
+    assert parse_event_markets(HOCKEY_DETAILS, "A vs. B", "baloncesto") == []
+
+
+def test_first_team_to_score_uses_none_home_away_like_altenar_and_zebet():
+    details = {
+        "markets": [
+            mk("First Team to Score", [out("Home", "Home", 1.85), out("NoGoal", "No Goal", 11.0), out("Away", "Away", 2.3)]),
+            mk("1st Half First Team to Score", [out("Home", "Home", 2.6), out("NoGoal", "No Goal", 2.9), out("Away", "Away", 3.4)]),
+            mk("2nd Half First Team to Score", [out("Home", "Home", 2.7), out("NoGoal", "No Goal", 3.1), out("Away", "Away", 3.5)]),
+            mk("Last Team to Score", [out("Home", "Home", 1.9), out("NoGoal", "No Goal", 11.0), out("Away", "Away", 2.2)]),  # se ignora
+        ]
+    }
+    markets = by_type(parse_event_markets(details, "A vs. B", "futbol"))
+    assert set(markets) == {"FIRST_GOAL", "FIRST_GOAL_HT", "FIRST_GOAL_2H"}
+    assert odds(markets["FIRST_GOAL"]) == {"1": 1.85, "None": 11.0, "2": 2.3}

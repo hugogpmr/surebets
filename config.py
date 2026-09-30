@@ -90,6 +90,15 @@ MAX_CONCURRENT_FETCHES = _fetches if _fetches > 0 else None if _fetches < 0 else
 # (fuera de git), propio de cada máquina.
 SOURCE_PARK_AFTER = int(os.getenv("SOURCE_PARK_AFTER", "5"))
 SOURCE_HEALTH_PATH = os.getenv("SOURCE_HEALTH_PATH", "cache/source_health.json")
+# Avisos de administración (engine/alerts.py): canal privado de Telegram, distinto del de
+# surebets, donde el bot avisa de fuentes muertas y de ciclos que fallan. Un bot NO puede crear
+# canales (la API no lo permite): se crea a mano, se añade el bot como administrador y aquí va su
+# id (empieza por -100). Vacío = sin avisos. ALERT_AFTER = ciclos seguidos malos antes de avisar
+# (0 = desactivado); ALERT_IGNORE = fuentes que nunca avisan (p.ej. sin credenciales).
+ADMIN_ALERT_CHAT_ID = os.getenv("ADMIN_ALERT_CHAT_ID", "")
+SOURCE_ALERT_AFTER = int(os.getenv("SOURCE_ALERT_AFTER", "3"))
+SOURCE_ALERT_IGNORE = frozenset(n.strip() for n in os.getenv("SOURCE_ALERT_IGNORE", "betfair_exchange").split(",") if n.strip())
+SOURCE_ALERTS_PATH = os.getenv("SOURCE_ALERTS_PATH", "cache/source_alerts.json")
 # Partidos que listaban las demás casas en el ciclo anterior, para adelantar la segunda pasada de
 # PokerStars (engine/peers.py). Fuera de git, propio de cada máquina.
 PEER_EVENTS_PATH = os.getenv("PEER_EVENTS_PATH", "cache/peer_events.json")

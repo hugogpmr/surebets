@@ -81,9 +81,31 @@ mercado es y, en hándicap/más-menos, la línea:
 - El resto de los grupos de la ficha (combinadas, marcador exacto, margen de
   victoria, más/menos por equipo, apuestas de jugador...) quedan fuera: no son de
   dos/tres resultados exhaustivos y limpios, o no tienen pareja en otra fuente.
+
+**Más mercados de la ficha (añadido 2026-09-29)**, todos en la misma página que ya se carga (coste
+extra cero) y verificados en vivo con Arsenal-Leeds: goles por equipo (`OU_HOME`/`OU_AWAY`, también
+`_HT`/`_2H`), primer equipo en marcar (`FIRST_GOAL`, `_HT`, `_2H`: "Ninguno"/local/visitante, como
+Altenar) y ambos marcan en la 1ª mitad (`BTTS_HT`). La pregunta lleva el nombre del equipo tal cual
+sale en el listado y con él se decide si es el local o el visitante; un nombre que no coincida con
+ninguno de los dos descarta el mercado. Las tres formas en que la web escribe la pregunta de goles
+de un equipo por mitad ("de goles de X en la 1ª mitad", "goles de X en la 2ª mitad", "de goles por X
+la 2ª mitad") las cubre una sola expresión. Quedan fuera, a propósito, "portería a cero" y "gana
+ambas mitades" (sin socio verificado con el que cruzar) y los combos, marcadores y rangos.
+
+**Más ligas y hockey (añadido 2026-09-29)**: `DEFAULT_EXTRA_URLS` añade a LaLiga las páginas de
+competición de otras 11 ligas de fútbol y la NHL, verificadas en vivo (las URLs salen de los
+enlaces `/es/competition/<id>-<slug>` de `https://www.zebet.es/es/sport/1-football`). De esas SOLO
+se lee el 1X2 del listado (una carga de página por liga): la ficha de cada partido, con el resto
+de mercados, sigue pidiéndose solo para LaLiga, porque es una navegación por partido (~3 s cada
+una) y multiplicaría el ciclo. El 1X2 de la NHL es el del tiempo reglamentario (con empate) y
+se emite como `1X2_REG`, que es el que cruza con Kambi y Bet777. Una liga sin partidos o con la
+página rota no debe tumbar a las demás. Baloncesto y tenis NO se añaden: sus listados no
+traen las cuotas en las clases del fútbol (`odds` llegó `null` en la EuroLeague, la NBA y el ATP de
+Tokio) y 888sport ya los cubre por API.
 """
 
 import asyncio
+import logging
 import re
 
 from playwright.async_api import async_playwright
@@ -94,6 +116,25 @@ from providers.base import OddsProvider
 DEFAULT_COMPETITION_URLS = {
     "futbol": "https://www.zebet.es/es/competition/306-laliga",
 }
+# Listados de los que solo se lee el 1X2 (ver docstring del módulo).
+DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
+    "futbol": [
+        "https://www.zebet.es/es/competition/94-premier_league",
+        "https://www.zebet.es/es/competition/305-serie_a",
+        "https://www.zebet.es/es/competition/268-bundesliga",
+        "https://www.zebet.es/es/competition/96-ligue_1",
+        "https://www.zebet.es/es/competition/6674-champions_league",
+        "https://www.zebet.es/es/competition/6675-liga_europa",
+        "https://www.zebet.es/es/competition/41817-conference_league",
+        "https://www.zebet.es/es/competition/18-segunda_division",
+        "https://www.zebet.es/es/competition/202-championship",
+        "https://www.zebet.es/es/competition/102-eredivisie",
+        "https://www.zebet.es/es/competition/154-portugal_liga",
+    ],
+    "hockey": ["https://www.zebet.es/es/competition/6-nhl"],
+}
+
+logger = logging.getLogger(__name__)
 
 # La web manda esta cabecera; verificado en vivo el 2026-09-24 sin ningún reto
 # anti-bot con ella (misma UA que usan ya providers/bet777.py y otros de este repo).
@@ -173,6 +214,20 @@ _AH_QUESTION_RE = re.compile(r"^Hándicap \(([+-]?\d+(?:\.\d+)?)\) - ¿Quién ga
 _AH_PERIOD_SUFFIX = {"el partido": "", "la 1ª mitad": "_HT", "la 2ª mitad": "_2H"}
 
 
+# Goles de un equipo (2026-09-29): la pregunta lleva el nombre del equipo. Por mitad la web la escribe
+# de tres formas distintas (ver docstring del módulo), de ahí las partes opcionales.
+_TEAM_OU_FULL_RE = re.compile(r"^¿Más o menos de goles para (?P<team>.+)\?$")
+_TEAM_OU_HALF_RE = re.compile(r"^¿Más o menos (?:de )?goles (?:de |por )?(?P<team>.+?) (?:en )?(?:la )?(?P<half>[12])ª mitad\?$")
+_HALF_SUFFIX = {"1": "_HT", "2": "_2H"}
+# "¿Qué equipo marca el 1?": ninguno/local/visitante (data-t "Primer gol"), como el FIRST_GOAL de Altenar.
+_FIRST_GOAL_QUESTIONS = {
+    "¿Qué equipo marca el 1?": "FIRST_GOAL",
+    "¿Qué equipo marca el gol 1 en la 1ª mitad?": "FIRST_GOAL_HT",
+    "¿Qué equipo marca el gol 1 en la 2ª mitad?": "FIRST_GOAL_2H",
+}
+_BTTS_HT_QUESTION = "¿Ambos equipos marcarán en la 1ª mitad?"
+
+
 class ZebetProvider(OddsProvider):
     """Zebet (grupo Zeturf): 1X2 pre-partido de LaLiga vía DOM, sin API ni
     autenticación. Ver docstring del módulo para el detalle verificado en vivo."""
@@ -180,8 +235,10 @@ class ZebetProvider(OddsProvider):
     name = "zebet"
     uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
-    def __init__(self, competition_urls: dict[str, str] | None = None):
+    def __init__(self, competition_urls: dict[str, str] | None = None, extra_urls: dict[str, list[str]] | None = None):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS
+        # Con `competition_urls` propias (tests, pruebas sueltas) no se añaden las ligas por defecto.
+        self.extra_urls = extra_urls if extra_urls is not None else ({} if competition_urls else DEFAULT_EXTRA_URLS)
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         return asyncio.run(self._fetch_markets_async(sports))
@@ -192,23 +249,32 @@ class ZebetProvider(OddsProvider):
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page(user_agent=USER_AGENT)
             for sport in sports:
-                url = self.competition_urls.get(sport)
-                if not url:
-                    continue
-                await page.goto(url, timeout=20000, wait_until="load")
-                try:
-                    await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=3000)
-                except Exception:
-                    pass  # ya aceptado en una sesión previa, o el banner no apareció
-                await page.wait_for_selector("#event", timeout=20000)
-                raw_events = await page.eval_on_selector("#event", _EXTRACT_EVENTS_JS)
-                events = self._parse_events(raw_events, sport)
-                for event_name, market_1x2, href in events:
-                    if market_1x2 is not None:
-                        markets.append(market_1x2)
-                    if href:
-                        markets.extend(await self._fetch_match_extras(page, href, event_name, sport))
+                primary = self.competition_urls.get(sport)
+                jobs = ([(primary, True)] if primary else []) + [(url, False) for url in self.extra_urls.get(sport, [])]
+                for url, with_extras in jobs:
+                    try:
+                        markets.extend(await self._fetch_competition(page, url, sport, with_extras))
+                    except Exception:
+                        logger.warning("Zebet: no se pudo leer %s", url, exc_info=True)
             await browser.close()
+        return markets
+
+    async def _fetch_competition(self, page, url: str, sport: str, with_extras: bool) -> list[Market]:
+        """1X2 del listado de una competición y, con `with_extras`, los mercados de la ficha de
+        cada partido. Cookiebot se acepta una vez por sesión (si sigue el banner, se acepta)."""
+        await page.goto(url, timeout=20000, wait_until="load")
+        try:
+            await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=3000)
+        except Exception:
+            pass  # ya aceptado en una sesión previa, o el banner no apareció
+        await page.wait_for_selector("#event", timeout=20000)
+        raw_events = await page.eval_on_selector("#event", _EXTRACT_EVENTS_JS)
+        markets: list[Market] = []
+        for event_name, market_1x2, href in self._parse_events(raw_events, sport):
+            if market_1x2 is not None:
+                markets.append(market_1x2)
+            if with_extras and href:
+                markets.extend(await self._fetch_match_extras(page, href, event_name, sport))
         return markets
 
     async def _fetch_match_extras(self, page, href: str, event_name: str, sport: str) -> list[Market]:
@@ -241,7 +307,8 @@ class ZebetProvider(OddsProvider):
                     Outcome(name="X", bookmaker=self.name, odds=odds[1]),
                     Outcome(name="2", bookmaker=self.name, odds=odds[2]),
                 ]
-                market = Market(event=event_name, sport=sport, market_type="1X2", outcomes=outcomes)
+                # NHL: el 1X2 del listado es el del tiempo reglamentario (con empate)
+                market = Market(event=event_name, sport=sport, market_type="1X2_REG" if sport == "hockey" else "1X2", outcomes=outcomes)
             events.append((event_name, market, event.get("href")))
         return events
 
@@ -254,10 +321,35 @@ class ZebetProvider(OddsProvider):
                 seen_types.add(market.market_type)
                 markets.append(market)
 
+        home, _, away = event_name.partition(" vs. ")
+        side_of = {home.strip(): "HOME", away.strip(): "AWAY"}
+
         for block in raw_blocks:
             data_t = block.get("dataT")
             question = (block.get("question") or "").strip()
             odds, labels = block.get("odds", []), block.get("labels", [])
+
+            team_full = _TEAM_OU_FULL_RE.match(question)
+            team_half = _TEAM_OU_HALF_RE.match(question)
+            if team_full or team_half:
+                match = team_full or team_half
+                side = side_of.get(match.group("team").strip())
+                if side is not None:  # si no es un equipo (p.ej. "goles en la 2ª mitad"), sigue con las demás preguntas
+                    suffix = f"_{side}" + (_HALF_SUFFIX[match.group("half")] if team_half and not team_full else "")
+                    for market in self._parse_ou_lines(odds, labels, suffix, event_name, sport):
+                        emit(market)
+                    continue
+            if question in _FIRST_GOAL_QUESTIONS:
+                emit(
+                    self._parse_labelled_market(
+                        odds, labels, {"Ninguno": "None", home.strip(): "1", away.strip(): "2"},
+                        _FIRST_GOAL_QUESTIONS[question], event_name, sport,
+                    )
+                )
+                continue
+            if question == _BTTS_HT_QUESTION:
+                emit(self._parse_labelled_market(odds, labels, _BTTS_LABELS, "BTTS_HT", event_name, sport))
+                continue
 
             if data_t == "Doble oportunidad":
                 emit(self._parse_labelled_market(odds, labels, _DC_LABELS, "DC", event_name, sport))

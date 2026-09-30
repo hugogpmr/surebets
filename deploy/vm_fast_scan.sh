@@ -26,6 +26,8 @@ scan_seconds=$SECONDS
 
 if [ "$scan_exit" -ne 0 ]; then
   echo "El escaneo fallo con codigo $scan_exit" >&2
+  # El escaneo ya no esta vivo para avisar el mismo (p.ej. OOM killer): lo avisa el script.
+  "$PYTHON" scripts/alert_admin.py "🔴 El ciclo rapido de la VM termino con error (codigo $scan_exit). Mira: journalctl -u surebets-fast" || true
   exit "$scan_exit"
 fi
 

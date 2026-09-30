@@ -54,7 +54,21 @@ FOOTBALL_SPORT_ID = 66
 # como fuente directa.
 BASKETBALL_SPORT_ID = 67
 TENNIS_SPORT_ID = 68
-SPORT_IDS: dict[str, int] = {"futbol": FOOTBALL_SPORT_ID, "baloncesto": BASKETBALL_SPORT_ID, "tenis": TENNIS_SPORT_ID}
+# Añadidos 2026-09-29 (GetAllSports + GetEventDetails reales, casa Jokerbet): hockey hielo (70),
+# voleibol (69), béisbol (76) y balonmano (73). Mismo widget y mismo esquema; solo cambia la tabla.
+HOCKEY_SPORT_ID = 70
+VOLLEYBALL_SPORT_ID = 69
+BASEBALL_SPORT_ID = 76
+HANDBALL_SPORT_ID = 73
+SPORT_IDS: dict[str, int] = {
+    "futbol": FOOTBALL_SPORT_ID,
+    "baloncesto": BASKETBALL_SPORT_ID,
+    "tenis": TENNIS_SPORT_ID,
+    "hockey": HOCKEY_SPORT_ID,
+    "voleibol": VOLLEYBALL_SPORT_ID,
+    "beisbol": BASEBALL_SPORT_ID,
+    "balonmano": HANDBALL_SPORT_ID,
+}
 
 # Ventana de partidos a escanear (horas desde ahora). Cada partido cuesta una
 # petición de ~2 MB descomprimido por casa (~1,3 s), así que ampliarla
@@ -239,8 +253,98 @@ BASKETBALL_QUARTER_SPECS: dict[int, tuple[str, str]] = {
     303: ("AH", _HANDICAP),
     304: ("OE", _ODD_EVEN),
 }
-_SPORT_MARKET_SPECS = {"futbol": FOOTBALL_MARKET_SPECS, "tenis": TENNIS_MARKET_SPECS, "baloncesto": BASKETBALL_MARKET_SPECS}
+
+# Hockey hielo (sportId 70, verificado el 2026-09-29 con partidos de la NHL). Altenar separa
+# "incl. prórroga y penaltis" (el partido completo, como el baloncesto: prefijos sin sufijo) del
+# tiempo reglamentario (typeId 18/19/20/29, sin ese texto en el nombre): estos llevan el sufijo
+# `_REG` para que NUNCA crucen con los del partido completo. El 1X2 del partido entero no existe
+# en Altenar (solo por periodo, ver HOCKEY_PERIOD_SPECS). Quedan fuera marcador exacto, "1x2 y
+# total" y los hándicaps de 3 vías con marcador (408).
+HOCKEY_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    406: ("ML", _TWO_WAY_12),  # Ganador (incl. prórroga y penaltis)
+    410: ("AH", _HANDICAP),
+    412: ("OU", _TOTAL),
+    414: ("OU_HOME", _TOTAL),
+    415: ("OU_AWAY", _TOTAL),
+    419: ("OE", _ODD_EVEN),
+    18: ("OU_REG", _TOTAL),  # tiempo reglamentario
+    19: ("OU_HOME_REG", _TOTAL),
+    20: ("OU_AWAY_REG", _TOTAL),
+    29: ("BTTS_REG", _YES_NO),
+}
+# Mercados "por periodo": mismo typeId para los 3 periodos, distinguidos solo por el texto
+# ("Primer periodo - total", "Segundo periodo - ..."): ver _period_number.
+HOCKEY_PERIOD_SPECS: dict[int, tuple[str, str]] = {
+    443: ("1X2", _THREE_WAY),
+    444: ("FIRST_GOAL", _FIRST_EVENT),
+    446: ("OU", _TOTAL),
+    447: ("OU_HOME", _TOTAL),
+    448: ("OU_AWAY", _TOTAL),
+    452: ("BTTS", _YES_NO),
+    459: ("DNB", _TWO_WAY_12),
+    460: ("AH", _HANDICAP),
+    462: ("OE", _ODD_EVEN),
+    529: ("DC", _DOUBLE_CHANCE),
+}
+
+# Voleibol (sportId 69): mismos typeId de ganador/set que el tenis; los de puntos son propios.
+VOLLEYBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    186: ("ML", _TWO_WAY_12),
+    202: ("ML_SET1", _TWO_WAY_12),
+    238: ("OU", _TOTAL),  # total de puntos del partido
+    310: ("OU_SET1", _TOTAL),
+    311: ("OE_SET1", _ODD_EVEN),
+}
+
+# Béisbol (sportId 76): todo "incl. extra innings" (sin sufijo); `_F5` = primeros 5 innings,
+# `_I1` = primer inning. Fuera: "Total (más de-exacto-menos de)" (3 vías), "carrera a N",
+# combinados y mercados de jugador.
+BASEBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    251: ("ML", _TWO_WAY_12),
+    256: ("AH", _HANDICAP),
+    258: ("OU", _TOTAL),
+    260: ("OU_HOME", _TOTAL),
+    261: ("OU_AWAY", _TOTAL),
+    264: ("OE", _ODD_EVEN),
+    275: ("AH_F5", _HANDICAP),
+    276: ("OU_F5", _TOTAL),
+    277: ("OU_HOME_F5", _TOTAL),
+    278: ("OU_AWAY_F5", _TOTAL),
+    288: ("OU_I1", _TOTAL),
+}
+
+# Balonmano (sportId 73): verificado el 2026-09-29 el partido completo (1X2 con empate, DC, DNB,
+# hándicap, total, par/impar). Los typeId de mitades son los de fútbol/baloncesto (Altenar los
+# reparte igual entre deportes); el parser descarta cualquier mercado cuyos resultados no
+# reconozca, así que uno inexistente aquí no produce nada.
+HANDBALL_MARKET_SPECS: dict[int, tuple[str, str]] = {
+    1: ("1X2", _THREE_WAY),
+    10: ("DC", _DOUBLE_CHANCE),
+    11: ("DNB", _TWO_WAY_12),
+    16: ("AH", _HANDICAP),
+    18: ("OU", _TOTAL),
+    19: ("OU_HOME", _TOTAL),
+    20: ("OU_AWAY", _TOTAL),
+    26: ("OE", _ODD_EVEN),
+    60: ("1X2_HT", _THREE_WAY),
+    63: ("DC_HT", _DOUBLE_CHANCE),
+    64: ("DNB_HT", _TWO_WAY_12),
+    66: ("AH_HT", _HANDICAP),
+    68: ("OU_HT", _TOTAL),
+    74: ("OE_HT", _ODD_EVEN),
+}
+
+_SPORT_MARKET_SPECS = {
+    "futbol": FOOTBALL_MARKET_SPECS,
+    "tenis": TENNIS_MARKET_SPECS,
+    "baloncesto": BASKETBALL_MARKET_SPECS,
+    "hockey": HOCKEY_MARKET_SPECS,
+    "voleibol": VOLLEYBALL_MARKET_SPECS,
+    "beisbol": BASEBALL_MARKET_SPECS,
+    "balonmano": HANDBALL_MARKET_SPECS,
+}
 _SPORT_QUARTER_SPECS = {"baloncesto": BASKETBALL_QUARTER_SPECS}
+_SPORT_PERIOD_SPECS = {"hockey": HOCKEY_PERIOD_SPECS}
 
 # "Primer/1° cuarto", "Segundo/2° cuarto"... Altenar usa DOS formatos de
 # ordinal según el mercado (verificado en vivo: typeId 303 usa "1° cuarto",
@@ -252,6 +356,36 @@ _QUARTER_NAME_RE = re.compile(r"^([a-záéíóúñ]+|\d+)[°ºª]?\s+cuarto\b", 
 def _quarter_number(name: str) -> int | None:
     match = _QUARTER_NAME_RE.match(name.strip())
     return _QUARTER_ORDINALS.get(match.group(1).lower()) if match else None
+
+
+# Hockey: "Primer periodo - total", "Segundo periodo - ...", "Tercero periodo - 1x2" (Altenar
+# escribe "Primero"/"Tercero" en algunos mercados y "Primer"/"Tercer" en otros).
+_PERIOD_ORDINALS = {"primer": 1, "primero": 1, "1": 1, "segundo": 2, "2": 2, "tercer": 3, "tercero": 3, "3": 3}
+_PERIOD_NAME_RE = re.compile(r"^([a-záéíóúñ]+|\d+)[°ºª]?\s+periodo\b", re.IGNORECASE)
+
+
+def _period_number(name: str) -> int | None:
+    match = _PERIOD_NAME_RE.match(name.strip())
+    return _PERIOD_ORDINALS.get(match.group(1).lower()) if match else None
+
+
+def _periodic_spec(sport: str, type_id: int, name: str) -> tuple[str, str] | None:
+    """(prefijo, tipo) de un mercado que se repite por cuarto/periodo con el mismo typeId,
+    o None si no es de esos o el texto no dice de qué cuarto/periodo es (se descarta: mejor
+    perder un mercado que cruzar el de un periodo con el de otro)."""
+    quarter_specs = _SPORT_QUARTER_SPECS.get(sport)
+    if quarter_specs and type_id in quarter_specs:
+        quarter = _quarter_number(name)
+        if quarter is not None:
+            prefix, kind = quarter_specs[type_id]
+            return f"{prefix}_Q{quarter}", kind
+    period_specs = _SPORT_PERIOD_SPECS.get(sport)
+    if period_specs and type_id in period_specs:
+        period = _period_number(name)
+        if period is not None:
+            prefix, kind = period_specs[type_id]
+            return f"{prefix}_P{period}", kind
+    return None
 
 
 # Resultados fijos de cada tipo de mercado. Los que hacen referencia a un
@@ -375,20 +509,15 @@ def parse_event_markets(
     home_id, away_id = competitor_ids
     odds_by_id = {odd["id"]: odd for odd in details.get("odds", [])}
     specs = _SPORT_MARKET_SPECS.get(sport, FOOTBALL_MARKET_SPECS)
-    quarter_specs = _SPORT_QUARTER_SPECS.get(sport)
     markets: list[Market] = []
     for market in _pick_market_variants(details.get("markets", [])).values():
         type_id = market.get("typeId")
         spec = specs.get(type_id)
         if spec is None:
-            quarter_spec = quarter_specs.get(type_id) if quarter_specs else None
-            quarter = _quarter_number(str(market.get("name") or "")) if quarter_spec else None
-            if quarter_spec is None or quarter is None:
+            spec = _periodic_spec(sport, type_id, str(market.get("name") or ""))
+            if spec is None:
                 continue
-            prefix, kind = quarter_spec
-            prefix = f"{prefix}_Q{quarter}"
-        else:
-            prefix, kind = spec
+        prefix, kind = spec
         if kind == _DOUBLE_CHANCE:
             dc_market = _parse_double_chance(event_name, sport, bookmaker, prefix, market, odds_by_id)
             if dc_market is not None:

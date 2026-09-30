@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import time
 from datetime import datetime, timedelta, timezone
@@ -128,3 +129,14 @@ async def notify_opportunity(bot: Bot, text: str) -> None:
     thread_id = await _notify_thread_id(bot)
     await bot.send_message(chat_id=config.TELEGRAM_CHAT_ID, text=text, message_thread_id=thread_id)
     _last_sent_at = time.monotonic()
+
+
+async def notify_admin(bot: Bot, text: str) -> None:
+    """Aviso al canal privado de administración (config.ADMIN_ALERT_CHAT_ID). Nunca lanza: un
+    fallo de Telegram aquí no debe tumbar el escaneo. Sin canal configurado no hace nada."""
+    if not config.ADMIN_ALERT_CHAT_ID:
+        return
+    try:
+        await bot.send_message(chat_id=config.ADMIN_ALERT_CHAT_ID, text=text)
+    except Exception:
+        logging.getLogger(__name__).warning("No se pudo enviar el aviso de administración", exc_info=True)

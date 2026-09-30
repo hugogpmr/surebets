@@ -262,6 +262,101 @@ COUNTRY_NAMES = frozenset(_COUNTRIES.values()) | frozenset(
     "uzbekistan indonesia vietnam jamaica haiti panama honduras guatemala cuba".split()
 )
 
+# Franquicias de las ligas de EE. UU. (NHL, MLB): cada plataforma escribe el equipo distinto
+# ("Toronto Maple Leafs" en Kambi, "TOR Maple Leafs" en Altenar). Se genera una variante por cada
+# ciudad y por cada código de la casa, siempre CON el mote: el mote solo ("Kings", "Panthers")
+# NO se admite, porque hay clubes europeos con el mismo mote ("Nottingham Panthers").
+# (mote[|otro mote], ciudades, códigos de tres letras de Altenar y estándar). Verificado el
+# 2026-09-29 con los nombres reales de Altenar y Kambi ("TOR Maple Leafs", "VGS Golden Knights",
+# "NY Rangers"). Una ciudad vacía admite el mote a secas ("Athletics").
+_US_TEAMS = [
+    # NHL
+    ("Ducks", ["Anaheim"], ["ANA"]),
+    ("Mammoth|Hockey Club", ["Utah"], ["UTA"]),
+    ("Bruins", ["Boston"], ["BOS"]),
+    ("Sabres", ["Buffalo"], ["BUF"]),
+    ("Flames", ["Calgary"], ["CGY", "CAL"]),
+    ("Hurricanes", ["Carolina"], ["CAR"]),
+    ("Blackhawks", ["Chicago"], ["CHI"]),
+    ("Avalanche", ["Colorado"], ["COL"]),
+    ("Blue Jackets", ["Columbus"], ["CBJ", "CLB"]),
+    ("Stars", ["Dallas"], ["DAL"]),
+    ("Red Wings", ["Detroit"], ["DET"]),
+    ("Oilers", ["Edmonton"], ["EDM"]),
+    ("Panthers", ["Florida"], ["FLA"]),
+    ("Kings", ["Los Angeles", "LA"], ["LAK"]),
+    ("Wild", ["Minnesota"], ["MIN"]),
+    ("Canadiens", ["Montreal", "Montréal"], ["MTL"]),
+    ("Predators", ["Nashville"], ["NSH", "NAS"]),
+    ("Devils", ["New Jersey", "NJ"], ["NJD"]),
+    ("Islanders", ["New York", "NY"], ["NYI"]),
+    ("Rangers", ["New York", "NY"], ["NYR"]),
+    ("Senators", ["Ottawa"], ["OTT"]),
+    ("Flyers", ["Philadelphia"], ["PHI"]),
+    ("Penguins", ["Pittsburgh"], ["PIT"]),
+    ("Sharks", ["San Jose"], ["SJS", "SJ"]),
+    ("Kraken", ["Seattle"], ["SEA"]),
+    ("Blues", ["St. Louis", "St Louis", "Saint Louis"], ["STL"]),
+    ("Lightning", ["Tampa Bay", "Tampa"], ["TBL", "TB"]),
+    ("Maple Leafs", ["Toronto"], ["TOR"]),
+    ("Canucks", ["Vancouver"], ["VAN"]),
+    ("Golden Knights", ["Vegas", "Las Vegas"], ["VGK", "VGS", "LV"]),
+    ("Capitals", ["Washington"], ["WSH", "WAS"]),
+    ("Jets", ["Winnipeg"], ["WPG"]),
+    # MLB
+    ("Angels", ["Los Angeles", "LA"], ["LAA"]),
+    ("Astros", ["Houston"], ["HOU"]),
+    ("Athletics", ["Oakland", "Sacramento", "Las Vegas", ""], ["OAK", "ATH"]),
+    ("Blue Jays", ["Toronto"], ["TOR"]),
+    ("Braves", ["Atlanta"], ["ATL"]),
+    ("Brewers", ["Milwaukee"], ["MIL"]),
+    ("Cardinals", ["St. Louis", "St Louis", "Saint Louis"], ["STL"]),
+    ("Cubs", ["Chicago"], ["CHC", "CHI"]),
+    ("Diamondbacks", ["Arizona"], ["ARI"]),
+    ("Dodgers", ["Los Angeles", "LA"], ["LAD"]),
+    ("Giants", ["San Francisco", "SF"], ["SFG"]),
+    ("Guardians", ["Cleveland"], ["CLE"]),
+    ("Mariners", ["Seattle"], ["SEA"]),
+    ("Marlins", ["Miami"], ["MIA"]),
+    ("Mets", ["New York", "NY"], ["NYM"]),
+    ("Nationals", ["Washington"], ["WSH", "WAS"]),
+    ("Orioles", ["Baltimore"], ["BAL"]),
+    ("Padres", ["San Diego"], ["SDP", "SD"]),
+    ("Phillies", ["Philadelphia"], ["PHI"]),
+    ("Pirates", ["Pittsburgh"], ["PIT"]),
+    ("Rangers", ["Texas"], ["TEX"]),
+    ("Rays", ["Tampa Bay", "Tampa"], ["TB", "TBR"]),
+    ("Red Sox", ["Boston"], ["BOS"]),
+    ("Reds", ["Cincinnati"], ["CIN"]),
+    ("Rockies", ["Colorado"], ["COL"]),
+    ("Royals", ["Kansas City"], ["KC", "KCR"]),
+    ("Tigers", ["Detroit"], ["DET"]),
+    ("Twins", ["Minnesota"], ["MIN"]),
+    ("White Sox", ["Chicago"], ["CHW", "CHI"]),
+    ("Yankees", ["New York", "NY"], ["NYY"]),
+]
+
+
+def _us_team_groups() -> list[tuple[str, ...]]:
+    """Un grupo de variantes por franquicia ("Mote1|Mote2" = mismo equipo con dos motes). El mote
+    va siempre con ciudad o código, así que dos franquicias solo chocan si comparten ambos."""
+    groups: dict[str, list[str]] = {}
+    seen: set[str] = set()
+    for nicks, cities, codes in _US_TEAMS:
+        nick_list = nicks.split("|")
+        canon = normalize(f"{cities[0]} {nick_list[0]}")
+        for nick in nick_list:
+            for prefix in cities + codes:
+                key = normalize(f"{prefix} {nick}")
+                if key not in seen:
+                    seen.add(key)
+                    groups.setdefault(canon, []).append(key)
+    return [(canon, *[v for v in variants if v != canon]) for canon, variants in groups.items()]
+
+
+_CLUB_GROUPS.extend(_us_team_groups())
+
+
 _AGE_RE = re.compile(r"\b(?:u|sub|under)[\s-]?(\d{2})\b")
 _WOMEN_RE = re.compile(r"\((?:w|f)\)|\bwomen\b|\bfem\b|\bfemenil\b|\bfemenino\b|\bfeminas\b")
 

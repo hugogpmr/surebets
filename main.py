@@ -91,6 +91,7 @@ SPORTS = [
     "balonmano_champions",
     "beisbol_mlb",
     "americano_nfl",
+    "voleibol",
 ]
 
 # Oportunidades activas del ciclo anterior (clave -> {margin, cycles, notified}),
@@ -115,6 +116,7 @@ async def scan_once(app) -> None:
         max_margin=config.MAX_MARGIN,
         verify_margin=config.VERIFY_MARGIN,
         verify_cycles=config.VERIFY_CYCLES,
+        max_concurrency=config.MAX_CONCURRENT_FETCHES,
     )
 
 

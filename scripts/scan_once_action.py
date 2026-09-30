@@ -40,7 +40,8 @@ from datetime import timedelta
 from telegram import Bot
 
 import config
-from bot.telegram_bot import notify_opportunity
+from bot.telegram_bot import notify_admin, notify_opportunity
+from engine.alerts import SourceAlerts
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.health import SourceHealth
 from engine.peers import PeerEvents
@@ -234,6 +235,9 @@ SPORTS = [
     # que haya, no hace falta una clave por liga como con CuotasAhora).
     "hockey",
     "tenismesa",
+    # Voleibol (2026-09-29): Altenar (sportId 69) y Bet777 (`volleyball`) lo leen directo, y
+    # ninguna otra fuente lo lista, así que no hay clave por competición.
+    "voleibol",
 ]
 
 STATE_PATH = pathlib.Path("data/active_opportunities.json")
@@ -291,6 +295,8 @@ async def run_scan(mode: str) -> None:
         max_concurrency=config.MAX_CONCURRENT_FETCHES,
         health=SourceHealth(config.SOURCE_HEALTH_PATH, config.SOURCE_PARK_AFTER) if config.SOURCE_PARK_AFTER else None,
         peers=PeerEvents(config.PEER_EVENTS_PATH),
+        source_alerts=SourceAlerts(config.SOURCE_ALERTS_PATH, config.SOURCE_ALERT_AFTER, config.SOURCE_ALERT_IGNORE),
+        notify_admin=lambda text: notify_admin(bot, text),
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en

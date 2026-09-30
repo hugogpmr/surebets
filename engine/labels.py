@@ -20,6 +20,7 @@ SPORT_NAMES = {
     "americano": "Fútbol americano",
     "hockey": "Hockey hielo",
     "tenismesa": "Tenis de mesa",
+    "voleibol": "Voleibol",
 }
 
 # Qué se cuenta en los mercados de más/menos y hándicap según el deporte.
@@ -32,6 +33,7 @@ _SPORT_UNIT = {
     "beisbol": "carreras",
     "hockey": "goles",
     "tenismesa": "puntos",
+    "voleibol": "puntos",
 }
 
 _METRIC_NOUNS = {
@@ -54,6 +56,12 @@ _PERIODS = {
     "Q4": "4º cuarto",
     "SET1": "1er set",
     "SET2": "2º set",
+    "REG": "tiempo reglamentario",
+    "P1": "1er periodo",
+    "P2": "2º periodo",
+    "P3": "3er periodo",
+    "F5": "primeros 5 innings",
+    "I1": "1er inning",
 }
 
 # Mercados de sí/no: base -> frase con {team} (equipo al que se refiere).

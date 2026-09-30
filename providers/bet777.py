@@ -82,7 +82,16 @@ BOOKMAKER_ID = "bet777es"
 BOOKMAKER = "bet777"
 # Valor del parámetro `sport` de la API Sportify por cada clave interna nuestra
 # (verificado en vivo el 2026-09-24: los tres responden sin autenticación).
-SPORT_API_NAMES: dict[str, str] = {"futbol": "football", "baloncesto": "basketball", "tenis": "tennis"}
+# Hockey hielo, béisbol y voleibol añadidos 2026-09-29 (mismos endpoints con otro `sport`;
+# 50/13/15 partidos pre-partido ese día). Balonmano no: `sport=handball` devolvió el árbol vacío.
+SPORT_API_NAMES: dict[str, str] = {
+    "futbol": "football",
+    "baloncesto": "basketball",
+    "tenis": "tennis",
+    "hockey": "ice-hockey",
+    "beisbol": "baseball",
+    "voleibol": "volleyball",
+}
 # La web manda estas cabeceras; la API responde igual sin ellas, pero así el
 # tráfico es el mismo que el de un navegador normal en bet777.es.
 HEADERS = {
@@ -102,6 +111,7 @@ _ODD_EVEN = "odd_even"
 _TOTAL = "total"  # Over (línea) / Under (línea), varias líneas en el mismo mercado
 _HANDICAP = "handicap"  # Home (línea) / Away (línea), varias líneas
 _DOUBLE_CHANCE = "double_chance"  # 1X / 12 / X2
+_FIRST_TEAM = "first_team"  # Home / NoGoal / Away: primer equipo en marcar (2026-09-29)
 
 # Mercados de partido completo por `name_untranslated` -> (prefijo de market_type, tipo).
 _FULL_TIME = {
@@ -118,6 +128,7 @@ _FULL_TIME = {
     "Goals Handicap": ("AH", _HANDICAP),
     "Goals Asian Handicap": ("AH", _HANDICAP),
     "Double Chance": ("DC", _DOUBLE_CHANCE),
+    "First Team to Score": ("FIRST_GOAL", _FIRST_TEAM),
 }
 # Mismos mercados por mitad: el nombre empieza por "1st Half " / "2nd Half " y el
 # resto va aquí (el resultado de la mitad se llama "Result", no "Match Result").
@@ -135,6 +146,7 @@ _HALF = {
     "Goals Handicap": ("AH", _HANDICAP),
     "Goals Asian Handicap": ("AH", _HANDICAP),
     "Double Chance": ("DC", _DOUBLE_CHANCE),
+    "First Team to Score": ("FIRST_GOAL", _FIRST_TEAM),
 }
 _HALF_RE = re.compile(r"^(1st|2nd) Half (.+)$")
 _HALF_SUFFIX = {"1st": "_HT", "2nd": "_2H"}
@@ -167,6 +179,9 @@ _YES_NO_KINDS = {"Yes": "Yes", "No": "No"}
 _ODD_EVEN_KINDS = {"Odd": "Odd", "Even": "Even"}
 # kind == nombre del resultado ("1X"/"12"/"X2"), verificado en vivo el 2026-09-24.
 _DOUBLE_CHANCE_KINDS = {"1X": "1X", "12": "12", "X2": "X2"}
+# Primer equipo en marcar (verificado en vivo el 2026-09-29): kinds Home/NoGoal/Away; mismos
+# resultados que el FIRST_GOAL de Altenar (1 / Ninguno / 2), así que cruza con él y con Zebet.
+_FIRST_TEAM_KINDS = {"Home": "1", "NoGoal": "None", "Away": "2"}
 _LINE_RE = re.compile(r"\((-?\d+(?:\.\d+)?)\)\s*$")
 
 # Ganador a dos vías por `kind` W1/W2 (baloncesto/tenis: sin empate posible,
@@ -224,6 +239,71 @@ _TENNIS_SET_RE = re.compile(r"^(1st|2nd) Set (.+)$")
 _SET_SUFFIX = {"1st": "_SET1", "2nd": "_SET2"}
 
 
+# Hockey hielo (verificado el 2026-09-29 con partidos de la NHL y de ligas europeas). Bet777 separa
+# "(Including Overtime)" (partido completo: prefijos sin sufijo, como Altenar y Kambi) de
+# "(Regular Time)" (60 minutos: sufijo `_REG`, que NUNCA debe cruzar con el anterior).
+_HOCKEY_FULL = {
+    "Match Winner (Including Overtime)": ("ML", _TWO_WAY_W),
+    "Goals Handicap (Including Overtime)": ("AH", _HANDICAP),
+    "Total Goals (Including Overtime)": ("OU", _TOTAL),
+    "Team 1 Total Goals (Including Overtime)": ("OU_HOME", _TOTAL),
+    "Team 2 Total Goals (Including Overtime)": ("OU_AWAY", _TOTAL),
+    "Match Result (Regular Time)": ("1X2_REG", _THREE_WAY),
+    "Double Chance (Regular Time)": ("DC_REG", _DOUBLE_CHANCE),
+    "Both Teams To Score (Regular Time)": ("BTTS_REG", _YES_NO),
+    "Total Goals Odd/Even (Regular Time)": ("OE_REG", _ODD_EVEN),
+    "Goals Handicap (Regular Time)": ("AH_REG", _HANDICAP),
+    "Goals Asian Handicap (Regular Time)": ("AH_REG", _HANDICAP),
+    "Total Goals (Regular Time)": ("OU_REG", _TOTAL),
+    "Total Goals Asian (Regular Time)": ("OU_REG", _TOTAL),
+    "Team 1 Total Goals (Regular Time)": ("OU_HOME_REG", _TOTAL),
+    "Team 1 Total Goals Asian (Regular Time)": ("OU_HOME_REG", _TOTAL),
+    "Team 2 Total Goals (Regular Time)": ("OU_AWAY_REG", _TOTAL),
+    "Team 2 Total Goals Asian (Regular Time)": ("OU_AWAY_REG", _TOTAL),
+}
+# "1st Period Winner" es a dos vías (W1/W2) y se emite como DNB (como el "Apuesta sin empate por
+# periodo" de Altenar y el "Draw No Bet - Period n" de Kambi); "Result" es el 1X2 con empate.
+_HOCKEY_PERIOD = {
+    "Result": ("1X2", _THREE_WAY),
+    "Winner": ("DNB", _TWO_WAY_W),
+    "Double Chance": ("DC", _DOUBLE_CHANCE),
+    "Both Team To Score": ("BTTS", _YES_NO),
+    "Goals Handicap": ("AH", _HANDICAP),
+    "Total Goals": ("OU", _TOTAL),
+    "Team 1 Total Goals": ("OU_HOME", _TOTAL),
+    "Team 2 Total Goals": ("OU_AWAY", _TOTAL),
+}
+_HOCKEY_PERIOD_RE = re.compile(r"^(1st|2nd|3rd) Period (.+)$")
+_PERIOD_SUFFIX = {"1st": "_P1", "2nd": "_P2", "3rd": "_P3"}
+
+# Béisbol (sportId Sportify 11): todo el partido incluye extra innings. "1st 5 Innings" -> `_F5`,
+# "1st Inning" -> `_I1` (mismos sufijos que Altenar y Kambi). Fuera: los "Result" a tres vías de
+# 5 innings/1er inning (sin socio con el que cruzar) y los mercados de "primero/último en anotar".
+_BASEBALL_FULL = {
+    "Money Line": ("ML", _TWO_WAY_W),
+    "Run Line": ("AH", _HANDICAP),
+    "Total Runs": ("OU", _TOTAL),
+    "Team 1 Total Runs": ("OU_HOME", _TOTAL),
+    "Team 2 Total Runs": ("OU_AWAY", _TOTAL),
+    "Total Runs Odd/Even": ("OE", _ODD_EVEN),
+    "1st 5 Innings Run Line": ("AH_F5", _HANDICAP),
+    "1st 5 Innings Total Runs": ("OU_F5", _TOTAL),
+    "1st 5 Innings Team 1 Total Runs": ("OU_HOME_F5", _TOTAL),
+    "1st 5 Innings Team 2 Total Runs": ("OU_AWAY_F5", _TOTAL),
+    "1st Inning Total Runs": ("OU_I1", _TOTAL),
+}
+
+# Voleibol (sportId Sportify 5): ganador y puntos totales del partido y del primer set.
+_VOLLEYBALL_FULL = {
+    "Match Winner": ("ML", _TWO_WAY_W),
+    "Total Points": ("OU", _TOTAL),
+    "Total Points Odd/Even": ("OE", _ODD_EVEN),
+    "1st Set Winner": ("ML_SET1", _TWO_WAY_W),
+    "1st Set Total Points": ("OU_SET1", _TOTAL),
+    "1st Set Total Points Odd/Even": ("OE_SET1", _ODD_EVEN),
+}
+
+
 def _fmt(value: float, signed: bool = False) -> str:
     text = str(int(value)) if value == int(value) else f"{value:g}"
     return "+" + text if signed and value > 0 else text
@@ -278,6 +358,12 @@ def _classify(name: str, sport: str = "futbol") -> tuple[str, str] | None:
         return _classify_baloncesto(name)
     if sport == "tenis":
         return _classify_tenis(name)
+    if sport == "hockey":
+        return _classify_hockey(name)
+    if sport == "beisbol":
+        return _BASEBALL_FULL.get(name)
+    if sport == "voleibol":
+        return _VOLLEYBALL_FULL.get(name)
     return _classify_futbol(name)
 
 
@@ -310,6 +396,16 @@ def _classify_baloncesto(name: str) -> tuple[str, str] | None:
     if match and match.group(2) in _BASKETBALL_QUARTER:
         prefix, kind = _BASKETBALL_QUARTER[match.group(2)]
         return prefix + _QUARTER_SUFFIX[match.group(1)], kind
+    return None
+
+
+def _classify_hockey(name: str) -> tuple[str, str] | None:
+    if name in _HOCKEY_FULL:
+        return _HOCKEY_FULL[name]
+    match = _HOCKEY_PERIOD_RE.match(name)
+    if match and match.group(2) in _HOCKEY_PERIOD:
+        prefix, kind = _HOCKEY_PERIOD[match.group(2)]
+        return prefix + _PERIOD_SUFFIX[match.group(1)], kind
     return None
 
 
@@ -403,6 +499,8 @@ def parse_event_markets(details: dict, event_name: str, sport: str = "futbol") -
             parsed = _fixed_market(event_name, sport, prefix, market, _ODD_EVEN_KINDS)
         elif kind == _DOUBLE_CHANCE:
             parsed = _fixed_market(event_name, sport, prefix, market, _DOUBLE_CHANCE_KINDS)
+        elif kind == _FIRST_TEAM:
+            parsed = _fixed_market(event_name, sport, prefix, market, _FIRST_TEAM_KINDS)
         else:
             markets.extend(_line_markets(event_name, sport, prefix, kind, market))
             continue
