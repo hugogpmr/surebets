@@ -4,7 +4,7 @@ Marca `[x]` al completar. Los puntos con ⭐ son los recomendados para empezar.
 
 ## A. Fiabilidad de la VM
 - [ ] 1. Diagnosticar el bloqueo por IP de datacenter (Sportium, Versus, Betfair, bwin, William Hill, Winamax dan 0 mercados en la VM). Opciones: escaneo desde tu PC, otra VM con IP menos "datacenter". Sin proxies ni evasión.
-- [x] 3. ⭐ Alerta a Telegram de "fuente muerta" y de ciclo muerto por OOM (código hecho 2026-09-29; falta crear el canal y poner `ADMIN_ALERT_CHAT_ID`, y desplegar en la VM).
+- [x] 3. ⭐ Alerta a Telegram de "fuente muerta" y de ciclo muerto por OOM: hecho, desplegado y probado en la VM (2026-09-30), enviando al supergrupo "admin surebets".
   - [ ] 3b. Alternativa al canal: un tema nuevo dentro del grupo de surebets, creado por el bot y cerrado para que solo escriban los admins. Limitación: Telegram no permite ocultar un tema a los miembros del grupo, así que lo leería todo el grupo. Pendiente de decidir; no implementado.
 - [ ] 4. Verificar que el swap y el OOM quedaron arreglados (`dmesg`, `journalctl ... Failed with result`) tras varios días.
 - [ ] 5. Diagnosticar de verdad (con captura, desde la VM) la ficha de Sportium y el DC de PokerStars, ambos desactivados sin causa raíz.

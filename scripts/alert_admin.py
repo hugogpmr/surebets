@@ -10,12 +10,16 @@ publica cualquier mensaje en el canal y ejecútalo.
 """
 
 import asyncio
+import pathlib
 import sys
 
-from telegram import Bot
+# Ejecutado como `python scripts/alert_admin.py`, la carpeta del proyecto no está en sys.path
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
-import config
-from bot.telegram_bot import notify_admin
+from telegram import Bot  # noqa: E402
+
+import config  # noqa: E402
+from bot.telegram_bot import notify_admin  # noqa: E402
 
 
 async def discover(bot: Bot) -> None:
