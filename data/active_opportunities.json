@@ -1,246 +1,211 @@
 {
   "New York Red Bulls vs. St. Louis City||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.20833333333333337,
-    "cycles": 202,
-    "notified": true
-  },
-  "Grecia vs. Países Bajos||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.2286324786324787,
-    "cycles": 107,
-    "notified": true
-  },
-  "Grecia vs. Países Bajos||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.17222222222222228,
-    "cycles": 107,
-    "notified": true
-  },
-  "Gales vs. Noruega||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.2063492063492064,
-    "cycles": 107,
-    "notified": true
-  },
-  "Dinamarca vs. Portugal||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.2286324786324787,
-    "cycles": 107,
-    "notified": true
-  },
-  "Dinamarca vs. Portugal||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.20000000000000007,
-    "cycles": 107,
-    "notified": true
-  },
-  "Irlanda vs. Austria||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.22689075630252098,
-    "cycles": 107,
-    "notified": true
-  },
-  "Irlanda vs. Austria||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.18571428571428572,
-    "cycles": 107,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.20879120879120872,
-    "cycles": 107,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.18045112781954886,
-    "cycles": 107,
-    "notified": true
-  },
-  "Malta vs. Gibraltar||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.25,
-    "cycles": 107,
+    "margin": 0.21604938271604945,
+    "cycles": 203,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_1.5||betfair,interwetten": {
     "margin": 0.08902691511387162,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_3.5||betfair,interwetten": {
     "margin": 0.054621848739495826,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_6.5||888sport,betfair": {
     "margin": 0.07017543859649122,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_7.5||betfair,interwetten": {
     "margin": 0.04785077047850772,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_9.5||betfair,interwetten": {
     "margin": 0.057644110275689275,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_10.5||betfair,bwin": {
     "margin": 0.020325203252032575,
-    "cycles": 81,
+    "cycles": 82,
     "notified": true
   },
   "Seattle Sounders vs. Sporting KC||futbol||AH_HT_-1||888sport,betfair": {
     "margin": 0.20355191256830607,
-    "cycles": 74,
+    "cycles": 75,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-1.5||1xbet_es,betfair": {
     "margin": 0.0884663083918974,
-    "cycles": 64,
+    "cycles": 65,
     "notified": true
   },
   "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.21653622315873966,
-    "cycles": 49,
+    "cycles": 50,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 39,
-    "notified": true
-  },
-  "Maldivas vs. Líbano||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.20122887864823347,
-    "cycles": 21,
+    "cycles": 40,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||BTTS||interwetten,retabet": {
     "margin": 0.011323511506148742,
-    "cycles": 19,
+    "cycles": 20,
     "notified": true
   },
   "Islas Vírgenes Británicas vs. Montserrat||futbol||AH_HT_1||888sport,interwetten": {
     "margin": 0.12077294685990336,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Islas Vírgenes de los Estados Unidos vs. San Martín||futbol||AH_HT_1||888sport,interwetten": {
     "margin": 0.11821705426356588,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Dominica vs. Guyana||futbol||AH_HT_1||888sport,interwetten": {
     "margin": 0.11821705426356588,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Islas Caimán vs. Puerto Rico||futbol||AH_HT_1||888sport,interwetten": {
     "margin": 0.030172413793103425,
-    "cycles": 17,
-    "notified": true
-  },
-  "Kazajistán vs. Moldavia||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.1891442813625035,
-    "cycles": 12,
+    "cycles": 18,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-2.5||1xbet_es,betfair": {
     "margin": 0.08717948717948709,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_4.5||betfair,interwetten": {
     "margin": 0.06392242232337231,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_8.5||betfair,interwetten": {
     "margin": 0.06878306878306883,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_11.5||betfair,bwin": {
     "margin": 0.012820512820512775,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_12.5||betfair,bwin": {
     "margin": 0.011515717398070335,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-4.5||betfair,interwetten": {
     "margin": 0.07196969696969702,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-3.5||888sport,betfair": {
     "margin": 0.0714285714285714,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_5.5||betfair,interwetten": {
     "margin": 0.07196969696969702,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Paris vs. Zalgiris Kaunas||baloncesto||AH_-2.5||betfair,paf": {
     "margin": 0.06730259671436145,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Maldivas vs. Líbano||futbol||BTTS||1xbet_es,betfair": {
     "margin": 0.011730205278592365,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-6.5||betfair,bwin": {
     "margin": 0.025504377617053597,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_2.5||888sport,betfair": {
     "margin": 0.08333333333333326,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Washington Mystics vs. Atlanta Dream||baloncesto||AH_-3.5||betfair,cgmapuestas": {
     "margin": 0.07407407407407407,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-7.5||1xbet_es,betfair": {
     "margin": 0.031509121061359946,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||AH_-5.5||betfair,interwetten": {
     "margin": 0.03907496012759171,
-    "cycles": 2,
-    "notified": true
-  },
-  "Letonia vs. Montenegro||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.20833333333333337,
-    "cycles": 2,
-    "notified": false
-  },
-  "Chipre vs. Armenia||futbol||AH_HT_-1||888sport,betfair": {
-    "margin": 0.13700918964076858,
-    "cycles": 2,
-    "notified": true
-  },
-  "Chipre vs. Armenia||futbol||AH_HT_1||888sport,betfair": {
-    "margin": 0.09999999999999998,
-    "cycles": 2,
-    "notified": true
-  },
-  "Hapoel Tel Aviv vs. Real Madrid||baloncesto||AH_-1.5||betfair,betway": {
-    "margin": 0.0292397660818714,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Adolfo Daniel Vallejo vs. Rafael Jodar||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.014705882352941235,
+    "cycles": 2,
+    "notified": true
+  },
+  "Hapoel Tel Aviv vs. Real Madrid||baloncesto||AH_-1.5||betfair,paston": {
+    "margin": 0.0292397660818714,
+    "cycles": 1,
+    "notified": true
+  },
+  "Correcaminos UAT Victoria vs. Lobos Plateados||baloncesto||ML||betway,marcaapuestas": {
+    "margin": 0.019079685746352437,
+    "cycles": 1,
+    "notified": true
+  },
+  "Brooklyn vs. Detroit City||futbol||AH_1||interwetten,jokerbet": {
+    "margin": 0.02083333333333337,
+    "cycles": 1,
+    "notified": true
+  },
+  "Azerbaiyán vs. Liechtenstein||futbol||AH_HT_-1||betfair,cgmapuestas": {
+    "margin": 0.11219512195121939,
+    "cycles": 1,
+    "notified": true
+  },
+  "Gales vs. Noruega||futbol||AH_HT_1||betfair,casumo": {
+    "margin": 0.02020202020202022,
+    "cycles": 1,
+    "notified": true
+  },
+  "Alemania vs. Serbia||futbol||AH_HT_-1||betfair,interwetten": {
+    "margin": 0.13888888888888884,
+    "cycles": 1,
+    "notified": true
+  },
+  "Malta vs. Gibraltar||futbol||AH_HT_-1||betfair,cgmapuestas": {
+    "margin": 0.15517241379310343,
+    "cycles": 1,
+    "notified": false
+  },
+  "Kazajistán vs. Moldavia||futbol||AH_HT_-1||betfair,cgmapuestas": {
+    "margin": 0.14083510261854215,
+    "cycles": 1,
+    "notified": true
+  },
+  "Chipre vs. Armenia||futbol||AH_HT_-1||betfair,cgmapuestas": {
+    "margin": 0.08145363408521311,
     "cycles": 1,
     "notified": true
   }
