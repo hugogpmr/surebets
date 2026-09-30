@@ -69,9 +69,11 @@ en `comparator_providers()`/el ciclo lento con caché, no en `direct_providers()
 """
 
 import base64
+import dataclasses
 import logging
 import os
 import re
+import statistics
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
@@ -138,6 +140,32 @@ _AH_MARKETS = {
     "Hándicap": "AH",
     "Hándicap de juegos": "AH",
 }
+# Casas que en este comparador publican bajo "Hándicap Asiático" su hándicap de 3 VÍAS (con
+# "Empate" en la línea, que aquí no llega): en líneas ENTERAS ("+1.0", "-1") el empate tras
+# aplicar el hándicap no es un reembolso sino un tercer resultado, así que "Gales +1" de una
+# casa contra "Noruega -1" de otra deja sin cubrir "Noruega gana por 1" y se pierden las dos
+# patas (alerta de Gales-Noruega, 1ª parte, 2026-09-30: 888sport +1 a 1,75 contra Betfair -1
+# a 4,33, margen falso del 20 %). Medido el 2026-09-30 en 160 partidos de fútbol: 888sport en
+# 1ª parte cotiza SOLO líneas enteras (314 de 314) y sus dos patas suman 0,98 de mediana
+# (mínimo 0,77, imposible en un 2 vías); Betfair también solo enteras (79 de 79) y nunca
+# da los dos lados de una línea. Las líneas fraccionarias (±0.5, ±1.5...) no tienen empate
+# posible, así que son 2 vías de verdad (Betfair en NFL/baloncesto) y se conservan.
+_THREE_WAY_INTEGER_BOOKIES = frozenset({"888sport", "betfair"})
+# (casa, deporte) cuyo hándicap llega con los EQUIPOS INTERCAMBIADOS respecto a las demás casas.
+# Medido el 2026-09-30 en la NFL: la escalera de Betfair (un solo equipo, de +13.5 a -1.5) encaja
+# con la del equipo CONTRARIO en las otras casas (error medio de probabilidad 0,013-0,034 con los
+# equipos cambiados frente a 0,05-0,21 tal cual, en 6 de 8 partidos con 11-30 líneas) y el
+# ganador del partido lo confirma (Steelers 1,75 / Browns 2,39 en Interwetten, mientras la
+# escalera de Betfair los daba como no favoritos). Cruzarla con el resto fabricaba "surebets" de
+# 5-9 % en ~25 líneas a la vez de cada partido. En baloncesto (Betfair también da un solo equipo)
+# salió mixto: 4 partidos mejor con equipos cambiados y 3 bien, con 1-2 líneas cada uno, o sea
+# indeterminado, así que se descarta por prudencia. Tenis sí sale bien orientado (16 de 17).
+_SWAPPED_SIDES = frozenset({("betfair", "americano"), ("betfair", "baloncesto")})
+# Comprobación general (`_drop_inverted_bookies`): líneas mínimas en común con las demás casas
+# para juzgar, error mínimo tal cual y cuánto mejor debe encajar con los equipos cambiados.
+_INVERSION_MIN_LINES = 8
+_INVERSION_MIN_ERROR = 0.08
+_INVERSION_RATIO = 0.3
 
 _PERIOD_RE = re.compile(r"^(.+?) - (Primera mitad|Segunda mitad|1º Mitad|2º Mitad)$")
 _PERIOD_SUFFIX = {"Primera mitad": "HT", "1º Mitad": "HT", "Segunda mitad": "2H", "2º Mitad": "2H"}
@@ -286,6 +314,23 @@ def _ou_markets(event: str, sport: str, prefix: str, items: list[_Odd]) -> list[
     ]
 
 
+def _drop_self_arbitrage(outcomes: list[Outcome]) -> list[Outcome]:
+    """Quita las lecturas de una casa cuyas dos patas de la MISMA línea suman menos de 1 en
+    probabilidad implícita: un hándicap de 2 vías real siempre suma >1 (su margen; medido
+    el 2026-09-30 en bet365/Interwetten/Jokerbet/Cgm: mínimo 1,035), así que eso solo pasa si
+    el comparador ha mezclado mercados distintos (hándicap de 3 vías sin su "Empate")."""
+    best: dict[tuple[str, str], float] = {}
+    for o in outcomes:
+        key = (o.bookmaker, o.name)
+        best[key] = max(best.get(key, 0.0), o.odds)
+    bad = {
+        bookie
+        for bookie in {b for b, _ in best}
+        if (bookie, "1") in best and (bookie, "2") in best and 1 / best[(bookie, "1")] + 1 / best[(bookie, "2")] < 1.0
+    }
+    return [o for o in outcomes if o.bookmaker not in bad] if bad else outcomes
+
+
 def _ah_markets(event: str, sport: str, prefix: str, items: list[_Odd], home: str, away: str) -> list[Market]:
     by_line: dict[float, list[Outcome]] = {}
     for o in items:
@@ -296,6 +341,10 @@ def _ah_markets(event: str, sport: str, prefix: str, items: list[_Odd], home: st
         try:
             value = float(match.group(2))
         except ValueError:
+            continue
+        if o.bookie in _THREE_WAY_INTEGER_BOOKIES and value == int(value):
+            continue
+        if (o.bookie, sport) in _SWAPPED_SIDES:
             continue
         # La línea se guarda siempre en perspectiva del local (mismo convenio que
         # providers/bet777.py): el visitante con "+2.5" es la misma línea que el local
@@ -310,10 +359,96 @@ def _ah_markets(event: str, sport: str, prefix: str, items: list[_Odd], home: st
         else:
             continue
         by_line.setdefault(line, []).append(_outcome(label, o.bookie, o.price))
+    filtered = {line: _drop_self_arbitrage(outcomes) for line, outcomes in by_line.items()}
     return [
         Market(event=event, sport=sport, market_type=f"{prefix}_{_fmt_line(line)}", outcomes=outcomes)
-        for line, outcomes in by_line.items()
+        for line, outcomes in filtered.items()
+        if outcomes
     ]
+
+
+_AH_TYPE_RE = re.compile(r"^AH((?:_HT|_2H)?)_([+-]?\d+(?:\.\d+)?)$")
+
+
+def _drop_inverted_bookies(markets: list[Market]) -> list[Market]:
+    """Quita el hándicap de las casas cuya escalera de líneas de UN partido encaja mucho mejor
+    con los equipos intercambiados que tal cual, comparada con la mediana de las demás casas.
+    Para cada línea se estima la probabilidad de que cubra el local (la cuota del "1" o el
+    complemento de la del "2"); si una casa tiene >= 8 líneas en común con las demás, su error
+    medio es >= 0,08 y con los equipos cambiados baja a menos del 30 %, sus lecturas se
+    descartan en ese partido y periodo. Umbrales conservadores a propósito: con 5 líneas y 0,05
+    saltaba sobre bet365 en 4 partidos de 848 con una curva perfectamente coherente (partidos
+    igualados, donde cambiar los equipos apenas mueve la curva). No necesita saber por qué llega invertida."""
+    curves: dict[tuple[str, str], dict[float, list[float]]] = {}
+    for market in markets:
+        match = _AH_TYPE_RE.match(market.market_type)
+        if not match:
+            continue
+        period, line = match.group(1), float(match.group(2))
+        for o in market.outcomes:
+            p = 1 / o.odds
+            curves.setdefault((period, o.bookmaker), {}).setdefault(line, []).append(p if o.name == "1" else 1 - p)
+    bad: set[tuple[str, str]] = set()
+    for (period, bookie), curve in curves.items():
+        consensus: dict[float, float] = {}
+        for (other_period, other), other_curve in curves.items():
+            if other_period == period and other != bookie:
+                for line, values in other_curve.items():
+                    consensus.setdefault(line, []).extend(values)
+        consensus = {line: statistics.median(values) for line, values in consensus.items()}
+        as_read = [abs(statistics.mean(v) - consensus[line]) for line, v in curve.items() if line in consensus]
+        swapped = [abs((1 - statistics.mean(v)) - consensus[-line]) for line, v in curve.items() if -line in consensus]
+        if len(as_read) < _INVERSION_MIN_LINES or len(swapped) < _INVERSION_MIN_LINES:
+            continue
+        error, error_swapped = statistics.mean(as_read), statistics.mean(swapped)
+        if error >= _INVERSION_MIN_ERROR and error_swapped <= _INVERSION_RATIO * error:
+            bad.add((period, bookie))
+    if not bad:
+        return markets
+    cleaned = []
+    for market in markets:
+        match = _AH_TYPE_RE.match(market.market_type)
+        if match:
+            kept = [o for o in market.outcomes if (match.group(1), o.bookmaker) not in bad]
+            if len(kept) != len(market.outcomes):
+                if not kept:
+                    continue
+                market = dataclasses.replace(market, outcomes=kept)
+        cleaned.append(market)
+    return cleaned
+
+
+def sanitize_cached_market(market: Market) -> Market | None:
+    """Aplica a un mercado YA leído (caché del ciclo lento, hasta 8 h de antigüedad) las
+    reglas de hándicap por mercado de `_ah_markets`, para que las lecturas malas guardadas antes
+    de la corrección no sigan avisando. Devuelve el mercado limpio, o None si no queda nada."""
+    match = _AH_TYPE_RE.match(market.market_type)
+    if not match:
+        return market
+    line = float(match.group(2))
+    outcomes = [
+        o
+        for o in market.outcomes
+        if not (line == int(line) and o.bookmaker in _THREE_WAY_INTEGER_BOOKIES)
+        and (o.bookmaker, market.sport) not in _SWAPPED_SIDES
+    ]
+    outcomes = _drop_self_arbitrage(outcomes)
+    if len(outcomes) == len(market.outcomes):
+        return market
+    return dataclasses.replace(market, outcomes=outcomes) if outcomes else None
+
+
+def sanitize_cached_markets(markets: list[Market]) -> list[Market]:
+    """`sanitize_cached_market` para toda una lectura de caché, más la comprobación de equipos
+    invertidos por partido (`_drop_inverted_bookies`), que necesita ver el partido entero."""
+    cleaned = [m for m in map(sanitize_cached_market, markets) if m is not None]
+    by_event: dict[tuple[str, str], list[Market]] = {}
+    for market in cleaned:
+        by_event.setdefault((market.sport, market.event), []).append(market)
+    result: list[Market] = []
+    for group in by_event.values():
+        result.extend(_drop_inverted_bookies(group))
+    return result
 
 
 def parse_event_markets(html: str, sport: str) -> list[Market]:
@@ -362,7 +497,7 @@ def parse_event_markets(html: str, sport: str) -> list[Market]:
             markets.extend(_ah_markets(event_name, sport, _AH_MARKETS[base] + period, items, home, away))
         # Cualquier otro nombre (Marcador correcto, Descanso/Final, Hándicap Europeo...)
         # se ignora a propósito, ver docstring del módulo.
-    return markets
+    return _drop_inverted_bookies(markets)
 
 
 def _extract_start_time(html: str) -> datetime | None:
