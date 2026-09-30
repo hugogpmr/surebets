@@ -136,6 +136,135 @@ def test_asian_handicap_normalizes_line_to_home_perspective():
     assert odds(markets["AH_-2.5"]) == {"1": 12.0, "2": 1.03}
 
 
+def test_three_way_integer_handicap_of_888sport_and_betfair_is_not_emitted():
+    # Gales-Noruega, 1ª parte (2026-09-30): "Gales +1" de 888sport (1,75) contra "Noruega -1" de
+    # Betfair (4,33) era un falso 20 %: su hándicap de líneas enteras es de 3 vías y no cubre
+    # "Noruega gana por 1". Con esas dos casas no debe salir ningún mercado de línea entera.
+    html = page(
+        "Gales",
+        "Noruega",
+        [
+            odd("Hándicap Asiático - Primera mitad", "Gales +1.0", "888sport", "1.75"),
+            odd("Hándicap Asiático - Primera mitad", "Noruega -1", "betfair", "4.33"),
+            odd("Hándicap Asiático - Primera mitad", "Gales -1.0", "888sport", "6.0"),
+            odd("Hándicap Asiático - Primera mitad", "Noruega +1", "betfair", "1.5"),
+        ],
+    )
+    assert parse_event_markets(html, "futbol") == []
+
+
+def test_three_way_bookies_keep_half_point_lines_and_do_not_affect_other_bookies():
+    html = page(
+        "Gales",
+        "Noruega",
+        [
+            odd("Hándicap Asiático - Primera mitad", "Gales +1.0", "888sport", "1.75"),  # 3 vías: fuera
+            odd("Hándicap Asiático - Primera mitad", "Noruega -1", "interwetten", "2.10"),
+            odd("Hándicap Asiático - Primera mitad", "Gales +1", "interwetten", "1.72"),  # 2 vías real: se queda
+            odd("Hándicap", "Gales +4.5", "betfair", "1.90"),  # línea de medio punto: siempre 2 vías
+            odd("Hándicap", "Noruega -4.5", "codere", "1.95"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "futbol"))
+    assert odds(markets["AH_HT_1"]) == {"1": 1.72, "2": 2.10}
+    assert markets["AH_HT_1"].outcomes[0].bookmaker == "interwetten"
+    assert {o.bookmaker for o in markets["AH_4.5"].outcomes} == {"betfair", "codere"}
+
+
+def test_handicap_pair_of_one_bookie_summing_under_one_is_dropped():
+    # Un 2 vías real suma >1 (margen de la casa): si las dos patas de UNA casa en la misma
+    # línea suman menos, es un mercado mezclado y no puede cruzar con nadie.
+    html = page(
+        "Malaga",
+        "Espanyol",
+        [
+            odd("Hándicap Asiático", "Malaga -1", "casaX", "3.00"),
+            odd("Hándicap Asiático", "Espanyol +1", "casaX", "1.40"),  # 1/3 + 1/1.4 = 1.05: sana
+            odd("Hándicap Asiático", "Malaga -2", "casaY", "5.00"),
+            odd("Hándicap Asiático", "Espanyol +2", "casaY", "1.10"),  # 1/5 + 1/1.1 = 1.11: sana
+            odd("Hándicap Asiático", "Malaga +1.5", "casaZ", "1.80"),
+            odd("Hándicap Asiático", "Espanyol -1.5", "casaZ", "4.00"),  # 1/1.8 + 1/4 = 0.81: mezclada
+            odd("Hándicap Asiático", "Espanyol -1.5", "casaW", "2.50"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "futbol"))
+    assert odds(markets["AH_-1"]) == {"1": 3.0, "2": 1.4}
+    assert odds(markets["AH_-2"]) == {"1": 5.0, "2": 1.1}
+    # casaZ fuera (sus dos patas sumaban 0,81); queda solo la pata de casaW
+    assert {o.bookmaker for o in markets["AH_1.5"].outcomes} == {"casaW"}
+
+
+def test_sanitize_cached_market_cleans_old_bad_reads():
+    from engine.models import Market, Outcome
+    from providers.casasdeapuestas import sanitize_cached_market
+
+    def market(market_type, *legs):
+        return Market(
+            event="Gales vs. Noruega",
+            sport="futbol",
+            market_type=market_type,
+            outcomes=[Outcome(name=n, bookmaker=b, odds=p, source="casasdeapuestas") for n, b, p in legs],
+        )
+
+    bad = market("AH_HT_1", ("1", "888sport", 1.75), ("2", "betfair", 4.33))
+    assert sanitize_cached_market(bad) is None
+    mixed = market("AH_HT_1", ("1", "888sport", 1.75), ("2", "betfair", 4.33), ("1", "interwetten", 1.72), ("2", "interwetten", 2.1))
+    cleaned = sanitize_cached_market(mixed)
+    assert {o.bookmaker for o in cleaned.outcomes} == {"interwetten"}
+    half = market("AH_4.5", ("1", "betfair", 1.9), ("2", "codere", 1.95))
+    assert sanitize_cached_market(half) is half
+    other = market("OU_2.5", ("Over", "888sport", 1.9), ("Under", "bet365", 1.9))
+    assert sanitize_cached_market(other) is other
+
+
+def test_betfair_handicap_is_dropped_in_nfl_and_basketball_but_kept_in_tennis():
+    # La escalera de Betfair llega con los equipos intercambiados en esos deportes (ver
+    # _SWAPPED_SIDES): no puede cruzarse con las demás casas.
+    odds_html = [
+        odd("Hándicap", "Malaga -1.5", "1xbet_es", "2.36"),
+        odd("Hándicap", "Espanyol +1.5", "betfair", "2.05"),
+    ]
+    for sport in ("americano", "baloncesto"):
+        markets = by_type(parse_event_markets(page("Malaga", "Espanyol", odds_html), sport))
+        assert {o.bookmaker for o in markets["AH_-1.5"].outcomes} == {"1xbet_es"}
+    tennis = by_type(parse_event_markets(page("Malaga", "Espanyol", [odd("Hándicap de juegos", n, b, p) for _, n, b, p in
+        [(0, "Malaga -1.5", "1xbet_es", "2.36"), (0, "Espanyol +1.5", "betfair", "1.6")]]), "tenis"))
+    assert {o.bookmaker for o in tennis["AH_-1.5"].outcomes} == {"1xbet_es", "betfair"}
+
+
+def _ladder(home, away, bookie, pairs):
+    """pairs = [(línea del local, cuota del local, cuota del visitante)] de una casa."""
+    html = []
+    for line, home_odds, away_odds in pairs:
+        html.append(odd("Hándicap", f"{home} {line:+g}", bookie, str(home_odds)))
+        html.append(odd("Hándicap", f"{away} {-line:+g}", bookie, str(away_odds)))
+    return html
+
+
+def test_bookmaker_whose_handicap_ladder_fits_the_swapped_teams_is_dropped():
+    lines = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5]
+    # prob. de que cubra el local en cada línea (sube con la línea; local NO favorito, así que
+    # intercambiar equipos cambia la escalera). Cada casa aplica su margen (cuotas x 0,95).
+    truth = dict(zip(lines, [0.12, 0.18, 0.25, 0.33, 0.43, 0.52, 0.61, 0.69]))
+
+    def honest(bookie):
+        return _ladder("Malaga", "Espanyol", bookie, [(L, round(0.95 / truth[L], 2), round(0.95 / (1 - truth[L]), 2)) for L in lines])
+
+    # casa invertida: declara el mismo mercado con los equipos cambiados (su "local" es en realidad el visitante)
+    swapped = _ladder("Malaga", "Espanyol", "casaInv", [(L, round(0.95 / (1 - truth[-L]), 2), round(0.95 / truth[-L], 2)) for L in lines])
+    markets = parse_event_markets(page("Malaga", "Espanyol", honest("casaA") + honest("casaB") + swapped), "futbol")
+    books = {o.bookmaker for m in markets for o in m.outcomes}
+    assert "casaInv" not in books and {"casaA", "casaB"} <= books
+
+
+def test_honest_ladders_are_not_dropped_as_inverted():
+    lines = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5]
+    truth = dict(zip(lines, [0.12, 0.18, 0.25, 0.33, 0.43, 0.52, 0.61, 0.69]))
+    html = page("Malaga", "Espanyol", sum((_ladder("Malaga", "Espanyol", b, [(L, round(1 / truth[L] * f, 2), round(1 / (1 - truth[L]) * f, 2)) for L in lines]) for b, f in (("casaA", 0.96), ("casaB", 0.94), ("casaC", 0.97))), []))
+    books = {o.bookmaker for m in parse_event_markets(html, "futbol") for o in m.outcomes}
+    assert books == {"casaA", "casaB", "casaC"}
+
+
 def test_basketball_handicap_uses_generic_handicap_label():
     html = page(
         "Detroit Pistons",

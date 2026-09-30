@@ -271,6 +271,13 @@ class CachedProvider(OddsProvider):
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         markets, self.summary = self.cache.markets_for(self.name, sports, self.max_age)
+        if self.name == "casasdeapuestas":
+            # Lecturas guardadas antes de corregir el hándicap de 3 vías de 888sport/Betfair
+            # y de los equipos invertidos (ver providers/casasdeapuestas.py): se limpian al servirlas en vez de esperar
+            # a que el ciclo lento las relea (hasta 8 h).
+            from providers.casasdeapuestas import sanitize_cached_markets
+
+            markets = sanitize_cached_markets(markets)
         return markets
 
 
