@@ -11,7 +11,7 @@ Marca `[x]` al completar. Los puntos con ⭐ son los recomendados para empezar.
 
 ## B. Cobertura de mercados y casas
 - [ ] 6. Betfair Exchange con Delayed Key gratuita (falta que generes la clave) + ángulo back-lay en el motor.
-- [x] 7. Más ligas en 888sport, Zebet, Versus y Marca Apuestas (2026-09-29): 888 todas las ligas por listado diario; Zebet +11 ligas (solo 1X2) + NHL; Marca y Versus +9 ligas cada una. Ojo: Versus/Sportium no leen desde la VM (IP de centro de datos).
+- [x] 7. Más ligas en 888sport, Zebet, Versus y Marca Apuestas (2026-09-29): 888 todas las ligas por listado diario; Zebet +11 ligas (solo 1X2) + NHL; Marca y Versus +4 ligas cada una (con 9 el ciclo de la VM subía a 330 s). Ojo: Versus/Sportium no leen desde la VM (IP de centro de datos).
 - [x] 8. Mercados extra de Zebet y Bet777 (2026-09-29): Zebet goles por equipo, primer gol y BTTS 1ª mitad (el más/menos por mitades ya estaba); Bet777 primer equipo en marcar. El resto de mercados de Bet777 auditados no tienen socio con el que cruzar.
 - [ ] 9. Pinnacle vía pinnapi como señal "sharp" de coherencia en `engine/quality.py`.
 - [~] 10. Tenis y baloncesto en más casas directas: HECHO en 888sport (2026-09-29). NO hecho en Zebet (su listado no trae las cuotas en las clases del fútbol) ni en PokerStars (DOM pesado, ya es lo más lento de la VM).
