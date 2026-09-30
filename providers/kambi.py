@@ -54,21 +54,34 @@ OPERATORS: dict[str, str] = {
 # Slug de deporte en la URL de listView (verificado en vivo 2026-09-24: ambos
 # devuelven cientos de eventos pre-partido). Antes estas claves ("baloncesto_*"/
 # "tenis_*" en main.py/scripts/scan_once_action.py) solo las cubría CuotasAhora.
-SPORT_PATHS: dict[str, str] = {"futbol": "football", "baloncesto": "basketball", "tenis": "tennis"}
+# Hockey hielo, balonmano y béisbol añadidos 2026-09-29 (listView real de Paf: 52/29/7 partidos
+# pre-partido). Voleibol no: Kambi no lo lista (0 eventos).
+SPORT_PATHS: dict[str, str] = {
+    "futbol": "football",
+    "baloncesto": "basketball",
+    "tenis": "tennis",
+    "hockey": "ice_hockey",
+    "balonmano": "handball",
+    "beisbol": "baseball",
+}
 
 # Kambi devuelve cuotas y líneas en milésimas (1910 = 1.91, 2500 = 2.5).
 _MILLI = 1000
 
+# Insensible a mayúsculas: Kambi escribe "Including Overtime and penalty shootout" en unos
+# mercados de hockey y "Penalty Shootout" en otros. La variante larga va antes que la corta.
 _PERIOD_RE = re.compile(
-    r"^(?P<base>.*?)(?: - (?P<period>1st Half|2nd Half|Quarter [1-4]|Including Overtime|Set 1|Set 2))?$"
+    r"^(?P<base>.*?)(?: - (?P<period>1st Half|2nd Half|Quarter [1-4]|Including Overtime and Penalty Shootout"
+    r"|Including Overtime|Regular Time|Period [1-3]|First 5 Innings|Inning 1|Set 1|Set 2))?$",
+    re.IGNORECASE,
 )
 # "won by" es el formato de tenis ("Total games won by Dane Sweeny"); "by"/"By"/"-"
 # el de fútbol/baloncesto ("Total Points by <equipo>"). Insensible a mayúsculas: el
 # nombre de la métrica llega en minúscula en el primer caso ("games") y en
 # mayúscula en el segundo ("Points").
-_TEAM_TOTAL_RE = re.compile(r"^Total (?P<metric>Goals|Corners|Cards|Points|Games)(?: won by| by| By| -) (?P<team>.+)$", re.IGNORECASE)
+_TEAM_TOTAL_RE = re.compile(r"^Total (?P<metric>Goals|Corners|Cards|Points|Games|Runs)(?: won by| by| By| -) (?P<team>.+)$", re.IGNORECASE)
 
-_METRIC_PREFIX = {"Goals": "OU", "Corners": "CORNERS_OU", "Cards": "CARDS_OU", "Points": "OU", "Games": "OU"}
+_METRIC_PREFIX = {"Goals": "OU", "Corners": "CORNERS_OU", "Cards": "CARDS_OU", "Points": "OU", "Games": "OU", "Runs": "OU"}
 _TOTAL_BASES = {
     "Total Goals": "OU",
     "Total Corners": "CORNERS_OU",
@@ -76,6 +89,7 @@ _TOTAL_BASES = {
     "Total Points": "OU",  # baloncesto (incl. prórroga salvo sufijo de mitad/cuarto)
     "Total Games": "OU",  # tenis: total de juegos del partido (o de un set, con sufijo)
     "Total Sets": "SETS_OU",  # tenis: total de sets jugados
+    "Total Runs": "OU",  # béisbol (incl. extra innings salvo sufijo `_F5`/`_I1`)
 }
 _MOST_BASES = {"Most Corners": "CORNERS_1X2", "Most Cards": "CARDS_1X2"}
 
@@ -103,11 +117,22 @@ _PERIOD_SUFFIXES = {
     "Including Overtime": "",
     "Set 1": "_SET1",
     "Set 2": "_SET2",
+    # Hockey: "Including Overtime and Penalty Shootout" es el partido completo (como el
+    # baloncesto); "Regular Time" (60 min) lleva `_REG` para no cruzar con él. Béisbol:
+    # primeros 5 innings y primer inning.
+    "Including Overtime and Penalty Shootout": "",
+    "Regular Time": "_REG",
+    "Period 1": "_P1",
+    "Period 2": "_P2",
+    "Period 3": "_P3",
+    "First 5 Innings": "_F5",
+    "Inning 1": "_I1",
 }
+_PERIOD_SUFFIXES = {key.lower(): value for key, value in _PERIOD_SUFFIXES.items()}
 
 
 def _period_suffix(period: str | None) -> str:
-    return _PERIOD_SUFFIXES.get(period, "")
+    return _PERIOD_SUFFIXES.get(period.lower(), "") if period else ""
 
 
 def _price(milli) -> float | None:
@@ -240,12 +265,20 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
                 market = _fixed_market(event_name, sport, bookmaker, f"{_MOST_BASES[base]}{suffix}", offer, _THREE_WAY)
             # Baloncesto ("Moneyline - Including Overtime") y tenis ("Match Odds"):
             # ganador a dos bandas, sin empate posible.
+            # Hockey: "Match Odds - Regular Time" es el 1X2 de 60 minutos (con empate).
+            elif base == "Match Odds" and suffix == "_REG":
+                market = _fixed_market(event_name, sport, bookmaker, "1X2_REG", offer, _THREE_WAY)
             elif base in ("Moneyline", "Match Odds"):
                 market = _fixed_market(event_name, sport, bookmaker, f"ML{suffix}", offer, _TWO_WAY_12)
             # Tenis: ganador de un set concreto ("Set 1"/"Set 2" es la label entera,
             # no un sufijo de otro mercado - a diferencia de "Total Games - Set 1").
             elif label in ("Set 1", "Set 2"):
                 market = _fixed_market(event_name, sport, bookmaker, f"ML_SET{label[-1]}", offer, _TWO_WAY_12)
+            # Hockey: ganador de un periodo ("Period 1", con empate) y balonmano: 1ª parte.
+            elif re.fullmatch(r"Period [1-3]", label):
+                market = _fixed_market(event_name, sport, bookmaker, f"1X2_P{label[-1]}", offer, _THREE_WAY)
+            elif label == "1st Half":
+                market = _fixed_market(event_name, sport, bookmaker, "1X2_HT", offer, _THREE_WAY)
         elif offer_type == "Double Chance":
             if base == "Double Chance":  # no "... and Both Teams To Score", etc.
                 market = _fixed_market(event_name, sport, bookmaker, f"DC{suffix}", offer, _DOUBLE_CHANCE)
@@ -272,11 +305,11 @@ def parse_event_offers(details: dict, event_name: str, sport: str, bookmaker: st
         # Baloncesto: "Point Spread"/"Handicap" (puntos, incl. sufijo de mitad/cuarto).
         # Tenis: "Game Handicap" (juegos) y "Set Handicap" (sets ganados).
         elif offer_type == "Handicap":
-            if base in ("Point Spread", "Handicap", "Game Handicap"):
+            if base in ("Point Spread", "Handicap", "Game Handicap", "Run Line", "Puck Line"):
                 market = _handicap_market(event_name, sport, bookmaker, f"AH{suffix}", offer, home, away)
             elif base == "Set Handicap":
                 market = _handicap_market(event_name, sport, bookmaker, f"SETS_AH{suffix}", offer, home, away)
-        elif offer_type == "Odd/Even" and base == "Total Points Odd/Even":
+        elif offer_type == "Odd/Even" and base in ("Total Points Odd/Even", "Total Goals Odd/Even", "Total Runs Odd/Even"):
             market = _fixed_market(event_name, sport, bookmaker, f"OE{suffix}", offer, _ODD_EVEN)
 
         if market is not None:

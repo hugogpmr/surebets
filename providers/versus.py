@@ -1,9 +1,30 @@
 import asyncio
+import logging
 
 from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+
+logger = logging.getLogger(__name__)
+
+# Otras ligas (añadidas 2026-09-29; ids sacados de los enlaces de
+# https://www.versus.es/apuestas/sports/soccer/competitions): mismos mercados que LaLiga, una carga de
+# página más los desplegables por liga (~8 s cada una). Solo se leen si la primera (LaLiga) cargó bien:
+# si la casa nos bloquea (IP de centro de datos), no se pierde el tiempo de espera en cada liga.
+DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
+    "futbol": [
+        "https://www.versus.es/apuestas/sports/soccer/competitions/454902/matches",  # Premier League
+        "https://www.versus.es/apuestas/sports/soccer/competitions/457009/matches",  # Serie A
+        "https://www.versus.es/apuestas/sports/soccer/competitions/476515/matches",  # Bundesliga
+        "https://www.versus.es/apuestas/sports/soccer/competitions/462676/matches",  # Ligue 1
+        "https://www.versus.es/apuestas/sports/soccer/competitions/458593/matches",  # Champions League
+        "https://www.versus.es/apuestas/sports/soccer/competitions/459635/matches",  # Europa League
+        "https://www.versus.es/apuestas/sports/soccer/competitions/472463/matches",  # Segunda División
+        "https://www.versus.es/apuestas/sports/soccer/competitions/457529/matches",  # Championship
+        "https://www.versus.es/apuestas/sports/soccer/competitions/479095/matches",  # Primeira Liga
+    ],
+}
 
 DEFAULT_COMPETITION_URLS = {
     "futbol": "https://www.versus.es/apuestas/sports/soccer/competitions/454900/matches",
@@ -110,8 +131,10 @@ class VersusProvider(OddsProvider):
     uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
     parkable = True  # navegador; ver engine/health.py
 
-    def __init__(self, competition_urls: dict[str, str] | None = None):
+    def __init__(self, competition_urls: dict[str, str] | None = None, extra_urls: dict[str, list[str]] | None = None):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS
+        # Con `competition_urls` propias (tests, pruebas sueltas) no se añaden las ligas por defecto.
+        self.extra_urls = extra_urls if extra_urls is not None else ({} if competition_urls else DEFAULT_EXTRA_URLS)
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         return asyncio.run(self._fetch_markets_async(sports))
@@ -125,18 +148,26 @@ class VersusProvider(OddsProvider):
                 url = self.competition_urls.get(sport)
                 if not url:
                     continue
-                await page.goto(url, timeout=20000, wait_until="domcontentloaded")
-                await page.wait_for_selector(".ta-EventListGroup", timeout=20000)
-                await page.wait_for_selector(".ta-SelectionButtonView", timeout=20000)
-                raw_events = await page.eval_on_selector(".ta-EventListGroup", _EXTRACT_EVENTS_JS)
-                markets.extend(self._parse_events(raw_events, sport))
-
-                markets.extend(await self._fetch_over_under(page, sport))
-
-                for item_class, (market_type, code, outcome_names) in SIMPLE_MARKETS.items():
-                    raw_events = await self._fetch_simple_market(page, item_class, code)
-                    markets.extend(self._parse_simple_market(raw_events, sport, market_type, outcome_names))
+                markets.extend(await self._fetch_competition(page, url, sport))
+                for extra_url in self.extra_urls.get(sport, []):
+                    try:
+                        markets.extend(await self._fetch_competition(page, extra_url, sport))
+                    except Exception:
+                        logger.warning("%s: no se pudo leer %s", self.name, extra_url, exc_info=True)
             await browser.close()
+        return markets
+
+    async def _fetch_competition(self, page, url: str, sport: str) -> list[Market]:
+        """1X2, más/menos, ambos marcan y resultado al descanso de UNA competición."""
+        await page.goto(url, timeout=20000, wait_until="domcontentloaded")
+        await page.wait_for_selector(".ta-EventListGroup", timeout=20000)
+        await page.wait_for_selector(".ta-SelectionButtonView", timeout=20000)
+        raw_events = await page.eval_on_selector(".ta-EventListGroup", _EXTRACT_EVENTS_JS)
+        markets = self._parse_events(raw_events, sport)
+        markets.extend(await self._fetch_over_under(page, sport))
+        for item_class, (market_type, code, outcome_names) in SIMPLE_MARKETS.items():
+            raw_events = await self._fetch_simple_market(page, item_class, code)
+            markets.extend(self._parse_simple_market(raw_events, sport, market_type, outcome_names))
         return markets
 
     async def _fetch_over_under(self, page, sport: str) -> list[Market]:

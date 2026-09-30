@@ -219,10 +219,10 @@ def test_kambi_basketball_quarter_and_half_suffixes():
 def test_kambi_fetch_markets_ignores_unsupported_sport_without_network():
     from providers.kambi import KambiProvider
 
-    assert KambiProvider().fetch_markets(["balonmano_champions"]) == []
+    assert KambiProvider().fetch_markets(["rugby_top14"]) == []
 
 
 def test_altenar_fetch_markets_ignores_unsupported_sport_without_network():
     from providers.altenar import AltenarProvider
 
-    assert AltenarProvider().fetch_markets(["balonmano_champions"]) == []
+    assert AltenarProvider().fetch_markets(["rugby_top14"]) == []

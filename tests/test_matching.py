@@ -1,6 +1,7 @@
 import pytest
 
-from engine.matching import best_odds_per_outcome, group_by_event
+from engine.matching import _events_match, best_odds_per_outcome, group_by_event
+from engine.team_aliases import canonical_team
 from engine.models import Market, Outcome
 
 
@@ -268,3 +269,26 @@ def test_peer_coverage_ignores_own_bookmaker_other_sports_and_case():
     ]
     coverage = peer_coverage(["Real Madrid vs. Sevilla", "Ajax vs. Feyenoord"], peers, "futbol", "pokerstars")
     assert coverage == {"Real Madrid vs. Sevilla": 1}
+
+
+@pytest.mark.parametrize(
+    "a,b",
+    [
+        ("TOR Maple Leafs vs. MTL Canadiens", "Toronto Maple Leafs vs. Montreal Canadiens"),
+        ("VGS Golden Knights vs. CHI Blackhawks", "Vegas Golden Knights vs. Chicago Blackhawks"),
+        ("NY Rangers vs. NY Islanders", "New York Rangers vs. New York Islanders"),
+        ("NY Yankees vs. BOS Red Sox", "New York Yankees vs. Boston Red Sox"),
+        ("CHI White Sox vs. TEX Rangers", "Chicago White Sox vs. Texas Rangers"),
+    ],
+)
+def test_us_league_franchise_names_from_altenar_and_kambi_are_the_same_team(a, b):
+    assert _events_match(a, b)
+
+
+def test_us_franchise_aliases_never_merge_teams_that_share_a_nickname_or_a_city():
+    # mismo mote en dos ligas, o misma ciudad: son equipos distintos
+    assert not _events_match("NY Rangers vs. NY Islanders", "Texas Rangers vs. NY Yankees")
+    assert not _events_match("Chicago Cubs vs. Chicago White Sox", "Chicago Cubs vs. Chicago Blackhawks")
+    # el mote a secas no vale: hay clubes europeos con el mismo mote
+    assert canonical_team("Nottingham Panthers") is None
+    assert canonical_team("Florida Panthers") == canonical_team("FLA Panthers") is not None

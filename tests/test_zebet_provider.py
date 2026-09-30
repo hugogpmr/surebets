@@ -170,3 +170,120 @@ def test_labelled_market_rejects_unknown_or_incomplete_labels():
         provider._parse_labelled_market(["1,75", "1,87", "2,0"], ["Si", "No", "Si"], _BTTS_LABELS, "BTTS", "A vs. B", "futbol")
         is None
     )
+
+
+# --- más ligas y hockey (2026-09-29) ---------------------------------------------------------
+
+
+def test_default_extra_urls_add_leagues_and_the_nhl_but_custom_urls_get_none():
+    provider = ZebetProvider()
+    assert len(provider.extra_urls["futbol"]) >= 10 and provider.extra_urls["hockey"]
+    assert all("/es/competition/" in url for urls in provider.extra_urls.values() for url in urls)
+    custom = ZebetProvider(competition_urls={"futbol": "https://www.zebet.es/es/competition/306-laliga"})
+    assert custom.extra_urls == {}
+
+
+def test_nhl_listing_odds_are_the_regulation_time_result():
+    raw = [{"teams": ["Toronto Maple Leafs", "Montreal Canadiens"], "odds": ["2,37", "4,00", "2,30"], "href": "/es/event/x"}]
+    (name, market, href), = ZebetProvider()._parse_events(raw, "hockey")
+    assert market.market_type == "1X2_REG" and name == "Toronto Maple Leafs vs. Montreal Canadiens"
+    (_, football_market, _), = ZebetProvider()._parse_events(raw, "futbol")
+    assert football_market.market_type == "1X2"
+
+
+def test_a_league_that_fails_does_not_stop_the_others(monkeypatch):
+    import asyncio
+
+    from engine.models import Market, Outcome
+
+    provider = ZebetProvider(competition_urls={"futbol": "https://z/primary"}, extra_urls={"futbol": ["https://z/broken", "https://z/ok"]})
+    calls = []
+
+    async def fake_competition(self, page, url, sport, with_extras):
+        calls.append((url, with_extras))
+        if url.endswith("broken"):
+            raise TimeoutError("sin #event")
+        return [Market(event="A vs. B", sport=sport, market_type="1X2", outcomes=[Outcome("1", "zebet", 2.0)])]
+
+    class FakePage:
+        pass
+
+    class FakeBrowser:
+        async def new_page(self, **kwargs):
+            return FakePage()
+
+        async def close(self):
+            pass
+
+    class FakePlaywright:
+        class chromium:
+            @staticmethod
+            async def launch(**kwargs):
+                return FakeBrowser()
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *exc):
+            return False
+
+    import providers.zebet as zebet
+
+    monkeypatch.setattr(zebet, "async_playwright", lambda: FakePlaywright())
+    monkeypatch.setattr(ZebetProvider, "_fetch_competition", fake_competition)
+    markets = asyncio.run(provider._fetch_markets_async(["futbol"]))
+    assert len(markets) == 2
+    assert calls == [("https://z/primary", True), ("https://z/broken", False), ("https://z/ok", False)]
+
+
+# --- más mercados de la ficha: goles por equipo, primer gol, BTTS 1ª mitad (2026-09-29) ------------
+
+TEAM_BLOCKS = [
+    block("Arsenal - Más de/Menos de", "¿Más o menos de goles para Arsenal?", ["1,47", "2,32", "2,42", "1,43"],
+          ["Más de 1.5", "Menos de 1.5", "Más de 2.5", "Menos de 2.5"]),
+    block("Arsenal - Más de/Menos de", "¿Más o menos de goles de Arsenal en la 1ª mitad?", ["1,48", "2,30"], ["Más de 0.5", "Menos de 0.5"]),
+    block("Arsenal - Más de/Menos de", "¿Más o menos goles de Arsenal en la 2ª mitad?", ["1,37", "2,62"], ["Más de 0.5", "Menos de 0.5"]),
+    block("Leeds United - Más de/Menos de", "¿Más o menos de goles para Leeds United?", ["1,68", "1,95"], ["Más de 0.5", "Menos de 0.5"]),
+    block("Leeds United - Más de/Menos de", "¿Más o menos de goles por Leeds United la 2ª mitad?", ["2,42", "1,43"], ["Más de 0.5", "Menos de 0.5"]),
+    block("Primer gol", "¿Qué equipo marca el 1?", ["13,00", "1,33", "3,10"], ["Ninguno", "Arsenal", "Leeds United"]),
+    block("Primer gol", "¿Qué equipo marca el gol 1 en la 1ª mitad?", ["3,20", "1,68", "4,20"], ["Ninguno", "Arsenal", "Leeds United"]),
+    block("Primer gol", "¿Qué equipo marca el gol 1 en la 2ª mitad?", ["3,85", "1,55", "3,60"], ["Ninguno", "Arsenal", "Leeds United"]),
+    block("Ambos equipos marcarán - 1a mitad", "¿Ambos equipos marcarán en la 1ª mitad?", ["4,00", "1,15"], ["Si", "No"]),
+    block("Mantendra su porteria a cero", "¿Arsenal mantendrá su portería intacta ?", ["1,80", "1,90"], ["Si", "No"]),  # fuera
+    block("Más de / Menos de (2a mitad)", "¿Más o menos de goles en la 2ª mitad?", ["1,50", "2,50"], ["Más de 1.5", "Menos de 1.5"]),
+]
+
+
+def team_markets(home="Arsenal", away="Leeds United"):
+    return {m.market_type: m for m in ZebetProvider()._parse_match_extras(TEAM_BLOCKS, f"{home} vs. {away}", "futbol")}
+
+
+def test_team_goal_totals_take_the_side_from_the_team_name_in_the_question():
+    markets = team_markets()
+    assert {o.name: o.odds for o in markets["OU_HOME_1.5"].outcomes} == {"Over": 1.47, "Under": 2.32}
+    assert "OU_HOME_2.5" in markets
+    assert {o.name: o.odds for o in markets["OU_HOME_HT_0.5"].outcomes} == {"Over": 1.48, "Under": 2.3}
+    assert "OU_HOME_2H_0.5" in markets  # "goles de X en la 2ª mitad" sin "de"
+    assert "OU_AWAY_0.5" in markets
+    assert "OU_AWAY_2H_0.5" in markets  # "de goles por X la 2ª mitad"
+
+
+def test_the_same_teams_swapped_flip_the_side():
+    markets = team_markets(home="Leeds United", away="Arsenal")
+    assert "OU_AWAY_1.5" in markets and "OU_HOME_0.5" in markets
+
+
+def test_a_question_with_an_unknown_team_is_dropped_and_the_match_wide_second_half_total_still_parses():
+    markets = team_markets(home="Chelsea", away="Fulham")
+    assert not any("HOME" in t or "AWAY" in t for t in markets)
+    assert "FIRST_GOAL" not in markets  # las etiquetas no son los equipos del partido
+    assert {o.name: o.odds for o in markets["OU_2H_1.5"].outcomes} == {"Over": 1.5, "Under": 2.5}
+
+
+def test_first_goal_uses_none_home_away_like_altenar_and_btts_ht_is_read():
+    markets = team_markets()
+    assert {o.name: o.odds for o in markets["FIRST_GOAL"].outcomes} == {"None": 13.0, "1": 1.33, "2": 3.1}
+    assert {o.name: o.odds for o in markets["FIRST_GOAL_HT"].outcomes} == {"None": 3.2, "1": 1.68, "2": 4.2}
+    assert "FIRST_GOAL_2H" in markets
+    assert {o.name: o.odds for o in markets["BTTS_HT"].outcomes} == {"Yes": 4.0, "No": 1.15}
+    assert not any(t.startswith("CS") for t in markets)
