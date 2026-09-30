@@ -1,131 +1,136 @@
 {
   "Alemania vs. Serbia||futbol||BTTS||interwetten,retabet": {
     "margin": 0.011323511506148742,
-    "cycles": 43,
+    "cycles": 44,
     "notified": true
   },
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 25,
+    "cycles": 26,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-1.5||casumo,interwetten": {
     "margin": 0.015259895088221231,
-    "cycles": 20,
+    "cycles": 21,
     "notified": true
   },
   "Brooklyn vs. Detroit City||futbol||AH_1||interwetten,jokerbet": {
     "margin": 0.02083333333333337,
-    "cycles": 19,
+    "cycles": 20,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
     "margin": 0.024676850763807323,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||1X2||goldenbull,interwetten,sportium": {
     "margin": 0.010989010989011061,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.0129749768303985,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,leovegas": {
     "margin": 0.013002364066193817,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_11.5||betfair,leovegas": {
     "margin": 0.02608695652173909,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Torque vs. Penarol||futbol||OU_2.5||bet365,enracha": {
     "margin": 0.03488372093023262,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Torque vs. Penarol||futbol||OU_3.5||bet365,goldenbull": {
     "margin": 0.022197761878554267,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Indonesia vs. Bangladesh||futbol||OU_HOME_3.5||888sport,paf": {
     "margin": 0.015259895088221231,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Indonesia vs. Bangladesh||futbol||OU_AWAY_0.5||888sport,paf": {
     "margin": 0.044575335226455515,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Alex De Minaur vs. Mariano Navone||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.016862170087976636,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Arda Azkara vs. Rohan Mehra||tenis||ML||888sport,paf": {
     "margin": 0.011868707538675638,
-    "cycles": 3,
-    "notified": true
-  },
-  "Unión San Felipe vs. San Luis||futbol||1X2||1xbet_es,daznbet_es,luckia": {
-    "margin": 0.020179511557293806,
-    "cycles": 2,
+    "cycles": 4,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||DNB||cgmapuestas,retabet": {
     "margin": 0.014768192850384665,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||CORNERS_OU_AWAY_4.5||jokerbet,paf": {
     "margin": 0.012077294685990392,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Argentina vs. Bolivia||futbol||BTTS||pokerstars,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cerro Porteno vs. Rubio Nu||futbol||OU_2.5||jokerbet,paf": {
     "margin": 0.022506198741178762,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||cgmapuestas,jokerbet": {
     "margin": 0.014146772767462457,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Raków Czestochowa vs. Polonia Bytom||futbol||OU_2.5||betfair,jokerbet": {
     "margin": 0.05055732484076436,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2/2.5||betway,paf": {
     "margin": 0.025684368690425896,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5/3||betway,paf": {
     "margin": 0.02365491651205942,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cerro Porteno vs. Rubio Nu||futbol||OU_2.5/3||jokerbet,paf": {
     "margin": 0.01520467836257311,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cerro Porteno vs. Rubio Nu||futbol||OU_3||jokerbet,paf": {
     "margin": 0.010752688172043001,
+    "cycles": 2,
+    "notified": true
+  },
+  "Unión San Felipe vs. San Luis||futbol||1X2||1xbet_es,cgmapuestas,luckia": {
+    "margin": 0.01534859368289776,
+    "cycles": 1,
+    "notified": true
+  },
+  "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
+    "margin": 0.011369274486366931,
     "cycles": 1,
     "notified": true
   }
