@@ -48,7 +48,7 @@ def _market():
 def test_default_extra_leagues_are_soccer_competition_pages_and_custom_urls_get_none(module, cls):
     provider = cls()
     urls = provider.extra_urls["futbol"]
-    assert len(urls) >= 8 and all("/apuestas/sports/soccer/competitions/" in u and u.endswith("/matches") for u in urls)
+    assert len(urls) == 4 and all("/apuestas/sports/soccer/competitions/" in u and u.endswith("/matches") for u in urls)
     assert len(set(urls)) == len(urls) and provider.competition_urls["futbol"] not in urls
     assert cls(competition_urls={"futbol": "https://x/primary"}).extra_urls == {}
 

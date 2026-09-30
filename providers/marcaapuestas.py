@@ -10,19 +10,15 @@ logger = logging.getLogger(__name__)
 
 # Otras ligas (añadidas 2026-09-29; ids sacados de los enlaces de
 # https://www.marcaapuestas.es/apuestas/sports/soccer/competitions): mismos mercados que LaLiga, una carga de
-# página más los desplegables por liga (~8 s cada una). Solo se leen si la primera (LaLiga) cargó bien:
+# página más los desplegables por liga (~8 s cada una en local, mucho más en la VM con 2 vCPU). Solo las 4
+# mayores (Premier, Serie A, Bundesliga, Champions): con 9 ligas el ciclo de la VM subió de ~230 s a 330 s. Solo se leen si la primera (LaLiga) cargó bien:
 # si la casa nos bloquea (IP de centro de datos), no se pierde el tiempo de espera en cada liga.
 DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
     "futbol": [
         "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19157/matches",  # Premier League
         "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19159/matches",  # Serie A
         "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19158/matches",  # Bundesliga
-        "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19327/matches",  # Ligue 1
         "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19161/matches",  # Champions League
-        "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19162/matches",  # Europa League
-        "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/48352/matches",  # Segunda División
-        "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19156/matches",  # Championship
-        "https://www.marcaapuestas.es/apuestas/sports/soccer/competitions/19211/matches",  # Primeira Liga
     ],
 }
 

@@ -10,19 +10,15 @@ logger = logging.getLogger(__name__)
 
 # Otras ligas (añadidas 2026-09-29; ids sacados de los enlaces de
 # https://www.versus.es/apuestas/sports/soccer/competitions): mismos mercados que LaLiga, una carga de
-# página más los desplegables por liga (~8 s cada una). Solo se leen si la primera (LaLiga) cargó bien:
+# página más los desplegables por liga (~8 s cada una en local, mucho más en la VM con 2 vCPU). Solo las 4
+# mayores (Premier, Serie A, Bundesliga, Champions): con 9 ligas el ciclo de la VM subió de ~230 s a 330 s. Solo se leen si la primera (LaLiga) cargó bien:
 # si la casa nos bloquea (IP de centro de datos), no se pierde el tiempo de espera en cada liga.
 DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
     "futbol": [
         "https://www.versus.es/apuestas/sports/soccer/competitions/454902/matches",  # Premier League
         "https://www.versus.es/apuestas/sports/soccer/competitions/457009/matches",  # Serie A
         "https://www.versus.es/apuestas/sports/soccer/competitions/476515/matches",  # Bundesliga
-        "https://www.versus.es/apuestas/sports/soccer/competitions/462676/matches",  # Ligue 1
         "https://www.versus.es/apuestas/sports/soccer/competitions/458593/matches",  # Champions League
-        "https://www.versus.es/apuestas/sports/soccer/competitions/459635/matches",  # Europa League
-        "https://www.versus.es/apuestas/sports/soccer/competitions/472463/matches",  # Segunda División
-        "https://www.versus.es/apuestas/sports/soccer/competitions/457529/matches",  # Championship
-        "https://www.versus.es/apuestas/sports/soccer/competitions/479095/matches",  # Primeira Liga
     ],
 }
 
