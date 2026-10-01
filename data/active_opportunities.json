@@ -1,76 +1,71 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 63,
+    "cycles": 64,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 25,
+    "cycles": 26,
     "notified": true
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 20,
+    "cycles": 21,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.014985014985014922,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.012195121951219523,
-    "cycles": 11,
+    "cycles": 12,
     "notified": true
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.04279279279279291,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Barbados vs. Bermudas||futbol||ML||interwetten,winamax": {
     "margin": 0.2264808362369337,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Bélgica vs. Turquía||futbol||ML||interwetten,retabet": {
     "margin": 0.1767363071710898,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Islandia vs. Bulgaria||futbol||ML||1xbet_es,interwetten": {
     "margin": 0.17724251057584384,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||ML_HT||interwetten,marcaapuestas": {
     "margin": 0.03392754456584246,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,paf": {
     "margin": 0.010060362173038184,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
-  "Panteras vs. Dorados||baloncesto||ML||888sport,bwin": {
-    "margin": 0.010060362173038184,
-    "cycles": 1,
-    "notified": true
-  },
-  "Alicia Dudeney vs. Katie Swan||tenis||ML||888sport,paf": {
-    "margin": 0.010752688172043001,
+  "Panathinaikos vs. Maccabi Tel Aviv||baloncesto||OU_172.5||bet365,betway": {
+    "margin": 0.015766841853798397,
     "cycles": 1,
     "notified": true
   }
