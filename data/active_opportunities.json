@@ -1,86 +1,91 @@
 {
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.016955266955267057,
-    "cycles": 23,
+    "cycles": 24,
     "notified": true
   },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 21,
+    "cycles": 22,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true
   },
   "China vs. Palestina||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.011323511506148742,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 16,
-    "notified": true
-  },
-  "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
-    "margin": 0.020204311719738133,
-    "cycles": 15,
+    "cycles": 17,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||CORNERS_OU_8.5||cgmapuestas,interwetten": {
     "margin": 0.011904761904761862,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
     "margin": 0.012195121951219523,
-    "cycles": 5,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||CARDS_OU_4.5||paston,pokerstars": {
-    "margin": 0.01098901098901095,
-    "cycles": 3,
-    "notified": true
-  },
-  "Crvena Zvezda vs. Anadolu Efes||baloncesto||ML||1xbet_es,interwetten": {
-    "margin": 0.015348288075560879,
-    "cycles": 2,
+    "cycles": 6,
     "notified": true
   },
   "Dunajska Streda vs. Puskás||futbol||OU_3.5||betfair,olybet": {
     "margin": 0.016132697114292216,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
-  "Madla vs. Viking FK||futbol||OU_AWAY_3.5||bet777,paf": {
-    "margin": 0.04651900167595224,
-    "cycles": 2,
-    "notified": true
-  },
-  "Azerbaiyán vs. Liechtenstein||futbol||BTTS||pokerstars,retabet": {
-    "margin": 0.01041666666666663,
+  "Inter Bogota vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
+    "margin": 0.020204311719738133,
     "cycles": 1,
     "notified": true
   },
-  "Madla vs. Viking||futbol||OU_3.5||jokerbet,paf": {
-    "margin": 0.012605042016806678,
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_169.5||888sport,casumo": {
+    "margin": 0.017735397949081966,
     "cycles": 1,
     "notified": true
   },
-  "Madla vs. Viking||futbol||OU_4.5||paf,paston": {
-    "margin": 0.01520467836257311,
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_170.5||888sport,casumo": {
+    "margin": 0.01891252955082745,
     "cycles": 1,
     "notified": true
   },
-  "Madla vs. Viking FK||futbol||OU_AWAY_2.5||jokerbet,paf": {
-    "margin": 0.024024024024024038,
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_171.5||888sport,casumo": {
+    "margin": 0.027735038418442715,
     "cycles": 1,
     "notified": true
   },
-  "Madla vs. Viking FK||futbol||1X2_HT||bet777,paf": {
-    "margin": 0.02088287299554903,
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_172.5||888sport,casumo": {
+    "margin": 0.028301886792452935,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_173.5||888sport,casumo": {
+    "margin": 0.02876001885902879,
+    "cycles": 1,
+    "notified": true
+  },
+  "Renata Zarazua vs. Aryna Sabalenka||tenis||OU_15.5||888sport,paf": {
+    "margin": 0.016227180527383256,
+    "cycles": 1,
+    "notified": true
+  },
+  "Renata Zarazua vs. Aryna Sabalenka||tenis||OU_17.5||888sport,paf": {
+    "margin": 0.02777777777777768,
+    "cycles": 1,
+    "notified": true
+  },
+  "Renata Zarazua vs. Aryna Sabalenka||tenis||OU_18.5||888sport,paf": {
+    "margin": 0.01863517636471379,
+    "cycles": 1,
+    "notified": true
+  },
+  "Renata Zarazua vs. Aryna Sabalenka||tenis||AH_+6.5||888sport,paf": {
+    "margin": 0.017168589924007827,
     "cycles": 1,
     "notified": true
   }
