@@ -1,51 +1,56 @@
 {
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.016955266955267057,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 11,
+    "cycles": 12,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "China vs. Palestina||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.011323511506148742,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Azerbaiyán vs. Liechtenstein||futbol||CARDS_OU_AWAY_1.5||bet777,betinia": {
     "margin": 0.011904761904761862,
-    "cycles": 5,
-    "notified": true
-  },
-  "Crvena Zvezda vs. Anadolu Efes||baloncesto||ML||1xbet_es,interwetten": {
-    "margin": 0.015348288075560879,
-    "cycles": 4,
+    "cycles": 6,
     "notified": true
   },
   "Balingen-Weilstetten vs. Bergischer HC||balonmano||1X2||1xbet_es,paston": {
     "margin": 0.03406332371734344,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
-  "Israel vs. Kosovo||futbol||CARDS_OU_4.5||paston,pokerstars": {
-    "margin": 0.01098901098901095,
+  "Japón vs. Ecuador||futbol||OU_2.5||bet365,pokerstars": {
+    "margin": 0.019584284512795813,
+    "cycles": 1,
+    "notified": true
+  },
+  "Surinam vs. Guatemala||futbol||DNB||betinia,retabet": {
+    "margin": 0.0108325894472725,
+    "cycles": 1,
+    "notified": true
+  },
+  "Nino Ehrenschneider vs. Taisei Ichikawa||tenis||ML||betway,paf": {
+    "margin": 0.024935703902493556,
     "cycles": 1,
     "notified": true
   }
