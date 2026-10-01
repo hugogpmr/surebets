@@ -1,4 +1,5 @@
 import difflib
+import re
 from datetime import datetime, timedelta
 from functools import lru_cache
 
@@ -144,6 +145,21 @@ def _loose_ok(a: datetime | None, b: datetime | None) -> bool:
     return a is not None and b is not None and abs(a - b) <= LOOSE_START_TOLERANCE
 
 
+# Línea final de un market_type ("AH_+1", "AH_HT_+0.5/+1"). Las fuentes directas
+# (Altenar, Kambi, bet777, 888sport, Zebet) escriben la línea positiva con signo y
+# casasdeapuestas sin él: "AH_+1" y "AH_1" son la misma línea pero no cruzaban entre sí
+# (medido 2026-10-01: 1.334 hándicaps positivos de casasdeapuestas sin pareja directa).
+_LINE_SUFFIX_RE = re.compile(r"_([+-]?\d+(?:\.\d+)?(?:/[+-]?\d+(?:\.\d+)?)?)$")
+
+
+def canonical_market_type(market_type: str) -> str:
+    """market_type con la línea sin "+" ("AH_+1" -> "AH_1", "AH_+0.5/+1" -> "AH_0.5/1")."""
+    match = _LINE_SUFFIX_RE.search(market_type)
+    if not match or "+" not in match.group(1):
+        return market_type
+    return market_type[: match.start(1)] + match.group(1).replace("+", "")
+
+
 def group_by_event(raw_markets: list[Market]) -> list[Market]:
     """Combina markets del mismo evento/mercado procedentes de distintos
     proveedores en un único Market con outcomes de varias casas, para que el
@@ -158,7 +174,8 @@ def group_by_event(raw_markets: list[Market]) -> list[Market]:
     groups: list[Market] = []
     by_key: dict[tuple[str, str], list[Market]] = {}
     for market in raw_markets:
-        candidates = by_key.setdefault((market.sport, market.market_type), [])
+        market_type = canonical_market_type(market.market_type)
+        candidates = by_key.setdefault((market.sport, market_type), [])
         target = next(
             (
                 g
@@ -172,7 +189,7 @@ def group_by_event(raw_markets: list[Market]) -> list[Market]:
             new_group = Market(
                 event=market.event,
                 sport=market.sport,
-                market_type=market.market_type,
+                market_type=market_type,
                 outcomes=list(market.outcomes),
                 start_time=market.start_time,
             )

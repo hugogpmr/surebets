@@ -3,7 +3,7 @@ import pytest
 from engine.arbitrage import compare_market
 from datetime import datetime, timedelta, timezone
 
-from engine.labels import kickoff_line, market_title, outcome_label, split_teams
+from engine.labels import kickoff_line, market_title, outcome_label, push_note, split_teams
 from engine.models import Market, Outcome
 from engine.scan import format_alert
 
@@ -109,3 +109,40 @@ def test_kickoff_line():
     assert "(en 3.0 h)" in kickoff_line(now + timedelta(hours=3, seconds=30))
     assert "(en 20 min)" in kickoff_line(now + timedelta(minutes=20, seconds=30))
     assert kickoff_line(now - timedelta(hours=1)).startswith("🕐 Empezó ")
+
+
+@pytest.mark.parametrize(
+    "market_type, expected",
+    [
+        ("AH_1", "Si Getafe acaba exactamente 1 gol por delante, se devuelven las dos apuestas"),
+        ("AH_-2", "Si Sevilla acaba exactamente 2 goles por delante, se devuelven las dos apuestas"),
+        ("AH_-1/-1.5", "Si Sevilla acaba exactamente 1 gol por delante, se devuelve media apuesta"),
+        ("AH_0/-0.5", "Si empatan, se devuelve media apuesta"),
+        ("CORNERS_AH_HT_-1", "Si Sevilla acaba exactamente 1 córner por delante (1ª parte)"),
+        ("AH_-1.5", None),
+        ("AH_0", None),  # empate no apuesta: ya lo dice el título
+        ("OU_2", None),
+    ],
+)
+def test_push_note_for_whole_and_quarter_handicap_lines(market_type, expected):
+    note = push_note(market_type, EVENT, "futbol")
+    if expected is None:
+        assert note is None
+    else:
+        assert expected in note
+
+
+def test_alert_explains_refund_on_whole_handicap_line():
+    market = Market(
+        event=EVENT,
+        sport="futbol",
+        market_type="AH_1",
+        outcomes=[
+            Outcome(name="1", bookmaker="bet777", odds=1.60),
+            Outcome(name="2", bookmaker="jokerbet", odds=2.90),
+        ],
+    )
+    text = format_alert(compare_market(market, 100))
+    assert "bet777: Sevilla +1 @1.60" in text
+    assert "jokerbet: Getafe -1 @2.90" in text
+    assert "Si Getafe acaba exactamente 1 gol por delante, se devuelven las dos apuestas" in text

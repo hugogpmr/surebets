@@ -39,6 +39,13 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
       `engine/live.py` + `scripts/run_live.py`, servicio `surebets-live`; ciclo lento seguido;
       panel a GitHub cada 10 min). Medido antes del cambio: Altenar ~300 s por lectura (1.350
       partidos), 888sport ~200 s, Kambi ~160 s, cruce ~24 s.
+- [!] **En pausa por memoria (2026-10-01)**: probado 2 veces en la VM. Funciona (avisos cada 1-2 min,
+      sin re-avisos al arrancar) pero en una VM de 4 GB agota la swap: 1ª prueba swap 100 % en 35 min;
+      2ª (malloc_trim + MALLOC_ARENA_MAX=2 + menos hilos) aguantó 40 min sin reiniciarse pero la swap
+      seguía subiendo (380 → 1.075 MB). Vuelto al ciclo de 12 min. El ciclo lento SÍ se queda seguido.
+      Decisión pendiente del usuario: subir la VM a 8 GB (y reactivar con
+      `systemctl disable --now surebets-fast.timer && systemctl enable --now surebets-live surebets-publish.timer`)
+      o adelgazar antes lo que se guarda (siguiente punto).
 - [ ] Altenar/Kambi/comparador por ventana de kickoff: fichas de los partidos de las próximas horas en
       cada vuelta, las de dentro de varios días cada 30-60 min (hoy Altenar relee los 1.350 cada vez).
 - [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).

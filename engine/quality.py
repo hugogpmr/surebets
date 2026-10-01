@@ -100,6 +100,8 @@ FLAG_DESCRIPTIONS = {
     "solo_comparador": "todas las cuotas vienen de comparadores (pueden ir desfasadas)",
     "cerca_inicio": "empieza pronto y alguna cuota viene de un comparador",
     "cuotas_desfasadas": "las cuotas se leyeron con mucha diferencia de tiempo",
+    "handicap_asiatico_ok": "comprobado con las cuotas de cada casa que es hándicap asiático (2 opciones, sin empate): si la diferencia cae justo en la línea, apuesta nula y se devuelve",
+    "handicap_sin_comprobar": "no se ha podido comprobar que alguna casa lo dé como hándicap asiático: mira en su web que este hándicap NO tenga opción de «Empate»; si la tiene, es europeo y NO es surebet",
 }
 
 
@@ -260,7 +262,9 @@ def drop_incoherent_rows(market: Market, min_sum: float = COHERENCE_MIN) -> tupl
 
 
 # Flags que se añaden DESPUÉS de assess() (miran el grupo entero, no solo la surebet).
-POST_FLAGS = frozenset({"lectura_duplicada", "cuota_atipica", "cuota_destacada"})
+POST_FLAGS = frozenset(
+    {"lectura_duplicada", "cuota_atipica", "cuota_destacada", "handicap_asiatico_ok", "handicap_sin_comprobar"}
+)
 
 
 def _leg_sources(outcomes: list[Outcome]) -> set[str]:

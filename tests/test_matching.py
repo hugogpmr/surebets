@@ -1,6 +1,6 @@
 import pytest
 
-from engine.matching import _events_match, best_odds_per_outcome, group_by_event
+from engine.matching import _events_match, best_odds_per_outcome, canonical_market_type, group_by_event
 from engine.team_aliases import canonical_team
 from engine.models import Market, Outcome
 
@@ -292,3 +292,29 @@ def test_us_franchise_aliases_never_merge_teams_that_share_a_nickname_or_a_city(
     # el mote a secas no vale: hay clubes europeos con el mismo mote
     assert canonical_team("Nottingham Panthers") is None
     assert canonical_team("Florida Panthers") == canonical_team("FLA Panthers") is not None
+
+
+@pytest.mark.parametrize(
+    "market_type, expected",
+    [
+        ("AH_+1", "AH_1"),
+        ("AH_HT_+0.5/+1", "AH_HT_0.5/1"),
+        ("AH_-1", "AH_-1"),
+        ("OU_2.5", "OU_2.5"),
+        ("1X2", "1X2"),
+    ],
+)
+def test_canonical_market_type_drops_plus_sign(market_type, expected):
+    assert canonical_market_type(market_type) == expected
+
+
+def test_signed_and_unsigned_positive_handicap_lines_are_grouped_together():
+    # Las fuentes directas escriben "AH_+1" y casasdeapuestas "AH_1": es la misma línea.
+    direct = Market(event="Nicaragua vs. Costa Rica", sport="futbol", market_type="AH_+1",
+                    outcomes=[Outcome(name="1", bookmaker="jokerbet", odds=1.30)])
+    comparator = Market(event="Nicaragua vs. Costa Rica", sport="futbol", market_type="AH_1",
+                        outcomes=[Outcome(name="2", bookmaker="interwetten", odds=4.20)])
+    groups = group_by_event([direct, comparator])
+    assert len(groups) == 1
+    assert groups[0].market_type == "AH_1"
+    assert {o.bookmaker for o in groups[0].outcomes} == {"jokerbet", "interwetten"}
