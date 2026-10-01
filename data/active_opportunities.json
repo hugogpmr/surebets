@@ -1,86 +1,71 @@
 {
-  "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
-    "margin": 0.05555555555555558,
-    "cycles": 70,
-    "notified": true
-  },
   "Torque vs. Peñarol||futbol||OU_2||jokerbet,winamax": {
     "margin": 0.014146772767462457,
-    "cycles": 38,
+    "cycles": 39,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||cgmapuestas,enracha": {
     "margin": 0.016908212560386437,
-    "cycles": 37,
+    "cycles": 38,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.021505376344086002,
-    "cycles": 37,
+    "cycles": 38,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||interwetten,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 35,
+    "cycles": 36,
     "notified": true
   },
   "Sara Bejlek vs. Maddison Inglis||tenis||ML_SET2||888sport,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true
   },
   "Soles vs. Diablos Rojos Del Mexico||baloncesto||ML||betway,bwin": {
     "margin": 0.018750000000000044,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Caroline Dolehide vs. Kate Fakih||tenis||ML||888sport,betway": {
     "margin": 0.030769230769230882,
-    "cycles": 3,
-    "notified": true
-  },
-  "China vs. Palestine||futbol||1X2||1xbet_es,bet365": {
-    "margin": 0.01516193403985655,
-    "cycles": 2,
-    "notified": true
-  },
-  "China vs. Palestine||futbol||OU_1.5||bet365,ebingo": {
-    "margin": 0.01041666666666663,
-    "cycles": 2,
-    "notified": true
-  },
-  "China vs. Palestina||futbol||OU_2||bet365,ebingo": {
-    "margin": 0.04428904428904423,
-    "cycles": 2,
+    "cycles": 4,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||paf,pokerstars": {
     "margin": 0.012204424103737566,
-    "cycles": 1,
-    "notified": true
-  },
-  "China vs. Palestine||futbol||OU_2.5||bet365,ebingo": {
-    "margin": 0.039291392232568834,
-    "cycles": 1,
-    "notified": true
-  },
-  "China vs. Palestine||futbol||OU_3.5||bet365,betfair": {
-    "margin": 0.04233870967741937,
-    "cycles": 1,
-    "notified": true
-  },
-  "China vs. Palestine||futbol||OU_4.5||bet365,betfair": {
-    "margin": 0.03314571607254535,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.010606060606060508,
+    "cycles": 2,
+    "notified": true
+  },
+  "Dinamarca vs. Portugal||futbol||CORNERS_OU_9.5||goldenbull,pokerstars": {
+    "margin": 0.015151515151515138,
     "cycles": 1,
     "notified": true
   },
-  "China vs. Palestina||futbol||OU_3||bet365,ebingo": {
-    "margin": 0.0736842105263158,
+  "Dinamarca vs. Portugal||futbol||CORNERS_OU_10.5||goldenbull,pokerstars": {
+    "margin": 0.012038190120381875,
+    "cycles": 1,
+    "notified": true
+  },
+  "Al Nasr Salalah vs. Samail||futbol||OU_2.5||888sport,bet777": {
+    "margin": 0.013975617008623265,
+    "cycles": 1,
+    "notified": true
+  },
+  "Santa Marta vs. Salamanca||futbol||DNB||888sport,betway": {
+    "margin": 0.014350945857795061,
+    "cycles": 1,
+    "notified": true
+  },
+  "Pilar Da Silva vs. Marina Bulbarella||tenis||ML||888sport,betway": {
+    "margin": 0.016227180527383256,
     "cycles": 1,
     "notified": true
   }
