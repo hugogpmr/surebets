@@ -1,158 +1,158 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 106,
+    "cycles": 114,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 68,
+    "cycles": 76,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 63,
+    "cycles": 71,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 56,
+    "cycles": 64,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 53,
+    "cycles": 61,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.04279279279279291,
-    "cycles": 50,
+    "cycles": 58,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Barbados vs. Bermudas||futbol||ML||interwetten,winamax": {
     "margin": 0.2264808362369337,
-    "cycles": 48,
+    "cycles": 56,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islandia vs. Bulgaria||futbol||ML||1xbet_es,interwetten": {
     "margin": 0.17724251057584384,
-    "cycles": 48,
+    "cycles": 56,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,paf": {
     "margin": 0.010060362173038184,
-    "cycles": 46,
+    "cycles": 54,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Martinica vs. Honduras||futbol||ML||1xbet_es,888sport": {
     "margin": 0.22679454295379364,
-    "cycles": 41,
+    "cycles": 49,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Boca Juniors vs. Unión Santa Fe||futbol||AH_-1||bet365,speedybet": {
     "margin": 0.012339657611081245,
-    "cycles": 13,
+    "cycles": 21,
     "notified": true,
     "since": "2026-10-01T21:13:29.359217+00:00"
   },
-  "Curacao vs. Trinidad y Tobago||futbol||1X2||1xbet_es,bet365": {
-    "margin": 0.059061166429587475,
-    "cycles": 12,
-    "notified": true,
-    "since": "2026-10-01T21:19:26.856059+00:00"
-  },
-  "Curazao vs. Trinidad y Tobago||futbol||AH_-1||1xbet_es,bet365": {
-    "margin": 0.02981814837804908,
-    "cycles": 12,
-    "notified": true,
-    "since": "2026-10-01T21:19:26.856059+00:00"
-  },
   "Mladá Boleslav vs. Pribram||futbol||AH_-1.5||1xbet_es,jokerbet": {
     "margin": 0.016261318920969048,
-    "cycles": 12,
+    "cycles": 20,
     "notified": true,
     "since": "2026-10-01T21:19:26.856059+00:00"
   },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||ML_HT||marcaapuestas,versus": {
     "margin": 0.03392754456584246,
-    "cycles": 10,
+    "cycles": 18,
     "notified": true,
     "since": "2026-10-01T21:21:34.519728+00:00"
   },
-  "Curazao vs. Trinidad & Tobago||futbol||AH_-1.5||1xbet_es,bet365": {
-    "margin": 0.011074036462111359,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-01T21:25:43.484311+00:00"
-  },
-  "Curazao vs. Trinidad y Tobago||futbol||AH_-2||1xbet_es,bet365": {
-    "margin": 0.017947166767493417,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-01T21:25:43.484311+00:00"
-  },
   "Nicaragua vs. Costa Rica||futbol||AH_1||1xbet_es,bet365": {
     "margin": 0.09938467275778473,
-    "cycles": 6,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-01T21:25:43.484311+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||AH_1.5||1xbet_es,bet365": {
     "margin": 0.059706434168414035,
-    "cycles": 6,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-01T21:25:43.484311+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||AH_2||1xbet_es,bet365": {
     "margin": 0.07559880239520955,
-    "cycles": 6,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-01T21:25:43.484311+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||AH_2.5||1xbet_es,bet365": {
     "margin": 0.03880070546737213,
-    "cycles": 6,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-01T21:25:43.484311+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||AH_3||1xbet_es,bet365": {
     "margin": 0.01740723774622077,
-    "cycles": 6,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-01T21:25:43.484311+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.012195121951219523,
-    "cycles": 3,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.014985014985014922,
-    "cycles": 3,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Croacia vs. Inglaterra||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.025287356321839094,
-    "cycles": 2,
+    "cycles": 10,
     "notified": true,
     "since": "2026-10-01T21:32:16.704722+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||1X2||1xbet_es,bet365,pokerstars": {
     "margin": 0.038415003024803385,
-    "cycles": 1,
+    "cycles": 9,
     "notified": true,
     "since": "2026-10-01T21:33:11.133167+00:00"
+  },
+  "Raków Czestochowa vs. Polonia Bytom||futbol||1X2||1xbet_es,bet777": {
+    "margin": 0.038358841508447816,
+    "cycles": 6,
+    "notified": true,
+    "since": "2026-10-01T21:36:18.391294+00:00"
+  },
+  "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||paston,winamax": {
+    "margin": 0.012195121951219523,
+    "cycles": 5,
+    "notified": true,
+    "since": "2026-10-01T21:37:20.755037+00:00"
+  },
+  "Club Atletico Olimpia vs. Club Trouville||baloncesto||ML||betway,paf": {
+    "margin": 0.020969467908289796,
+    "cycles": 5,
+    "notified": true,
+    "since": "2026-10-01T21:37:20.755037+00:00"
+  },
+  "Curazao vs. Trinidad y Tobago||futbol||OU_3||bet365,jokerbet": {
+    "margin": 0.012195121951219523,
+    "cycles": 4,
+    "notified": true,
+    "since": "2026-10-01T21:38:21.060737+00:00"
   }
 }
