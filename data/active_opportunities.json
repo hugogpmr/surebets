@@ -1,72 +1,62 @@
 {
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 48,
+    "cycles": 49,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||DNB||cgmapuestas,retabet": {
     "margin": 0.014768192850384665,
-    "cycles": 25,
+    "cycles": 26,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||1X2||1xbet_es,cgmapuestas,luckia": {
     "margin": 0.01534859368289776,
-    "cycles": 23,
+    "cycles": 24,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2||jokerbet,winamax": {
     "margin": 0.014146772767462457,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||cgmapuestas,enracha": {
     "margin": 0.016908212560386437,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.021505376344086002,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||interwetten,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Carlos Alcaraz vs. Alex Michelsen||tenis||AH_-1.5||goldenpark,olybet": {
     "margin": 0.18913270637408564,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,paf": {
     "margin": 0.02721999107541273,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Maldivas vs. Líbano||futbol||BTTS||betfair,williamhill": {
     "margin": 0.024806201550387597,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||paf,pokerstars": {
     "margin": 0.012204424103737566,
-    "cycles": 7,
-    "notified": true
-  },
-  "Kei Nishikori vs. Frances Tiafoe||tenis||AH_-1.5||goldenpark,olybet": {
-    "margin": 0.1992481203007519,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 6,
-    "notified": true
-  },
-  "Tailandia vs. Filipinas||futbol||DNB||888sport,betway": {
-    "margin": 0.018181818181818077,
-    "cycles": 2,
+    "cycles": 7,
     "notified": true
   }
 }
