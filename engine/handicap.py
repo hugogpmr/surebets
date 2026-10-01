@@ -25,7 +25,7 @@ from .matching import event_key
 from .models import Market
 
 # Hándicap (de goles, córners, sets...; de partido o de periodo) con línea sin "/".
-_AH_RE = re.compile(r"^(.*\bAH(?:_[A-Z0-9]+)*)_(-?\d+(?:\.\d+)?)$")
+_AH_RE = re.compile(r"^((?:.*_)?AH(?:_[A-Z0-9]+)*)_(-?\d+(?:\.\d+)?)$")
 LADDER_MAX_ODDS = 5.0
 
 ASIAN = "asiatico"

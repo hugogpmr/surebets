@@ -96,6 +96,8 @@ const FLAG_DESCRIPTIONS = {
   solo_comparador: "todas las cuotas vienen de comparadores (pueden ir desfasadas)",
   cerca_inicio: "empieza pronto y alguna cuota viene de un comparador",
   cuotas_desfasadas: "las cuotas se leyeron con mucha diferencia de tiempo",
+  handicap_asiatico_ok: "comprobado con las cuotas de cada casa que es hándicap asiático (2 opciones, sin empate): si la diferencia cae justo en la línea, apuesta nula y se devuelve",
+  handicap_sin_comprobar: "no se ha podido comprobar que alguna casa lo dé como hándicap asiático: mira en su web que este hándicap NO tenga opción de «Empate»; si la tiene, es europeo y NO es surebet",
 };
 const BLOCKING_FLAGS = new Set(["una_sola_casa", "mercado_incompleto", "margen_absurdo", "lectura_duplicada", "cuota_atipica"]);
 const RELIABILITY_RANK = { alta: 3, media: 2, baja: 1 };
@@ -323,8 +325,9 @@ function reliabilityBadge(m) {
   const flags = (m.flags || []).map((f) => FLAG_DESCRIPTIONS[f] || f);
   const title = flags.length ? flags.join(" · ") : "Todas las cuotas vienen directas de la casa";
   const blocked = (m.flags || []).some((f) => BLOCKING_FLAGS.has(f));
+  const icons = (m.flags || []).map((f) => (f === "handicap_asiatico_ok" ? "✅" : "⚠"));
   const list = flags.length
-    ? `<span class="flag-list ${blocked ? "blocked" : ""}">${flags.map((t) => `⚠ ${t}`).join("<br>")}</span>`
+    ? `<span class="flag-list ${blocked ? "blocked" : ""}">${flags.map((t, i) => `${icons[i]} ${t}`).join("<br>")}</span>`
     : "";
   let verification = "";
   if (m.verification === "verificada") {

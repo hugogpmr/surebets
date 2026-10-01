@@ -18,6 +18,7 @@ from .arbitrage import compare_market
 from .alerts import SourceAlerts
 from .backtest import SurebetLog
 from .health import SourceHealth
+from .handicap import ASIAN, check_whole_handicaps
 from .labels import kickoff_line, market_title, outcome_label, push_note, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
 from .peers import PeerEvents
@@ -101,8 +102,10 @@ def format_alert(comparison) -> str:
         lines.append("✅ Margen muy alto verificado con una segunda lectura directa de las casas")
     elif comparison.verification == "pendiente":
         lines.append("🔎 Margen muy alto sin verificar en directo: solo se avisa tras aparecer en varios escaneos seguidos")
+    if "handicap_asiatico_ok" in comparison.flags:
+        lines.append(f"✅ {FLAG_DESCRIPTIONS['handicap_asiatico_ok'].capitalize()}")
     for flag in comparison.flags:
-        if flag not in ("margen_verificado", "margen_a_verificar"):  # ya explicados arriba
+        if flag not in ("margen_verificado", "margen_a_verificar", "handicap_asiatico_ok"):  # ya explicados arriba
             lines.append(f"⚠️ {FLAG_DESCRIPTIONS.get(flag, flag)}")
     return "\n".join(lines)
 
@@ -231,7 +234,12 @@ def _build_comparisons(
 ) -> list:
     comparisons = []
     references: dict[tuple, list] = {}
-    for grouped in group_by_event(raw_markets):
+    # Hándicap de línea entera: fuera las casas que lo dan europeo (3 vías), ver engine/handicap.py.
+    groups, handicap_verdicts, dropped_3way = check_whole_handicaps(group_by_event(raw_markets))
+    if stats is not None:
+        stats["dropped_3way_handicap"] = stats.get("dropped_3way_handicap", 0) + dropped_3way
+    for grouped in groups:
+        verdicts = handicap_verdicts.get(id(grouped))
         # Filas de comparador imposibles (suma de probabilidades < 1: tabla de otra
         # pestaña leída por error) fuera ANTES de calcular nada con ellas.
         grouped, dropped = drop_incoherent_rows(grouped)
@@ -259,6 +267,13 @@ def _build_comparisons(
                 comparison.reliability = "media"
             if "cuota_atipica" in comparison.flags:
                 comparison.reliability = "baja"
+            if verdicts is not None:
+                if all(verdicts.get(o.bookmaker) == ASIAN for o in market.outcomes):
+                    comparison.flags.append("handicap_asiatico_ok")
+                else:
+                    comparison.flags.append("handicap_sin_comprobar")
+                    if comparison.reliability == "alta":
+                        comparison.reliability = "media"
 
     # Solo las candidatas con alguna pata de comparador pueden ser una lectura
     # duplicada (las APIs de Altenar/Kambi devuelven cada mercado por separado).
