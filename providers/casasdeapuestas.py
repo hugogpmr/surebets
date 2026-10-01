@@ -217,7 +217,18 @@ def _price(text: str) -> float | None:
 _BOOKMAKER_ALIASES = {
     "william_hill": "williamhill",
     "marca_apuestas": "marcaapuestas",
+    # Visto en la caché real de la VM el 2026-10-01: DAZN Bet llega como "daznbet_es" aquí y
+    # como "daznbet" desde Altenar - la misma cuenta contada como dos casas.
+    "daznbet_es": "daznbet",
 }
+
+# Casas del comparador que NO se usan (ni para avisar ni para el panel). Ojo: este comparador
+# solo publica la MEJOR cuota de cada resultado, así que quitar una casa no destapa la segunda
+# mejor: ese resultado simplemente se queda sin lectura del comparador en ese partido.
+# Lista elegida por el usuario en `casas_comparador.md`. "betfair_exchange" fuera desde el
+# 2026-10-01: es la cuota bruta del Exchange, sin descontar la comisión (~5 %) que sí se paga
+# al ganar, así que sobrevalora esa pata (el provider directo betfair_exchange.py ya la descuenta).
+EXCLUDED_BOOKIES = frozenset({"betfair_exchange"})
 
 
 def _canonical_bookie(bookie: str) -> str:
@@ -254,7 +265,10 @@ def _extract_odds(soup: BeautifulSoup) -> list[_Odd]:
         price = _price(span.get_text() if span else div.get_text())
         if price is None:
             continue
-        odds.append(_Odd(mercado, nombre, _canonical_bookie(bookie_div["data-bookie"]), price))
+        bookie = _canonical_bookie(bookie_div["data-bookie"])
+        if bookie in EXCLUDED_BOOKIES:
+            continue
+        odds.append(_Odd(mercado, nombre, bookie, price))
     return odds
 
 
@@ -432,6 +446,15 @@ def sanitize_cached_market(market: Market) -> Market | None:
     """Aplica a un mercado YA leído (caché del ciclo lento, hasta COMPARATOR_MAX_AGE_HOURS de antigüedad) las
     reglas de hándicap por mercado de `_ah_markets`, para que las lecturas malas guardadas antes
     de la corrección no sigan avisando. Devuelve el mercado limpio, o None si no queda nada."""
+    if any(o.bookmaker in EXCLUDED_BOOKIES or o.bookmaker in _BOOKMAKER_ALIASES for o in market.outcomes):
+        kept = [
+            dataclasses.replace(o, bookmaker=_canonical_bookie(o.bookmaker))
+            for o in market.outcomes
+            if _canonical_bookie(o.bookmaker) not in EXCLUDED_BOOKIES
+        ]
+        if not kept:
+            return None
+        market = dataclasses.replace(market, outcomes=kept)
     match = _AH_TYPE_RE.match(market.market_type)
     if not match:
         return market

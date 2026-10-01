@@ -18,7 +18,16 @@ pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden co
 - [x] Tenis: Goldenpark/Olybet publican en el comparador el hándicap de SETS ±1.5 como "hándicap de
       juegos" (y con el signo cambiado) → surebets falsas del 18-23 % del 1-oct. Descartarlo.
 - [x] Edad máxima de las cuotas cacheadas del comparador: 8 h → 2 h (red de seguridad si el ciclo lento falla).
-- [ ] Opcional (pendiente de que el usuario confirme, reescribe historia): limpiar el historial de git (repo de 664 MB por los .db).
+- [—] Limpiar el historial de git: descartado por el usuario (2026-10-01), no hace falta: ya no crece.
+
+### Antes de la Fase 1 — quedarnos con las casas que interesan
+- [ ] El usuario marca en [casas_comparador.md](casas_comparador.md) qué casas del comparador se quedan
+      (criterio: tener o ir a abrir cuenta ahí). Luego se ponen las descartadas en `EXCLUDED_BOOKIES`
+      (`providers/casasdeapuestas.py`) y se despliega.
+- [x] Betfair Exchange del comparador excluido (cuota bruta sin comisión) y DAZN Bet unificado
+      (`daznbet_es` = `daznbet`), 2026-10-01.
+- [ ] Con la lista cerrada: verificar a mano las licencias DGOJ de las que se queden con ⚠️ y añadirlas
+      al panel (`docs/app.js`).
 
 ### Fase 1 — Betfair Exchange (el cambio de enfoque con más impacto)
 - [ ] Generar la Delayed App Key gratuita (developer.betfair.com) — lo tiene que hacer el usuario — y

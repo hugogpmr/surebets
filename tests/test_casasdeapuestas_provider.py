@@ -485,3 +485,33 @@ def test_bookmaker_names_that_already_match_are_left_untouched():
     )
     markets = by_type(parse_event_markets(html, "futbol"))
     assert {o.bookmaker for o in markets["1X2"].outcomes} == {"betfair", "bwin"}
+
+
+def test_excluded_and_aliased_bookies():
+    from engine.models import Market, Outcome
+    from providers import casasdeapuestas
+    from providers.casasdeapuestas import sanitize_cached_market
+
+    html = page(
+        "Malaga",
+        "Espanyol",
+        [
+            odd("Final del partido (1X2)", "Malaga", "betfair_exchange", "2.10"),
+            odd("Final del partido (1X2)", "Empate", "daznbet_es", "3.40"),
+            odd("Final del partido (1X2)", "Espanyol", "bet365", "3.90"),
+        ],
+    )
+    markets = parse_event_markets(html, "futbol")
+    assert {o.bookmaker for m in markets for o in m.outcomes} == {"daznbet", "bet365"}
+    cached = Market(
+        event="Malaga vs. Espanyol",
+        sport="futbol",
+        market_type="OU_2.5",
+        outcomes=[
+            Outcome(name="Over", bookmaker="betfair_exchange", odds=2.1, source="casasdeapuestas"),
+            Outcome(name="Under", bookmaker="daznbet_es", odds=1.9, source="casasdeapuestas"),
+        ],
+    )
+    cleaned = sanitize_cached_market(cached)
+    assert [(o.name, o.bookmaker) for o in cleaned.outcomes] == [("Under", "daznbet")]
+    assert casasdeapuestas.EXCLUDED_BOOKIES >= {"betfair_exchange"}
