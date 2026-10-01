@@ -1,96 +1,111 @@
 {
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 40,
+    "cycles": 41,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 37,
-    "notified": true
-  },
-  "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
-    "margin": 0.010752688172043001,
-    "cycles": 35,
+    "cycles": 38,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.026048847079177095,
-    "cycles": 18,
-    "notified": true
-  },
-  "Puente Alto vs. Valdivia||baloncesto||ML||betway,williamhill": {
-    "margin": 0.014705882352941235,
-    "cycles": 9,
+    "cycles": 19,
     "notified": true
   },
   "Daniil Medvedev vs. Pablo Carreno Busta||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.01904761904761898,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Skelleftea vs. Malmo||hockey||ML||casino_barcelona,interwetten": {
     "margin": 0.015562161216996051,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Ryota Tanuma vs. Yuga Tashiro||tenis||ML||betinia,paf": {
     "margin": 0.018952062430323213,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "India vs. Brasil||futbol||AH_3.5||1xbet_es,bet365": {
-    "margin": 0.030458033015577812,
-    "cycles": 4,
+    "margin": 0.012731203459043883,
+    "cycles": 5,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.0129749768303985,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_11.5||betfair,leovegas": {
     "margin": 0.015873015873015928,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Hapoel Tel Aviv vs. Real Madrid||baloncesto||ML||casumo,jokerbet": {
     "margin": 0.012605042016806678,
-    "cycles": 2,
-    "notified": true
-  },
-  "Gales vs. Noruega||futbol||AH_1||cgmapuestas,goldenbull": {
-    "margin": 0.015259895088221231,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Núremberg vs. FC Ingolstadt 04||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.018759018759018753,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Sporting Cristal vs. Asociacion Deportiva Tarma||futbol||1X2||1xbet_es,ijuego": {
-    "margin": 0.03514299691626266,
-    "cycles": 1,
+    "margin": 0.02018084236600748,
+    "cycles": 2,
     "notified": true
   },
   "Carlos Alcaraz vs. Matteo Arnaldi||tenis||AH_-6.5||leovegas,sportium": {
     "margin": 0.050320411807962984,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Carlos Alcaraz vs. Matteo Arnaldi||tenis||AH_-4.5||888sport,leovegas": {
     "margin": 0.038712921065862216,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Carlos Alcaraz vs. Matteo Arnaldi||tenis||OU_17.5||888sport,leovegas": {
     "margin": 0.010752688172043001,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Kenta Kawada vs. Abdumalik, Kamalov||tenis||ML||betinia,paf": {
     "margin": 0.014146772767462457,
+    "cycles": 2,
+    "notified": true
+  },
+  "Leones de Quilpué vs. Español de Osorno||baloncesto||ML||888sport,paston": {
+    "margin": 0.011695906432748426,
+    "cycles": 1,
+    "notified": true
+  },
+  "Núremberg vs. FC Ingolstadt 04||futbol||1X2||1xbet_es,luckia,yaasscasino": {
+    "margin": 0.02974064160912593,
+    "cycles": 1,
+    "notified": true
+  },
+  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,leovegas": {
+    "margin": 0.013002364066193817,
+    "cycles": 1,
+    "notified": true
+  },
+  "Filip Krolo vs. Noah Lopez||tenis||ML||betway,paf": {
+    "margin": 0.014563106796116498,
+    "cycles": 1,
+    "notified": true
+  },
+  "BC Beroe SZ vs. Rilski Sportist||baloncesto||ML||bet777,betway": {
+    "margin": 0.032258064516129004,
+    "cycles": 1,
+    "notified": true
+  },
+  "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,leovegas": {
+    "margin": 0.010752688172043001,
     "cycles": 1,
     "notified": true
   }
