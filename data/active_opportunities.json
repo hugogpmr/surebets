@@ -1,86 +1,106 @@
 {
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.016955266955267057,
-    "cycles": 33,
+    "cycles": 34,
     "notified": true
   },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 31,
+    "cycles": 32,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 28,
+    "cycles": 29,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 26,
+    "cycles": 27,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
     "margin": 0.024390243902438935,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
-    "margin": 0.020204311719738133,
-    "cycles": 9,
-    "notified": true
-  },
-  "TBV Lemgo vs. Hamburgo||balonmano||OU_59.5||leovegas,olybet": {
-    "margin": 0.013711257057264614,
-    "cycles": 6,
+    "margin": 0.026048847079177095,
+    "cycles": 10,
     "notified": true
   },
   "Azerbaiyán vs. Liechtenstein||futbol||CARDS_OU_3.5||bet777,betway": {
     "margin": 0.08212560386473422,
-    "cycles": 6,
-    "notified": true
-  },
-  "Uzbekistán vs. Siria||futbol||1X2||1xbet_es,interwetten,paf": {
-    "margin": 0.01317952646562881,
-    "cycles": 5,
-    "notified": true
-  },
-  "Daniil Medvedev vs. Pablo Carreno Busta||tenis||ML_SET1||888sport,bet365": {
-    "margin": 0.0357142857142857,
-    "cycles": 2,
-    "notified": true
-  },
-  "Carlos Alcaraz vs. Matteo Arnaldi||tenis||OU_19.5||casumo,interwetten": {
-    "margin": 0.016195310611554325,
-    "cycles": 2,
+    "cycles": 7,
     "notified": true
   },
   "Athletic Club vs. Sport Recife||futbol||1X2||1xbet_es,bet365": {
     "margin": 0.016751663810487316,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "CA Platense vs. Estudiantes||futbol||1X2||1xbet_es,cgmapuestas,retabet": {
     "margin": 0.031551911442568636,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Besiktas vs. FC Barcelona||baloncesto||OU_169.5||jokerbet,williamhill": {
     "margin": 0.012195121951219523,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Islas Vírgenes Británicas vs. Montserrat||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.05137844611528819,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Dominica vs. Guyana||futbol||AH_0||1xbet_es,interwetten": {
     "margin": 0.1331777720162476,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Platense vs. Estudiantes de La Plata||futbol||DNB||paf,retabet": {
     "margin": 0.011666299801893043,
+    "cycles": 2,
+    "notified": true
+  },
+  "Sila SC vs. SM Asyut||futbol||OU_1.5||betway,daznbet": {
+    "margin": 0.014705882352941235,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sila SC vs. SM Asyut||futbol||OU_2.5||bet777,daznbet": {
+    "margin": 0.07152089616544588,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sila SC vs. SM Asyut||futbol||OU_3.5||betway,daznbet": {
+    "margin": 0.047186932849364815,
+    "cycles": 1,
+    "notified": true
+  },
+  "Puente Alto vs. Valdivia||baloncesto||ML||betway,williamhill": {
+    "margin": 0.014705882352941235,
+    "cycles": 1,
+    "notified": true
+  },
+  "Uzbekistán vs. Siria||futbol||AH_-1.5||1xbet_es,interwetten": {
+    "margin": 0.012605042016806678,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sila SC vs. SM Asyut||futbol||OU_2/2.5||bet777,betinia": {
+    "margin": 0.05371800796637416,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sila SC vs. SM Asyut||futbol||OU_2.5/3||bet777,betinia": {
+    "margin": 0.07100340136054428,
+    "cycles": 1,
+    "notified": true
+  },
+  "Vilniaus Perlas vs. BC Telsiai||baloncesto||ML||daznbet,paston": {
+    "margin": 0.01218013185830824,
     "cycles": 1,
     "notified": true
   }
