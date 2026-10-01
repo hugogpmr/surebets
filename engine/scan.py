@@ -16,6 +16,7 @@ from storage.db import comparison_key, save_comparisons, save_opportunity
 
 from .arbitrage import compare_market
 from .alerts import SourceAlerts
+from .backtest import SurebetLog
 from .health import SourceHealth
 from .labels import kickoff_line, market_title, outcome_label, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
@@ -235,6 +236,7 @@ def _build_comparisons(
             continue
         market = best_odds_per_outcome(grouped)
         comparison = compare_market(market, bankroll, min_margin, round_step)
+        comparison.readings = grouped.outcomes
         comparisons.append(comparison)
         # Todos los pares (casa, cuota) leídos en cada mercado, para detectar
         # tablas de un comparador leídas dos veces con otra etiqueta.
@@ -364,6 +366,7 @@ async def _run_scan_cycle(
     peers: PeerEvents | None = None,
     source_alerts: SourceAlerts | None = None,
     notify_admin: NotifyFn | None = None,
+    backtest: SurebetLog | None = None,
     executor: ThreadPoolExecutor | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
@@ -597,6 +600,25 @@ async def _run_scan_cycle(
 
     phases["avisos"] = notify_seconds
     phases["confirmacion"] = time.perf_counter() - step - notify_seconds
+
+    # Histórico para el backtest (engine/backtest.py). Un fallo aquí nunca debe tumbar el ciclo.
+    if backtest is not None:
+        step = time.perf_counter()
+        try:
+            summary = backtest.record_cycle(
+                comparisons,
+                sources,
+                now,
+                min_margin,
+                notified_keys={k for k, v in active_state.items() if v.get("notified")},
+            )
+            logger.info(
+                "Backtest: %d episodios nuevos, %d que siguen, %d cerrados",
+                summary["abiertos"], summary["actualizados"], summary["cerrados"],
+            )
+        except Exception:
+            logger.warning("No se pudo guardar el histórico del backtest", exc_info=True)
+        phases["backtest"] = time.perf_counter() - step
 
     if discarded:
         logger.info("Descartadas %d falsas surebets por error de datos (ver engine/quality.py)", discarded)

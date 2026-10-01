@@ -71,3 +71,7 @@ class MarketComparison:
     # garantizando beneficio; None si no existe uno válido.
     rounded_stakes: dict[str, float] | None = None
     rounded_profit: float | None = None
+    # Todas las lecturas (casa, resultado, cuota) que entraron en este mercado antes de quedarse
+    # con la mejor de cada resultado. No se guarda en ningún sitio: solo la usa el histórico del
+    # backtest (engine/backtest.py) para ver qué pasó con la cuota de cada pata.
+    readings: list[Outcome] | None = field(default=None, repr=False, compare=False)

@@ -73,7 +73,10 @@ COMPARATOR_CACHE_PATH = os.getenv("COMPARATOR_CACHE_PATH", "cache/comparator_cac
 # que el cambio 12->25), sigue dejando de sobra los 25 min de presupuesto.
 SLOW_BUDGET_MINUTES = int(os.getenv("SLOW_BUDGET_MINUTES", "25"))
 SLOW_MAX_MATCHES = int(os.getenv("SLOW_MAX_MATCHES", "40"))
-COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "8"))
+# Bajado 8 -> 2 el 2026-10-01: el ciclo lento relee cada competición activa cada ~20 min, así que
+# esto solo actúa como red de seguridad si el ciclo lento se cae (antes podían cruzarse cuotas de
+# hasta 8 h con las directas recién leídas).
+COMPARATOR_MAX_AGE_HOURS = float(os.getenv("COMPARATOR_MAX_AGE_HOURS", "2"))
 
 # Máximo de proveedores CON NAVEGADOR (Chromium) leyéndose a la vez; las fuentes por httpx
 # (Altenar, Kambi, Bet777...) no cuentan y arrancan siempre todas a la vez. Vacío/0 = automático:
@@ -117,3 +120,11 @@ BETFAIR_PASSWORD = os.getenv("BETFAIR_PASSWORD", "")
 # verdad para el arbitraje. 0.05 = 5%, la tarifa por defecto habitual; ajústala
 # si tu cuenta tiene una comisión distinta (Betfair la muestra en "Mi cuenta").
 BETFAIR_EXCHANGE_COMMISSION = float(os.getenv("BETFAIR_EXCHANGE_COMMISSION", "0.05"))
+
+# Histórico de surebets para el backtest (engine/backtest.py, scripts/backtest_report.py): cada
+# surebet detectada se guarda como un episodio (cuándo apareció, con qué cuotas, cuándo y por qué
+# dejó de aparecer). Va en su propio .db en cache/ (fuera de git, propio de cada máquina) porque
+# crece con el tiempo. Vacío = desactivado.
+BACKTEST_DB_PATH = os.getenv("BACKTEST_DB_PATH", "cache/backtest.db")
+# Los episodios cerrados con más de estos días se borran. 0 = se conservan siempre.
+BACKTEST_KEEP_DAYS = int(os.getenv("BACKTEST_KEEP_DAYS", "90"))

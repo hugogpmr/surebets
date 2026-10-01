@@ -1,6 +1,7 @@
 .env
 *.db
-!data/surebets.db
+# data/surebets.db ya NO se sube (desde 2026-10-01): pesaba 55 MB y crecía ~11 MB/día, y GitHub
+# rechaza ficheros de más de 100 MB. Vive solo en la máquina que escanea (la VM).
 __pycache__/
 *.pyc
 .venv/

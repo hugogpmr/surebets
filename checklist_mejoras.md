@@ -2,6 +2,45 @@
 
 Marca `[x]` al completar. Los puntos con ⭐ son los recomendados para empezar.
 
+## Hoja de ruta (revisión general del 2026-10-01)
+
+Diagnóstico con datos reales de `data/surebets.db` (27-sep a 1-oct): el límite no es el número de
+casas sino (1) avisos con errores de lectura, (2) latencia (ciclo cada 12 min, Chromium arrancado de cero
+cada vez: las surebets reales duran minutos), (3) 7 fuentes a 0 en la VM por la IP de centro de datos y
+(4) las cuentas limitadas, que son el recurso escaso de verdad. Decisión del usuario: las surebets con
+pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden con la casa oficial).
+
+### Fase 0 — arreglos rápidos (en curso 2026-10-01)
+- [ ] `data/surebets.db` fuera de git: crecía ~11 MB/día (55 MB el 1-oct) y GitHub rechaza ficheros de
+      más de 100 MB → el push del ciclo iba a romperse hacia el 5-oct. Se queda solo en la VM.
+- [ ] Desplegar el backtest (punto 12) en la VM.
+- [ ] Tenis: Goldenpark/Olybet publican en el comparador el hándicap de SETS ±1.5 como "hándicap de
+      juegos" (y con el signo cambiado) → surebets falsas del 18-23 % del 1-oct. Descartarlo.
+- [ ] Edad máxima de las cuotas cacheadas del comparador: 8 h → 2 h (red de seguridad si el ciclo lento falla).
+- [ ] Opcional (pide confirmación, reescribe historia): limpiar el historial de git (repo de 664 MB por los .db).
+
+### Fase 1 — Betfair Exchange (el cambio de enfoque con más impacto)
+- [ ] Generar la Delayed App Key gratuita (developer.betfair.com) — lo tiene que hacer el usuario — y
+      probar `providers/betfair_exchange.py` en vivo.
+- [ ] Validar cada pata contra el precio del Exchange (pata muy por encima = error que la casa anulará).
+- [ ] Surebets back-lay: apostar en casa normal + "en contra" en el Exchange (2 patas en cualquier mercado,
+      el Exchange no limita, cada surebet gasta una sola cuenta). Leer el dinero disponible en cada precio
+      (el Exchange español solo tiene liquidez de España).
+
+### Fase 2 — motor continuo (velocidad)
+- [ ] Un servicio permanente con un trabajador por fuente, cada una a su ritmo (APIs baratas cada 30-60 s).
+- [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
+- [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
+      patas justo antes de avisar. Publicar el panel sin git en cada ciclo.
+
+### Fase 3 — nodo en casa (webs que la VM no puede leer)
+- [ ] Mini PC / Raspberry Pi en la conexión de casa con las fuentes de navegador (Sportium, Versus, bwin,
+      Winamax, William Hill), mandando sus lecturas a la VM por Tailscale. Es tu conexión, no un proxy.
+
+### Fase 4 — cuentas y ejecución
+- [ ] Botón "he apostado" en Telegram, registro de beneficio y de límites por casa (puntos 18-20).
+- [ ] Ordenar surebets por lo que "gastan" de cada cuenta, no solo por margen (evitar mercados que delatan).
+
 ## A. Fiabilidad de la VM
 - [ ] 1. Diagnosticar el bloqueo por IP de datacenter (Sportium, Versus, Betfair, bwin, William Hill, Winamax dan 0 mercados en la VM). Opciones: escaneo desde tu PC, otra VM con IP menos "datacenter". Sin proxies ni evasión.
 - [x] 3. ⭐ Alerta a Telegram de "fuente muerta" y de ciclo muerto por OOM: hecho, desplegado y probado en la VM (2026-09-30), enviando al supergrupo "admin surebets".
@@ -18,7 +57,7 @@ Marca `[x]` al completar. Los puntos con ⭐ son los recomendados para empezar.
 - [x] 11. Más deportes en Altenar/Kambi (2026-09-29): hockey, béisbol, balonmano (Altenar+Kambi) y voleibol (solo Altenar + Bet777, Kambi no lo lista). Bet777 también hockey, béisbol y voleibol. Vigilar 429 de Kambi en la VM.
 
 ## C. Calidad de las surebets
-- [ ] 12. ⭐ Backtest con histórico: guardar cada surebet detectada y comprobar si la cuota seguía viva o era error de lectura; calibrar filtros con datos reales.
+- [x] 12. ⭐ Backtest con histórico (2026-10-01): cada surebet detectada (también las descartadas por error de datos) se guarda como un episodio en `cache/backtest.db` (fuera de git), con la cuota de cada pata al empezar, al máximo/mínimo y al terminar, y el motivo del fin: `cuota_movida` (real, no es error), `relevo_de_casas`, `pata_desaparecida`, `mercado_desaparecido`, `partido_empezado`, `sin_datos`. Informe: `python scripts/backtest_report.py [--days N] [--csv f.csv]`. Sin esperar ciclos: no cambia cuándo se avisa. Pendiente de desplegar en la VM; los datos útiles llegan tras unos días de ciclos. Código en `engine/backtest.py`.
 - [ ] 13. Filtro por antigüedad de cuota (Kambi expone `changedDate` por outcome).
 - [ ] 14. Penalizar cuotas de comparador cerca del kickoff (divergen hasta ~7%).
 - [ ] 15. Puntuación de confianza por casa según su tasa histórica de cuotas que desaparecen o cambian.

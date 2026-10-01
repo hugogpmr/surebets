@@ -299,11 +299,12 @@ def test_empty_reads_are_retried_soon_with_growing_delay(cache):
 
 
 def test_retry_delay_doubles_and_never_exceeds_the_normal_interval():
-    from engine.cache import TOP_INTERVAL, retry_delay
+    from engine.cache import OTHER_INTERVAL, TOP_INTERVAL, retry_delay
 
-    assert [retry_delay(n, TOP_INTERVAL) for n in (1, 2, 3, 4, 10)] == [
-        timedelta(minutes=20), timedelta(minutes=40), timedelta(minutes=80), TOP_INTERVAL, TOP_INTERVAL
+    assert [retry_delay(n, OTHER_INTERVAL) for n in (1, 2, 3, 4, 10)] == [
+        timedelta(minutes=20), timedelta(minutes=40), timedelta(minutes=80), OTHER_INTERVAL, OTHER_INTERVAL
     ]
+    assert retry_delay(3, TOP_INTERVAL) == TOP_INTERVAL
 
 
 def test_retry_delay_does_not_overflow_with_a_very_long_empty_streak():

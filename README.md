@@ -67,6 +67,24 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 - **Desde cualquier sitio**: instala [Tailscale](https://tailscale.com) (gratis) en el PC y el móvil, con la misma cuenta,
   y abre la URL `100.x.x.x:8000` que imprime el script. Es una red privada: no queda nada expuesto a internet.
 
+## Backtest: qué pasó con cada surebet
+
+Cada ciclo guarda todas las surebets detectadas (también las descartadas por error de datos) en
+`cache/backtest.db`, fuera de git: cuándo aparecieron, con qué cuotas, y cuándo y **por qué** dejaron de
+aparecer. Distingue una cuota que se movió (surebet real, normal en un mercado rápido) de un mercado o una pata
+que desaparece o una fuente que no respondió. No cambia cuándo se avisa. Se lee con:
+
+```bash
+.venv\Scripts\python scripts\backtest_report.py --days 7 --csv episodios.csv
+```
+
+Desactivable con `BACKTEST_DB_PATH=` vacío en `.env`. Detalle en `engine/backtest.py`.
+
+**`data/surebets.db` ya no se sube a git (2026-10-01)**: pesaba 55 MB, crecía ~11 MB/día y GitHub rechaza
+ficheros de más de 100 MB, así que el push de cada ciclo iba a romperse en pocos días. Vive solo en la VM
+(la usan el bot `/hoy` `/ahora` `/stats` y el volcado del panel); el panel sigue saliendo de `docs/data.json`.
+Copia de seguridad del día del cambio en la VM: `/root/surebets.db.bak-2026-10-01`.
+
 ## Tests
 
 ```bash

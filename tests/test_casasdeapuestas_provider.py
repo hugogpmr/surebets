@@ -232,6 +232,43 @@ def test_betfair_handicap_is_dropped_in_nfl_and_basketball_but_kept_in_tennis():
     assert {o.bookmaker for o in tennis["AH_-1.5"].outcomes} == {"1xbet_es", "betfair"}
 
 
+def test_tennis_sets_handicap_labelled_as_games_is_dropped():
+    # Goldenpark/Olybet publican el hándicap de SETS ±1.5 como "de juegos" (1-oct-2026: falsas del
+    # 18-23 % en Alcaraz-Michelsen). Sus ±1.5 se descartan; los de las demás casas y sus otras
+    # líneas no.
+    html = page(
+        "Jaume Munar",
+        "Jaime Faria",
+        [
+            odd("Hándicap de juegos", "Jaume Munar -1.5", "goldenpark", "2.27"),
+            odd("Hándicap de juegos", "Jaime Faria +1.5", "goldenpark", "4.0"),
+            odd("Hándicap de juegos", "Jaime Faria +1.5", "olybet", "8.25"),
+            odd("Hándicap de juegos", "Jaume Munar -1.5", "bet365", "1.83"),
+            odd("Hándicap de juegos", "Jaime Faria +1.5", "casumo", "1.95"),
+            odd("Hándicap de juegos", "Jaume Munar -3.5", "goldenpark", "2.4"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "tenis"))
+    assert {o.bookmaker for o in markets["AH_-1.5"].outcomes} == {"bet365", "casumo"}
+    assert {o.bookmaker for o in markets["AH_-3.5"].outcomes} == {"goldenpark"}
+
+
+def test_sanitize_cached_market_drops_tennis_sets_as_games():
+    from engine.models import Market, Outcome
+    from providers.casasdeapuestas import sanitize_cached_market
+
+    bad = Market(
+        event="Carlos Alcaraz vs. Alex Michelsen",
+        sport="tenis",
+        market_type="AH_-1.5",
+        outcomes=[
+            Outcome(name="1", bookmaker="goldenpark", odds=1.45, source="casasdeapuestas"),
+            Outcome(name="2", bookmaker="olybet", odds=8.25, source="casasdeapuestas"),
+        ],
+    )
+    assert sanitize_cached_market(bad) is None
+
+
 def _ladder(home, away, bookie, pairs):
     """pairs = [(línea del local, cuota del local, cuota del visitante)] de una casa."""
     html = []

@@ -161,6 +161,14 @@ _THREE_WAY_INTEGER_BOOKIES = frozenset({"888sport", "betfair"})
 # salió mixto: 4 partidos mejor con equipos cambiados y 3 bien, con 1-2 líneas cada uno, o sea
 # indeterminado, así que se descarta por prudencia. Tenis sí sale bien orientado (16 de 17).
 _SWAPPED_SIDES = frozenset({("betfair", "americano"), ("betfair", "baloncesto")})
+# Casas que en tenis publican como "Hándicap de juegos" ±1.5 lo que en realidad es su hándicap de
+# SETS ("gana 2-0"), y además con el signo del no favorito cambiado: medido en vivo el 2026-10-01 en
+# 7 partidos ATP/WTA, Goldenpark "Faria +1.5" a 4,0 es "Faria -1.5 sets" (Casumo 4,25), y sus dos
+# patas de la misma línea suman ~0,69 (imposible en un 2 vías). Solo publica esa línea. Cruzada con
+# el hándicap de juegos real de otra casa daba "surebets" del 18-23 % (Alcaraz-Michelsen,
+# Nishikori-Tiafoe, 1-oct). Olybet es la misma plataforma (GiG/Sportnco) y salió en esas mismas
+# alertas con el mismo patrón. El ±1.5 de juegos de las demás casas sí es real y se conserva.
+_SETS_AS_GAMES_BOOKIES = frozenset({"goldenpark", "olybet"})
 # Comprobación general (`_drop_inverted_bookies`): líneas mínimas en común con las demás casas
 # para juzgar, error mínimo tal cual y cuánto mejor debe encajar con los equipos cambiados.
 _INVERSION_MIN_LINES = 8
@@ -346,6 +354,8 @@ def _ah_markets(event: str, sport: str, prefix: str, items: list[_Odd], home: st
             continue
         if (o.bookie, sport) in _SWAPPED_SIDES:
             continue
+        if sport == "tenis" and o.bookie in _SETS_AS_GAMES_BOOKIES and abs(value) == 1.5:
+            continue
         # La línea se guarda siempre en perspectiva del local (mismo convenio que
         # providers/bet777.py): el visitante con "+2.5" es la misma línea que el local
         # con "-2.5", así que se invierte el signo para que ambos lados caigan en el
@@ -419,7 +429,7 @@ def _drop_inverted_bookies(markets: list[Market]) -> list[Market]:
 
 
 def sanitize_cached_market(market: Market) -> Market | None:
-    """Aplica a un mercado YA leído (caché del ciclo lento, hasta 8 h de antigüedad) las
+    """Aplica a un mercado YA leído (caché del ciclo lento, hasta COMPARATOR_MAX_AGE_HOURS de antigüedad) las
     reglas de hándicap por mercado de `_ah_markets`, para que las lecturas malas guardadas antes
     de la corrección no sigan avisando. Devuelve el mercado limpio, o None si no queda nada."""
     match = _AH_TYPE_RE.match(market.market_type)
@@ -431,6 +441,7 @@ def sanitize_cached_market(market: Market) -> Market | None:
         for o in market.outcomes
         if not (line == int(line) and o.bookmaker in _THREE_WAY_INTEGER_BOOKIES)
         and (o.bookmaker, market.sport) not in _SWAPPED_SIDES
+        and not (market.sport == "tenis" and o.bookmaker in _SETS_AS_GAMES_BOOKIES and abs(line) == 1.5)
     ]
     outcomes = _drop_self_arbitrage(outcomes)
     if len(outcomes) == len(market.outcomes):

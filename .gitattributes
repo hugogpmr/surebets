@@ -7,4 +7,3 @@
 data/active_opportunities.json merge=ours
 data/notify_topic.json merge=ours
 docs/data.json merge=ours
-data/surebets.db merge=ours -diff

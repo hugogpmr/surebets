@@ -34,12 +34,14 @@ VERSION = 1
 # Cada cuánto conviene releer una competición (horas), por prioridad. La
 # prioridad es la posición de la clave en la lista de competiciones (LaLiga
 # primero): las TOP_LEAGUES primeras son las que más cruzan con las APIs
-# directas. Un dato pasa a no usarse a las COMPARATOR_MAX_AGE_HOURS (8), así que
-# ningún intervalo debería superarlo.
+# directas. Un dato pasa a no usarse a las COMPARATOR_MAX_AGE_HOURS (2 desde el 2026-10-01,
+# antes 8), así que ningún intervalo debería superarlo. En la práctica solo deciden el ORDEN: el
+# ciclo lento de la VM relee todas las competiciones en cada vuelta (medido el 2026-10-01: las
+# activas tenían todas menos de 20 min), así que solo pesan si algún día el presupuesto no llega.
 TOP_LEAGUES = 6
-TOP_INTERVAL = timedelta(hours=2)
-FOOTBALL_INTERVAL = timedelta(hours=5)
-OTHER_INTERVAL = timedelta(hours=8)
+TOP_INTERVAL = timedelta(hours=1)
+FOOTBALL_INTERVAL = timedelta(hours=1, minutes=30)
+OTHER_INTERVAL = timedelta(hours=2)
 # Tras una lectura vacía: primer reintento a los 20 min, luego 40, 80... sin
 # pasar del intervalo normal de esa competición.
 RETRY_BASE = timedelta(minutes=20)
@@ -274,7 +276,7 @@ class CachedProvider(OddsProvider):
         if self.name == "casasdeapuestas":
             # Lecturas guardadas antes de corregir el hándicap de 3 vías de 888sport/Betfair
             # y de los equipos invertidos (ver providers/casasdeapuestas.py): se limpian al servirlas en vez de esperar
-            # a que el ciclo lento las relea (hasta 8 h).
+            # a que el ciclo lento las relea (hasta COMPARATOR_MAX_AGE_HOURS).
             from providers.casasdeapuestas import sanitize_cached_markets
 
             markets = sanitize_cached_markets(markets)

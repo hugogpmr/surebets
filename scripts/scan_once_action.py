@@ -42,6 +42,7 @@ from telegram import Bot
 import config
 from bot.telegram_bot import notify_admin, notify_opportunity
 from engine.alerts import SourceAlerts
+from engine.backtest import SurebetLog
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.health import SourceHealth
 from engine.peers import PeerEvents
@@ -258,6 +259,19 @@ def run_slow() -> None:
     logger.info("Ciclo lento terminado: %d competiciones actualizadas", len(done))
 
 
+def open_backtest() -> SurebetLog | None:
+    """Histórico del backtest, o None si está desactivado o no se puede abrir (nunca debe impedir
+    el escaneo)."""
+    if not config.BACKTEST_DB_PATH:
+        return None
+    try:
+        pathlib.Path(config.BACKTEST_DB_PATH).parent.mkdir(parents=True, exist_ok=True)
+        return SurebetLog(config.BACKTEST_DB_PATH, config.BACKTEST_KEEP_DAYS)
+    except Exception:
+        logger.warning("No se pudo abrir el histórico del backtest: el ciclo sigue sin él", exc_info=True)
+        return None
+
+
 async def run_scan(mode: str) -> None:
     pathlib.Path(config.DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     init_db(config.DB_PATH)
@@ -297,6 +311,7 @@ async def run_scan(mode: str) -> None:
         peers=PeerEvents(config.PEER_EVENTS_PATH),
         source_alerts=SourceAlerts(config.SOURCE_ALERTS_PATH, config.SOURCE_ALERT_AFTER, config.SOURCE_ALERT_IGNORE),
         notify_admin=lambda text: notify_admin(bot, text),
+        backtest=open_backtest(),
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en
