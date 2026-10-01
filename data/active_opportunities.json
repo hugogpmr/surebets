@@ -1,86 +1,91 @@
 {
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 43,
+    "cycles": 44,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 40,
+    "cycles": 41,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.026048847079177095,
-    "cycles": 21,
+    "cycles": 22,
     "notified": true
   },
   "Daniil Medvedev vs. Pablo Carreno Busta||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.01904761904761898,
-    "cycles": 10,
-    "notified": true
-  },
-  "Skelleftea vs. Malmo||hockey||ML||casino_barcelona,interwetten": {
-    "margin": 0.015562161216996051,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Ryota Tanuma vs. Yuga Tashiro||tenis||ML||betinia,paf": {
     "margin": 0.018952062430323213,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "India vs. Brasil||futbol||AH_3.5||1xbet_es,bet365": {
     "margin": 0.012731203459043883,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Kenta Kawada vs. Abdumalik, Kamalov||tenis||ML||betinia,paf": {
     "margin": 0.014146772767462457,
-    "cycles": 4,
-    "notified": true
-  },
-  "Leones de Quilpué vs. Español de Osorno||baloncesto||ML||888sport,paston": {
-    "margin": 0.011695906432748426,
-    "cycles": 3,
-    "notified": true
-  },
-  "Azerbaiyán vs. Liechtenstein||futbol||BTTS||888sport,ijuego": {
-    "margin": 0.027586206896551668,
-    "cycles": 2,
+    "cycles": 5,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Hapoel Tel Aviv vs. Real Madrid||baloncesto||ML||jokerbet,speedybet": {
-    "margin": 0.020146520146520186,
-    "cycles": 1,
+    "margin": 0.04112554112554112,
+    "cycles": 2,
     "notified": true
   },
   "FC Bayern Munchen vs. Partizan||baloncesto||OU_167.5||888sport,betway": {
     "margin": 0.012195121951219523,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Núremberg vs. FC Ingolstadt 04||futbol||1X2||1xbet_es,luckia": {
     "margin": 0.05212472585933603,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Núremberg vs. FC Ingolstadt 04||futbol||OU_3.5||jokerbet,retabet": {
     "margin": 0.0129749768303985,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_3.5||cgmapuestas,paston": {
     "margin": 0.022506198741178762,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,paf": {
     "margin": 0.0129749768303985,
+    "cycles": 2,
+    "notified": true
+  },
+  "Azerbaiyán vs. Liechtenstein||futbol||BTTS||pokerstars,yaasscasino": {
+    "margin": 0.05250305250305254,
+    "cycles": 1,
+    "notified": true
+  },
+  "Guinea vs. Kenia||futbol||AH_-1||1xbet_es,jokerbet": {
+    "margin": 0.014563106796116498,
+    "cycles": 1,
+    "notified": true
+  },
+  "Skelleftea vs. Malmo||hockey||ML||betway,casino_barcelona": {
+    "margin": 0.015562161216996051,
+    "cycles": 1,
+    "notified": true
+  },
+  "Plunges Olimpas vs. BC Silute||baloncesto||ML||betway,daznbet": {
+    "margin": 0.024390243902438935,
     "cycles": 1,
     "notified": true
   }
