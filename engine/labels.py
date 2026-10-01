@@ -184,6 +184,51 @@ def market_title(market_type: str, event: str, sport: str) -> str:
     return title
 
 
+_SINGULAR = {
+    "goles": "gol",
+    "puntos": "punto",
+    "juegos": "juego",
+    "carreras": "carrera",
+    "córners": "córner",
+    "tarjetas": "tarjeta",
+    "tiros a puerta": "tiro a puerta",
+    "tiros": "tiro",
+    "fueras de juego": "fuera de juego",
+    "faltas": "falta",
+}
+
+
+def push_note(market_type: str, event: str, sport: str) -> str | None:
+    """Aviso de devolución para el hándicap asiático con línea entera o de cuarto.
+
+    "A +1" en una casa y "B -1" en otra es una surebet real (si empatan o gana A, cobra
+    A+1; si B gana por 2 o más, cobra B-1), pero si B gana EXACTAMENTE por 1 las dos
+    apuestas son nulas y se devuelven: ese resultado no da el margen, da 0. Con línea de
+    cuarto ("-0.5/-1") en ese resultado se devuelve media apuesta y se gana la mitad.
+    Sin pérdida en ningún caso, pero el aviso tiene que decirlo. None si no aplica."""
+    p = _parse(market_type)
+    if p["base"] != "AH" or not p["line"]:
+        return None
+    values = [float(part) for part in p["line"].split("/")]
+    whole = [v for v in values if v == int(v)]
+    if not whole or (len(values) == 1 and whole[0] == 0):  # AH 0 = empate no apuesta
+        return None
+    line = whole[0]
+    home, away = split_teams(event)
+    noun = _METRIC_NOUNS.get(p["metric"]) or _SPORT_UNIT.get(sport, "")
+    n = abs(int(line))
+    unit = _SINGULAR.get(noun, noun) if n == 1 else noun
+    if line == 0:
+        when = "Si empatan"
+    else:
+        when = f"Si {home if line < 0 else away} acaba exactamente {n} {unit} por delante".rstrip()
+    if p["period"]:
+        when += f" ({_PERIODS[p['period']]})"
+    if len(values) == 1:
+        return f"↩️ {when}, se devuelven las dos apuestas: ni ganas ni pierdes. Con cualquier otro resultado, ganas el margen."
+    return f"↩️ {when}, se devuelve media apuesta de cada lado y ganas la mitad del margen. Con cualquier otro resultado, el margen entero."
+
+
 def outcome_label(market_type: str, outcome: str, event: str, sport: str) -> str:
     """Qué se apuesta en un resultado, en castellano, p.ej. "Más de 9.5"."""
     p = _parse(market_type)

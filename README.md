@@ -67,7 +67,10 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 - **Desde cualquier sitio**: instala [Tailscale](https://tailscale.com) (gratis) en el PC y el móvil, con la misma cuenta,
   y abre la URL `100.x.x.x:8000` que imprime el script. Es una red privada: no queda nada expuesto a internet.
 
-## Modo continuo (desde 2026-10-01)
+## Modo continuo (preparado 2026-10-01, EN PAUSA)
+
+**En pausa**: en la VM de 4 GB agota la memoria (ver `checklist_mejoras.md`, Fase 2). La VM sigue con el
+ciclo rápido de 12 min; lo de abajo describe cómo funciona cuando se reactive.
 
 En la VM el escaneo ya no es un ciclo cada 12 min, sino un proceso siempre encendido
 (`scripts/run_live.py`, servicio `surebets-live`, código en `engine/live.py`):

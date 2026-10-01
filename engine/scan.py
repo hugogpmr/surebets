@@ -18,7 +18,7 @@ from .arbitrage import compare_market
 from .alerts import SourceAlerts
 from .backtest import SurebetLog
 from .health import SourceHealth
-from .labels import kickoff_line, market_title, outcome_label, sport_name
+from .labels import kickoff_line, market_title, outcome_label, push_note, sport_name
 from .matching import best_odds_per_outcome, event_key, group_by_event
 from .peers import PeerEvents
 from .quality import (
@@ -91,6 +91,9 @@ def format_alert(comparison) -> str:
     for o in market.outcomes:
         label = outcome_label(market.market_type, o.name, market.event, market.sport)
         lines.append(f"🏠 {o.bookmaker}: {label} @{o.odds:.2f}")
+    note = push_note(market.market_type, market.event, market.sport)
+    if note:
+        lines.append(note)
     sources = _source_by_leg(comparison)
     if sources:
         lines.append(f"🔗 Fuentes: {sources}")
