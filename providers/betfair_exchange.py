@@ -50,10 +50,12 @@ from providers.filters import exclude_esports_default, exclude_womens_default, i
 
 logger = logging.getLogger(__name__)
 
-# Las cuentas españolas (betfair.es) usan sus propios servidores: con los de .com el login da
-# INVALID_USERNAME_OR_PASSWORD aunque los datos sean buenos. Comprobado en vivo el 2026-10-01.
+# Las cuentas españolas (betfair.es) inician sesión en su propio servidor: con el de .com el login
+# da INVALID_USERNAME_OR_PASSWORD aunque los datos sean buenos (comprobado en vivo el 2026-10-01).
+# Las consultas, en cambio, van SIEMPRE al servidor .com: según la documentación oficial ("Betting
+# on Spanish Exchange"), con un token de .es devuelve solo los mercados del Exchange español.
 IDENTITY_LOGIN_URL = f"https://identitysso.betfair.{config.BETFAIR_DOMAIN}/api/login"
-BETTING_API_URL = f"https://api.betfair.{config.BETFAIR_DOMAIN}/exchange/betting/json-rpc/v1"
+BETTING_API_URL = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 SOCCER_EVENT_TYPE_ID = "1"
 MATCH_ODDS = "MATCH_ODDS"
 DRAW_RUNNER_NAME = "The Draw"
