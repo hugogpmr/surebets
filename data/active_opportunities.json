@@ -1,56 +1,81 @@
 {
-  "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
-    "margin": 0.016955266955267057,
-    "cycles": 37,
-    "notified": true
-  },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 35,
+    "cycles": 36,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 32,
+    "cycles": 33,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 30,
+    "cycles": 31,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.026048847079177095,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Puente Alto vs. Valdivia||baloncesto||ML||betway,williamhill": {
     "margin": 0.014705882352941235,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Daniil Medvedev vs. Pablo Carreno Busta||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.01904761904761898,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Skelleftea vs. Malmo||hockey||ML||casino_barcelona,interwetten": {
     "margin": 0.015562161216996051,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Ryota Tanuma vs. Yuga Tashiro||tenis||ML||betinia,paf": {
     "margin": 0.018952062430323213,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Maldivas vs. Líbano||futbol||BTTS||888sport,betfair": {
     "margin": 0.020242914979757165,
+    "cycles": 2,
+    "notified": true
+  },
+  "Israel vs. Kosovo||futbol||CARDS_OU_4.5||paston,pokerstars": {
+    "margin": 0.01098901098901095,
     "cycles": 1,
     "notified": true
   },
-  "August Holmgren vs. Andrea Guerrieri||tenis||ML||888sport,paf": {
-    "margin": 0.019079685746352437,
+  "Wolfsburg vs. Havelse||futbol||BTTS||888sport,betfair": {
+    "margin": 0.06521739130434778,
+    "cycles": 1,
+    "notified": true
+  },
+  "SC Jena vs. Rasta Vechta||baloncesto||ML||marcaapuestas,paston": {
+    "margin": 0.019407558733401387,
+    "cycles": 1,
+    "notified": true
+  },
+  "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
+    "margin": 0.012195121951219523,
+    "cycles": 1,
+    "notified": true
+  },
+  "Helmond vs. Heracles||futbol||AH_1||cgmapuestas,paf": {
+    "margin": 0.020231870879745317,
+    "cycles": 1,
+    "notified": true
+  },
+  "Helmond vs. Heracles||futbol||AH_1.5||cgmapuestas,paf": {
+    "margin": 0.01098901098901095,
+    "cycles": 1,
+    "notified": true
+  },
+  "Helmond vs. Heracles||futbol||AH_1.75||cgmapuestas,paf": {
+    "margin": 0.015151515151515138,
     "cycles": 1,
     "notified": true
   }
