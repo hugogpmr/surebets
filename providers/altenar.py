@@ -10,6 +10,7 @@ import httpx
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+from providers.detail_cache import DetailCache, collect, plan
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -689,6 +690,8 @@ class AltenarProvider(OddsProvider):
         self.integrations = integrations or INTEGRATIONS
         self.horizon_hours = horizon_hours or int(os.environ.get("ALTENAR_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
         self.max_workers = max_workers
+        # Fichas ya leídas (modo continuo): las de partidos lejanos no se releen en cada vuelta.
+        self.details = DetailCache()
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         requested = {key.split("_", 1)[0] for key in sports} & set(SPORT_IDS)
@@ -793,7 +796,8 @@ class AltenarProvider(OddsProvider):
             for event_id in listings[integration]
             if seen_by[event_id] >= 2
         ]
-        logger.info("Altenar: %d eventos comparables, %d peticiones de detalle", len({j[1] for j in jobs}), len(jobs))
+        now = datetime.now(timezone.utc)
+        to_read, cached = plan(jobs, lambda job: starts[job[1]], self.details, now)
 
         def fetch(job):
             integration, event_id = job
@@ -803,7 +807,7 @@ class AltenarProvider(OddsProvider):
                 )
             except Exception:
                 logger.warning("Altenar: fallo en detalle %s/%s", integration, event_id, exc_info=True)
-                return []
+                return None
             parsed = parse_event_markets(
                 details, canonical[event_id], sport, self.integrations[integration], competitors[event_id]
             )
@@ -811,10 +815,13 @@ class AltenarProvider(OddsProvider):
                 market.start_time = starts[event_id]
             return parsed
 
-        markets: list[Market] = []
         with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-            for result in pool.map(fetch, jobs):
-                markets.extend(result)
+            results = list(pool.map(fetch, to_read))
+        markets, summary = collect(jobs, to_read, results, cached, self.details, now)
+        logger.info(
+            "Altenar %s: %d eventos comparables, %d fichas leídas, %d de caché, %d fallos (%d con respaldo)",
+            sport, len({j[1] for j in jobs}), summary["leidas"], summary["de_cache"], summary["fallos"], summary["respaldo"],
+        )
         return markets
 
     @staticmethod

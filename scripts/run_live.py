@@ -87,7 +87,7 @@ async def main() -> None:
     # Un hilo por lectura y otro por segunda pasada de cada carril, más el análisis: más hilos solo
     # reparten la memoria en más zonas de glibc (ver engine.live.release_memory).
     executor = ThreadPoolExecutor(max_workers=2 * len(lanes) + 4, thread_name_prefix="carril")
-    sem = asyncio.Semaphore(config.MAX_CONCURRENT_FETCHES) if config.MAX_CONCURRENT_FETCHES else None
+    sem = asyncio.Semaphore(config.LIVE_MAX_BROWSERS) if config.LIVE_MAX_BROWSERS > 0 else None
     updated = asyncio.Event()
     last_export = 0.0
 
