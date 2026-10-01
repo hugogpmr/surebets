@@ -1,76 +1,86 @@
 {
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.016955266955267057,
-    "cycles": 22,
+    "cycles": 23,
     "notified": true
   },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 20,
+    "cycles": 21,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "China vs. Palestina||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.011323511506148742,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
-    "margin": 0.011369274486366931,
-    "cycles": 14,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||CORNERS_OU_8.5||betfair,paf": {
-    "margin": 0.01098901098901095,
-    "cycles": 8,
+    "margin": 0.020204311719738133,
+    "cycles": 15,
     "notified": true
   },
   "Dinamarca vs. Portugal||futbol||CORNERS_OU_8.5||cgmapuestas,interwetten": {
     "margin": 0.011904761904761862,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
-    "margin": 0.024390243902438935,
-    "cycles": 4,
+    "margin": 0.012195121951219523,
+    "cycles": 5,
     "notified": true
   },
   "Israel vs. Kosovo||futbol||CARDS_OU_4.5||paston,pokerstars": {
     "margin": 0.01098901098901095,
-    "cycles": 2,
-    "notified": true
-  },
-  "FC Bayern Munchen vs. Partizan||baloncesto||ML||888sport,luckia": {
-    "margin": 0.0117647058823529,
-    "cycles": 2,
-    "notified": true
-  },
-  "Azerbaiyán vs. Liechtenstein||futbol||BTTS||interwetten,pokerstars": {
-    "margin": 0.03978696741854637,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Crvena Zvezda vs. Anadolu Efes||baloncesto||ML||1xbet_es,interwetten": {
     "margin": 0.015348288075560879,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Dunajska Streda vs. Puskás||futbol||OU_3.5||betfair,olybet": {
     "margin": 0.016132697114292216,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Madla vs. Viking FK||futbol||OU_AWAY_3.5||bet777,paf": {
-    "margin": 0.02418126428027423,
+    "margin": 0.04651900167595224,
+    "cycles": 2,
+    "notified": true
+  },
+  "Azerbaiyán vs. Liechtenstein||futbol||BTTS||pokerstars,retabet": {
+    "margin": 0.01041666666666663,
+    "cycles": 1,
+    "notified": true
+  },
+  "Madla vs. Viking||futbol||OU_3.5||jokerbet,paf": {
+    "margin": 0.012605042016806678,
+    "cycles": 1,
+    "notified": true
+  },
+  "Madla vs. Viking||futbol||OU_4.5||paf,paston": {
+    "margin": 0.01520467836257311,
+    "cycles": 1,
+    "notified": true
+  },
+  "Madla vs. Viking FK||futbol||OU_AWAY_2.5||jokerbet,paf": {
+    "margin": 0.024024024024024038,
+    "cycles": 1,
+    "notified": true
+  },
+  "Madla vs. Viking FK||futbol||1X2_HT||bet777,paf": {
+    "margin": 0.02088287299554903,
     "cycles": 1,
     "notified": true
   }
