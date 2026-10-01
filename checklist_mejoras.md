@@ -10,14 +10,15 @@ cada vez: las surebets reales duran minutos), (3) 7 fuentes a 0 en la VM por la 
 (4) las cuentas limitadas, que son el recurso escaso de verdad. Decisión del usuario: las surebets con
 pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden con la casa oficial).
 
-### Fase 0 — arreglos rápidos (en curso 2026-10-01)
-- [ ] `data/surebets.db` fuera de git: crecía ~11 MB/día (55 MB el 1-oct) y GitHub rechaza ficheros de
-      más de 100 MB → el push del ciclo iba a romperse hacia el 5-oct. Se queda solo en la VM.
-- [ ] Desplegar el backtest (punto 12) en la VM.
-- [ ] Tenis: Goldenpark/Olybet publican en el comparador el hándicap de SETS ±1.5 como "hándicap de
+### Fase 0 — arreglos rápidos (hecho y desplegado en la VM el 2026-10-01)
+- [x] `data/surebets.db` fuera de git: crecía ~11 MB/día (55 MB el 1-oct) y GitHub rechaza ficheros de
+      más de 100 MB → el push del ciclo iba a romperse hacia el 5-oct. Se queda solo en la VM (copia:
+      `/root/surebets.db.bak-2026-10-01`). El push del ciclo bajó a ~3 s.
+- [x] Desplegar el backtest (punto 12) en la VM: ya graba en `cache/backtest.db` (primer ciclo: 453 episodios).
+- [x] Tenis: Goldenpark/Olybet publican en el comparador el hándicap de SETS ±1.5 como "hándicap de
       juegos" (y con el signo cambiado) → surebets falsas del 18-23 % del 1-oct. Descartarlo.
-- [ ] Edad máxima de las cuotas cacheadas del comparador: 8 h → 2 h (red de seguridad si el ciclo lento falla).
-- [ ] Opcional (pide confirmación, reescribe historia): limpiar el historial de git (repo de 664 MB por los .db).
+- [x] Edad máxima de las cuotas cacheadas del comparador: 8 h → 2 h (red de seguridad si el ciclo lento falla).
+- [ ] Opcional (pendiente de que el usuario confirme, reescribe historia): limpiar el historial de git (repo de 664 MB por los .db).
 
 ### Fase 1 — Betfair Exchange (el cambio de enfoque con más impacto)
 - [ ] Generar la Delayed App Key gratuita (developer.betfair.com) — lo tiene que hacer el usuario — y
