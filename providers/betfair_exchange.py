@@ -9,14 +9,10 @@ el foco de este proyecto. Es un canal 100% oficial y soportado, cero riesgo de
 bloqueo, a diferencia del scraper DOM actual (sensible a cambios de HTML y a
 geo-IP en runners cloud, ver memoria del proyecto).
 
-**IMPORTANTE - sin verificar en vivo**: a diferencia de todos los demás
-providers de este repo (que solo se dan por buenos tras probarlos contra la
-web/API real), este se ha escrito siguiendo la documentación oficial de
-Betfair API-NG pero **no se ha podido ejecutar contra la API real** porque
-hace falta una cuenta de Betfair + una app key que solo el usuario puede
-generar (developer.betfair.com) - no es algo que se pueda crear en su nombre.
-Antes de fiarte de sus resultados, corre `fetch_markets(["futbol"])` una vez
-con tus credenciales en `.env` y revisa los mercados que devuelve.
+**Verificado en vivo el 2026-10-01** con la cuenta española del usuario y su Delayed App Key
+(creada con `createDeveloperAppKeys`; tardó unos minutos en aceptarse, antes daba
+INVALID_APP_KEY): 16 partidos de LaLiga. Cuenta española = login en `identitysso.betfair.es`
+y consultas en `api.betfair.com` (ver `IDENTITY_LOGIN_URL`/`BETTING_API_URL`).
 
 Autenticación: login "interactivo" (usuario+contraseña+app key), NO el login
 "no interactivo" por certificado (`identitysso-cert`) que Betfair recomienda
@@ -40,6 +36,7 @@ compararlo sin descontar la comisión infla el margen calculado.
 """
 
 import logging
+from datetime import datetime
 
 import httpx
 
@@ -254,7 +251,16 @@ def _parse_match_odds(catalogue_entry: dict, book: dict, commission: float) -> M
         Outcome(name="X", bookmaker=BOOKMAKER, odds=draw_odds),
         Outcome(name="2", bookmaker=BOOKMAKER, odds=away_odds),
     ]
-    return Market(event=f"{home_name} vs. {away_name}", sport="futbol", market_type="1X2", outcomes=outcomes)
+    start_time = None
+    raw_start = catalogue_entry.get("marketStartTime")
+    if raw_start:
+        try:
+            start_time = datetime.fromisoformat(raw_start.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+    return Market(
+        event=f"{home_name} vs. {away_name}", sport="futbol", market_type="1X2", outcomes=outcomes, start_time=start_time
+    )
 
 
 def _best_back(runner_book: dict | None, commission: float) -> float | None:

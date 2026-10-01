@@ -100,7 +100,7 @@ SOURCE_HEALTH_PATH = os.getenv("SOURCE_HEALTH_PATH", "cache/source_health.json")
 # (0 = desactivado); ALERT_IGNORE = fuentes que nunca avisan (p.ej. sin credenciales).
 ADMIN_ALERT_CHAT_ID = os.getenv("ADMIN_ALERT_CHAT_ID", "")
 SOURCE_ALERT_AFTER = int(os.getenv("SOURCE_ALERT_AFTER", "3"))
-SOURCE_ALERT_IGNORE = frozenset(n.strip() for n in os.getenv("SOURCE_ALERT_IGNORE", "betfair_exchange").split(",") if n.strip())
+SOURCE_ALERT_IGNORE = frozenset(n.strip() for n in os.getenv("SOURCE_ALERT_IGNORE", "").split(",") if n.strip())
 SOURCE_ALERTS_PATH = os.getenv("SOURCE_ALERTS_PATH", "cache/source_alerts.json")
 # Partidos que listaban las demás casas en el ciclo anterior, para adelantar la segunda pasada de
 # PokerStars (engine/peers.py). Fuera de git, propio de cada máquina.

@@ -90,3 +90,22 @@ def test_fetch_markets_noop_without_credentials():
 def test_fetch_markets_noop_for_non_football_sports():
     provider = BetfairExchangeProvider(app_key="k", username="u", password="p")
     assert provider.fetch_markets(["tenis"]) == []
+
+
+def test_start_time_comes_from_market_start_time():
+    from datetime import datetime, timezone
+
+    from providers.betfair_exchange import _parse_match_odds
+
+    entry = {
+        "event": {"name": "Malaga v Espanyol"},
+        "marketStartTime": "2026-10-04T14:00:00.000Z",
+        "runners": [
+            {"selectionId": 1, "runnerName": "Malaga"},
+            {"selectionId": 2, "runnerName": "Espanyol"},
+            {"selectionId": 3, "runnerName": "The Draw"},
+        ],
+    }
+    book = {"runners": [{"selectionId": i, "status": "ACTIVE", "ex": {"availableToBack": [{"price": 3.0}]}} for i in (1, 2, 3)]}
+    market = _parse_match_odds(entry, book, 0.05)
+    assert market.start_time == datetime(2026, 10, 4, 14, 0, tzinfo=timezone.utc)

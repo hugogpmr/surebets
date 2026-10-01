@@ -30,8 +30,9 @@ pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden co
       al panel (`docs/app.js`).
 
 ### Fase 1 — Betfair Exchange (el cambio de enfoque con más impacto)
-- [ ] Generar la Delayed App Key gratuita (developer.betfair.com) — lo tiene que hacer el usuario — y
-      probar `providers/betfair_exchange.py` en vivo.
+- [x] Delayed App Key generada (2026-10-01, app `surebets-bot-da544d`, en el `.env` de la VM) y
+      `providers/betfair_exchange.py` probado en vivo: 16 partidos de LaLiga (1X2). Login en .es,
+      consultas en .com. Hoy solo lee 1X2 de LaLiga: ampliar a más ligas/mercados y precio "en contra".
 - [ ] Validar cada pata contra el precio del Exchange (pata muy por encima = error que la casa anulará).
 - [ ] Surebets back-lay: apostar en casa normal + "en contra" en el Exchange (2 patas en cualquier mercado,
       el Exchange no limita, cada surebet gasta una sola cuenta). Leer el dinero disponible en cada precio
