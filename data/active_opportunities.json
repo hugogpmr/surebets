@@ -1,66 +1,81 @@
 {
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 38,
+    "cycles": 39,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 35,
+    "cycles": 36,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 33,
+    "cycles": 34,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.026048847079177095,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Puente Alto vs. Valdivia||baloncesto||ML||betway,williamhill": {
     "margin": 0.014705882352941235,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true
   },
   "Daniil Medvedev vs. Pablo Carreno Busta||tenis||ML_SET1||888sport,bet365": {
     "margin": 0.01904761904761898,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Skelleftea vs. Malmo||hockey||ML||casino_barcelona,interwetten": {
     "margin": 0.015562161216996051,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Ryota Tanuma vs. Yuga Tashiro||tenis||ML||betinia,paf": {
     "margin": 0.018952062430323213,
-    "cycles": 5,
-    "notified": true
-  },
-  "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
-    "margin": 0.012195121951219523,
-    "cycles": 3,
+    "cycles": 6,
     "notified": true
   },
   "India vs. Brasil||futbol||AH_3.5||1xbet_es,bet365": {
     "margin": 0.030458033015577812,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.0129749768303985,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_11.5||betfair,leovegas": {
     "margin": 0.015873015873015928,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
-  "Robert Strombachs vs. Michal Krajci||tenis||ML||betway,paf": {
-    "margin": 0.010752688172043001,
+  "Sporting Cristal vs. Asociacion Deportiva Tarma||futbol||1X2||1xbet_es,betway,interwetten": {
+    "margin": 0.017771032186050695,
+    "cycles": 1,
+    "notified": true
+  },
+  "Hapoel Tel Aviv vs. Real Madrid||baloncesto||ML||casumo,jokerbet": {
+    "margin": 0.012605042016806678,
+    "cycles": 1,
+    "notified": true
+  },
+  "Baskonia vs. Olimpia Milano||baloncesto||ML||bwin,paf": {
+    "margin": 0.01098901098901095,
+    "cycles": 1,
+    "notified": true
+  },
+  "Gales vs. Noruega||futbol||AH_1||cgmapuestas,goldenbull": {
+    "margin": 0.015259895088221231,
+    "cycles": 1,
+    "notified": true
+  },
+  "Núremberg vs. FC Ingolstadt 04||futbol||OU_3||jokerbet,winamax": {
+    "margin": 0.018759018759018753,
     "cycles": 1,
     "notified": true
   }
