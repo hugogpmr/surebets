@@ -1,101 +1,101 @@
 {
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 58,
+    "cycles": 59,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 55,
+    "cycles": 56,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 17,
+    "cycles": 18,
     "notified": true
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 12,
+    "cycles": 13,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.014985014985014922,
-    "cycles": 9,
-    "notified": true
-  },
-  "Platense vs. Estudiantes de La Plata||futbol||CORNERS_OU_HOME_4.5||bet777,paf": {
-    "margin": 0.012345679012345734,
-    "cycles": 7,
+    "cycles": 10,
     "notified": true
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Nava vs. Balonmano Triana||balonmano||1X2||1xbet_es,leovegas,winamax": {
     "margin": 0.01568791530164826,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.012195121951219523,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "THW Kiel vs. Gummersbach||balonmano||1X2||goldenbull,interwetten": {
     "margin": 0.0111925111925113,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 2,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||1X2||daznbet,jokerbet,luckia": {
-    "margin": 0.012852546339541249,
-    "cycles": 1,
-    "notified": true
-  },
-  "CA Platense vs. Estudiantes||futbol||1X2||888sport,cgmapuestas,paf": {
-    "margin": 0.011233019853709503,
-    "cycles": 1,
-    "notified": true
-  },
-  "Las Vegas Aces vs. Indiana Fever||baloncesto||OU_HT_92.5||betfair,yosports": {
-    "margin": 0.014563106796116498,
-    "cycles": 1,
-    "notified": true
-  },
-  "Mineros vs. Abejas de Leon||baloncesto||ML||888sport,betway": {
-    "margin": 0.012585569589154244,
-    "cycles": 1,
-    "notified": true
-  },
-  "Yshai Oliel vs. Florent Bax||tenis||ML||888sport,paf": {
-    "margin": 0.016227180527383256,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||AH_-2||interwetten,paf": {
     "margin": 0.014563106796116498,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Copiapó vs. Puerto Montt||futbol||1X2||1xbet_es,cgmapuestas,winamax": {
     "margin": 0.016028633675692516,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Recoleta vs. Santiago Wanderers||futbol||1X2||1xbet_es,cgmapuestas,interwetten": {
     "margin": 0.021475993712402053,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Recoleta vs. Santiago Wanderers||futbol||DNB||paston,retabet": {
     "margin": 0.020295548073325786,
+    "cycles": 2,
+    "notified": true
+  },
+  "Dinamarca vs. Portugal||futbol||1X2||codere,interwetten,jokerbet": {
+    "margin": 0.01094198911913935,
+    "cycles": 1,
+    "notified": true
+  },
+  "Israel vs. Kosovo||futbol||CARDS_OU_5.5||betinia,pokerstars": {
+    "margin": 0.06485671191553544,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sporting Cristal vs. Tarma||futbol||OU_2.5||888sport,interwetten": {
+    "margin": 0.021620077146530914,
+    "cycles": 1,
+    "notified": true
+  },
+  "Trento vs. Treviso||baloncesto||ML||betfair,winamax": {
+    "margin": 0.022063208109719623,
+    "cycles": 1,
+    "notified": true
+  },
+  "Trento vs. Treviso||baloncesto||AH_1.5||1xbet_es,interwetten": {
+    "margin": 0.02119552274351033,
+    "cycles": 1,
+    "notified": true
+  },
+  "Sporting Cristal vs. Tarma||futbol||AH_-1/-1.5||bet777,jokerbet": {
+    "margin": 0.011952959321380408,
     "cycles": 1,
     "notified": true
   }
