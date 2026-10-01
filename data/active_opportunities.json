@@ -1,164 +1,152 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 163,
+    "cycles": 172,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 120,
+    "cycles": 129,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 113,
+    "cycles": 122,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 110,
+    "cycles": 119,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.04279279279279291,
-    "cycles": 107,
+    "cycles": 116,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islandia vs. Bulgaria||futbol||ML||1xbet_es,interwetten": {
     "margin": 0.17724251057584384,
-    "cycles": 105,
+    "cycles": 114,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Martinica vs. Honduras||futbol||ML||1xbet_es,888sport": {
     "margin": 0.22679454295379364,
-    "cycles": 98,
+    "cycles": 107,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.012195121951219523,
-    "cycles": 60,
+    "cycles": 69,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.014985014985014922,
-    "cycles": 60,
+    "cycles": 69,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.031425891181988685,
-    "cycles": 41,
+    "cycles": 50,
     "notified": true,
     "since": "2026-10-01T22:02:13.131531+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 40,
+    "cycles": 49,
     "notified": true,
     "since": "2026-10-01T22:17:05.420880+00:00"
   },
   "República Dominicana vs. Haití||futbol||AH_0.5||888sport,bet365": {
     "margin": 0.019663654261249053,
-    "cycles": 39,
+    "cycles": 48,
     "notified": true,
     "since": "2026-10-01T22:26:56.988317+00:00"
   },
   "Puente Alto vs. CD Valdivia||baloncesto||DNB_HT||betinia,paf": {
-    "margin": 0.024630541871921152,
-    "cycles": 39,
+    "margin": 0.04761904761904767,
+    "cycles": 48,
     "notified": true,
     "since": "2026-10-01T22:26:56.988317+00:00"
   },
-  "Finn Harps vs. Kerry||futbol||BTTS||888sport,betfair": {
-    "margin": 0.021620077146530914,
-    "cycles": 14,
-    "notified": true,
-    "since": "2026-10-01T23:01:03.246289+00:00"
-  },
   "Panteras vs. Dorados||baloncesto||ML||betway,paf": {
     "margin": 0.015873015873015928,
-    "cycles": 13,
+    "cycles": 22,
     "notified": true,
     "since": "2026-10-01T23:02:03.207194+00:00"
   },
   "Nicaragua vs. Costa Rica||futbol||OU_3||bet365,jokerbet": {
-    "margin": 0.0292397660818714,
-    "cycles": 9,
+    "margin": 0.019138755980861344,
+    "cycles": 18,
     "notified": true,
     "since": "2026-10-01T23:06:47.792475+00:00"
   },
-  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||paf,pokerstars": {
-    "margin": 0.010060362173038184,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-01T23:10:51.217620+00:00"
-  },
   "Cleveland Browns vs. Pittsburgh Steelers||americano||ML||codere,marcaapuestas": {
     "margin": 0.01891252955082745,
-    "cycles": 6,
+    "cycles": 15,
     "notified": true,
     "since": "2026-10-01T23:10:51.217620+00:00"
   },
   "Puente Alto vs. Valdivia||baloncesto||ML||betway,paf": {
-    "margin": 0.015151515151515138,
-    "cycles": 3,
+    "margin": 0.058441558441558406,
+    "cycles": 12,
     "notified": true,
     "since": "2026-10-01T23:14:30.119504+00:00"
   },
   "Puente Alto vs. Valdivia||baloncesto||AH_8.5||jokerbet,paf": {
-    "margin": 0.042735042735042694,
-    "cycles": 3,
+    "margin": 0.08717948717948709,
+    "cycles": 12,
     "notified": true,
     "since": "2026-10-01T23:14:30.119504+00:00"
   },
   "São Bernardo vs. CRB||futbol||CORNERS_OU_12.5||cgmapuestas,paf": {
     "margin": 0.013002364066193817,
-    "cycles": 3,
+    "cycles": 12,
     "notified": true,
     "since": "2026-10-01T23:14:30.119504+00:00"
   },
-  "Nicaragua vs. Costa Rica||futbol||OU_3.5||bet365,jokerbet": {
-    "margin": 0.010011123470522798,
-    "cycles": 2,
-    "notified": true,
-    "since": "2026-10-01T23:15:30.101235+00:00"
-  },
   "República Dominicana vs. Haití||futbol||AH_1||1xbet_es,bet365": {
     "margin": 0.024276377217553602,
-    "cycles": 2,
-    "notified": true,
-    "since": "2026-10-01T23:15:30.101235+00:00"
-  },
-  "Nicaragua vs. Costa Rica||futbol||AH_2||bet365,jokerbet": {
-    "margin": 0.012605042016806678,
-    "cycles": 2,
-    "notified": true,
-    "since": "2026-10-01T23:15:30.101235+00:00"
-  },
-  "Nicaragua vs. Costa Rica||futbol||AH_HT_1||bet777,betway": {
-    "margin": 0.010011123470522798,
-    "cycles": 2,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-01T23:15:30.101235+00:00"
   },
   "Südtirol vs. FC Wacker Innsbruck||futbol||ML||1xbet_es,jokerbet": {
     "margin": 0.19875759324922337,
-    "cycles": 1,
+    "cycles": 10,
     "notified": false,
     "since": "2026-10-01T23:16:30.591217+00:00"
   },
   "Kazajistán vs. Moldavia||futbol||AH_-1||cgmapuestas,interwetten": {
     "margin": 0.019079685746352437,
-    "cycles": 1,
+    "cycles": 10,
     "notified": true,
     "since": "2026-10-01T23:16:30.591217+00:00"
+  },
+  "Nicaragua vs. Costa Rica||futbol||BTTS||betway,paf": {
+    "margin": 0.05296162788217473,
+    "cycles": 6,
+    "notified": true,
+    "since": "2026-10-01T23:21:31.135301+00:00"
+  },
+  "Nicaragua vs. Costa Rica||futbol||OU_HOME_0.5||jokerbet,paf": {
+    "margin": 0.05945945945945952,
+    "cycles": 6,
+    "notified": true,
+    "since": "2026-10-01T23:21:31.135301+00:00"
+  },
+  "Puente Alto vs. CD Valdivia||baloncesto||DNB_Q1||betinia,paf": {
+    "margin": 0.02412280701754388,
+    "cycles": 4,
+    "notified": true,
+    "since": "2026-10-01T23:24:16.021377+00:00"
   }
 }
