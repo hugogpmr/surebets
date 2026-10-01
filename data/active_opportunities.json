@@ -1,76 +1,71 @@
 {
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 65,
+    "cycles": 66,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2||jokerbet,winamax": {
     "margin": 0.014146772767462457,
-    "cycles": 33,
+    "cycles": 34,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||cgmapuestas,enracha": {
     "margin": 0.016908212560386437,
-    "cycles": 32,
+    "cycles": 33,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.021505376344086002,
-    "cycles": 32,
+    "cycles": 33,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||interwetten,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 30,
+    "cycles": 31,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||paf,pokerstars": {
     "margin": 0.012204424103737566,
-    "cycles": 24,
+    "cycles": 25,
     "notified": true
   },
   "Sara Bejlek vs. Maddison Inglis||tenis||ML_SET2||888sport,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true
   },
   "Japón vs. Ecuador||futbol||AH_-1.5||1xbet_es,bet365": {
     "margin": 0.020372956543169396,
-    "cycles": 9,
+    "cycles": 10,
     "notified": true
   },
   "China vs. Palestina||futbol||OU_4.5||bet365,betfair": {
     "margin": 0.01307882644043834,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "China vs. Palestina||futbol||BTTS||1xbet_es,bet365": {
     "margin": 0.01165011459129106,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "China vs. Palestina||futbol||AH_-0.5||bet365,paston": {
     "margin": 0.0117647058823529,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
-  "China vs. Palestina||futbol||OU_2||bet365,ebingo": {
-    "margin": 0.039364391477067384,
+  "China vs. Palestina||futbol||OU_2||bet365,jokerbet": {
+    "margin": 0.05393457117595046,
     "cycles": 1,
     "notified": true
   },
-  "China vs. Palestina||futbol||OU_2.5||bet365,ebingo": {
-    "margin": 0.036353671903543994,
+  "China vs. Palestina||futbol||OU_3||bet365,jokerbet": {
+    "margin": 0.09915237532032328,
     "cycles": 1,
     "notified": true
   },
-  "China vs. Palestina||futbol||OU_3||bet365,ebingo": {
-    "margin": 0.06552094522019347,
-    "cycles": 1,
-    "notified": true
-  },
-  "China vs. Palestina||futbol||OU_3.5||bet365,ebingo": {
-    "margin": 0.024805706377089343,
+  "China vs. Palestina||futbol||OU_3.5||bet365,jokerbet": {
+    "margin": 0.04233870967741937,
     "cycles": 1,
     "notified": true
   }
