@@ -1,136 +1,141 @@
 {
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 56,
+    "cycles": 57,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 53,
+    "cycles": 54,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "Alemania vs. Serbia||futbol||CARDS_1X2||bet777,betway": {
     "margin": 0.01871442777427601,
-    "cycles": 11,
+    "cycles": 12,
     "notified": true
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.03403263403263401,
-    "cycles": 7,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_3.75||bet365,jokerbet": {
-    "margin": 0.03846153846153855,
-    "cycles": 7,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_4||bet365,cgmapuestas": {
-    "margin": 0.04279279279279291,
-    "cycles": 7,
-    "notified": true
-  },
-  "Ranheim vs. Egersund||futbol||OU_3.5||bet365,jokerbet": {
-    "margin": 0.024676850763807323,
-    "cycles": 5,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_3.25||bet365,jokerbet": {
-    "margin": 0.020146520146520186,
-    "cycles": 5,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_4.25||bet365,cgmapuestas": {
-    "margin": 0.0357582147250044,
-    "cycles": 5,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_4.75||bet365,cgmapuestas": {
-    "margin": 0.016227180527383256,
-    "cycles": 5,
-    "notified": true
-  },
-  "Ranheim vs. Egersunds||futbol||OU_5||bet365,cgmapuestas": {
-    "margin": 0.010025062656641603,
-    "cycles": 5,
+    "cycles": 8,
     "notified": true
   },
   "Platense vs. Estudiantes de La Plata||futbol||CORNERS_OU_HOME_4.5||bet777,paf": {
     "margin": 0.012345679012345734,
-    "cycles": 5,
-    "notified": true
-  },
-  "THW Kiel vs. Gummersbach||balonmano||1X2||1xbet_es,goldenbull": {
-    "margin": 0.028543581175160204,
-    "cycles": 4,
-    "notified": true
-  },
-  "Ranheim vs. Egersund||futbol||OU_4.5||bet365,betfair": {
-    "margin": 0.03375527426160341,
-    "cycles": 3,
-    "notified": true
-  },
-  "Ranheim vs. Egersund||futbol||OU_5.5||bet365,betfair": {
-    "margin": 0.024531024531024626,
-    "cycles": 3,
+    "cycles": 6,
     "notified": true
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 3,
-    "notified": true
-  },
-  "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha": {
-    "margin": 0.01328967642526968,
-    "cycles": 2,
+    "cycles": 4,
     "notified": true
   },
   "Nava vs. Balonmano Triana||balonmano||1X2||1xbet_es,leovegas,winamax": {
     "margin": 0.01568791530164826,
-    "cycles": 2,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||CARDS_OU_5.5||betinia,pokerstars": {
-    "margin": 0.05594405594405605,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_3.5||cgmapuestas,winamax": {
     "margin": 0.0117647058823529,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.03600464576074325,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cumbayá vs. Santo Domingo||futbol||BTTS||betway,ebingo": {
     "margin": 0.015596418600173356,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cumbayá vs. Santo Domingo||futbol||OU_1.5||versus,winamax": {
     "margin": 0.07224958949096871,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cumbayá vs. Santo Domingo||futbol||OU_2.5||bwin,ebingo": {
     "margin": 0.01769591910436974,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true
   },
   "Cumbayá vs. Santo Domingo||futbol||OU_3.5||bwin,winamax": {
     "margin": 0.016227180527383256,
+    "cycles": 2,
+    "notified": true
+  },
+  "Sporting Cristal vs. Tarma||futbol||OU_1.5||888sport,betfair": {
+    "margin": 0.011868707538675638,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_168.5||casumo,paston": {
+    "margin": 0.03058929374718855,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_169.5||casumo,jokerbet": {
+    "margin": 0.03628117913832196,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_170.5||casumo,jokerbet": {
+    "margin": 0.03605609235500684,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_171.5||casumo,jokerbet": {
+    "margin": 0.03874899390594444,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_172.5||casumo,jokerbet": {
+    "margin": 0.04049700874367235,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_173.5||betway,casumo": {
+    "margin": 0.05040504050405037,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_174.5||betway,casumo": {
+    "margin": 0.04438405797101441,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_175.5||betway,casumo": {
+    "margin": 0.03985507246376807,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bologna vs. Olympiacos||baloncesto||OU_HT_87.5||betway,casumo": {
+    "margin": 0.023640661938534313,
+    "cycles": 1,
+    "notified": true
+  },
+  "Virtus Bolonia vs. Olympiacos||baloncesto||OU_167.5||casumo,paston": {
+    "margin": 0.030303030303030276,
+    "cycles": 1,
+    "notified": true
+  },
+  "THW Kiel vs. Gummersbach||balonmano||1X2||goldenbull,interwetten": {
+    "margin": 0.0111925111925113,
+    "cycles": 1,
+    "notified": true
+  },
+  "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
+    "margin": 0.010752688172043001,
     "cycles": 1,
     "notified": true
   }
