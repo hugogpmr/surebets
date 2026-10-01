@@ -129,6 +129,9 @@ LIVE_EXPORT_SECONDS = int(os.getenv("LIVE_EXPORT_SECONDS", "180"))
 # Minutos que una surebet de margen muy alto sin verificar debe seguir apareciendo antes de avisarse
 # (equivale a los VERIFY_CYCLES=3 ciclos de 12 min del modo antiguo, con una vuelta del comparador).
 LIVE_VERIFY_MINUTES = int(os.getenv("LIVE_VERIFY_MINUTES", "30"))
+# Navegadores (Chromium) a la vez en el modo continuo. Menos que MAX_CONCURRENT_FETCHES (3): con 3
+# llegaban a 1,9 GB entre todos (VM, 2026-10-01), y cada uno tiene 12 min para leer. 0 = sin límite.
+LIVE_MAX_BROWSERS = int(os.getenv("LIVE_MAX_BROWSERS", "2"))
 # Si el proceso continuo pasa de tantos MB (RAM + swap), se reinicia limpio (lo relanza systemd).
 LIVE_MAX_MEMORY_MB = int(os.getenv("LIVE_MAX_MEMORY_MB", "2000"))
 # Al arrancar, el primer análisis espera a que todas las fuentes hayan leído una vez, como mucho esto.

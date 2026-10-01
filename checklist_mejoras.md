@@ -46,7 +46,7 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
       Decisión pendiente del usuario: subir la VM a 8 GB (y reactivar con
       `systemctl disable --now surebets-fast.timer && systemctl enable --now surebets-live surebets-publish.timer`)
       o adelgazar antes lo que se guarda (siguiente punto).
-- [ ] Altenar/Kambi/comparador por ventana de kickoff: fichas de los partidos de las próximas horas en
+- [x] (2026-10-02, solo en modo continuo: `providers/detail_cache.py`; partidos a <6 h cada vuelta, 6-24 h cada 20 min, más lejos cada 45 min; navegadores a la vez 3 → 2) Altenar/Kambi/comparador por ventana de kickoff: fichas de los partidos de las próximas horas en
       cada vuelta, las de dentro de varios días cada 30-60 min (hoy Altenar relee los 1.350 cada vez).
 - [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
 - [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las

@@ -11,6 +11,7 @@ import httpx
 from engine.models import Market, Outcome
 from providers.altenar import DEFAULT_HORIZON_HOURS, _fmt_line
 from providers.base import OddsProvider
+from providers.detail_cache import DetailCache, collect, plan
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -361,6 +362,8 @@ class KambiProvider(OddsProvider):
         self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.operators = operators or OPERATORS
         self.horizon_hours = horizon_hours or int(os.environ.get("KAMBI_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
+        # Fichas ya leídas (modo continuo): las de partidos lejanos no se releen en cada vuelta.
+        self.details = DetailCache()
         self.max_workers = max_workers
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
@@ -436,7 +439,10 @@ class KambiProvider(OddsProvider):
             for event_id in listings[operator]
             if seen_by[event_id] >= 2
         ]
-        logger.info("Kambi: %d eventos comparables, %d peticiones de detalle", len({j[1] for j in jobs}), len(jobs))
+        now = datetime.now(timezone.utc)
+        to_read, cached = plan(
+            jobs, lambda job: datetime.fromisoformat(reference[job[1]]["start"].replace("Z", "+00:00")), self.details, now
+        )
 
         def fetch(job):
             operator, event_id = job
@@ -447,7 +453,7 @@ class KambiProvider(OddsProvider):
                 )
             except Exception:
                 logger.warning("Kambi: fallo en detalle %s/%s", operator, event_id, exc_info=True)
-                return []
+                return None
             name = f"{event['homeName'].strip()} vs. {event['awayName'].strip()}"
             parsed = parse_event_offers(
                 details, name, sport, self.operators[operator], event["homeName"], event["awayName"]
@@ -457,8 +463,11 @@ class KambiProvider(OddsProvider):
                 market.start_time = start
             return parsed
 
-        markets: list[Market] = []
         with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-            for result in pool.map(fetch, jobs):
-                markets.extend(result)
+            results = list(pool.map(fetch, to_read))
+        markets, summary = collect(jobs, to_read, results, cached, self.details, now)
+        logger.info(
+            "Kambi %s: %d eventos comparables, %d fichas leídas, %d de caché, %d fallos (%d con respaldo)",
+            sport, len({j[1] for j in jobs}), summary["leidas"], summary["de_cache"], summary["fallos"], summary["respaldo"],
+        )
         return markets
