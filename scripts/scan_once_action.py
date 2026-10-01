@@ -51,7 +51,6 @@ from providers.altenar import AltenarProvider
 from providers.base import OddsProvider
 from providers.bet777 import Bet777Provider
 from providers.betfair import BetfairProvider
-from providers.betfair_exchange import BetfairExchangeProvider
 from providers.bwin import BwinProvider
 from providers.casasdeapuestas import CasasDeApuestasProvider
 from providers.kambi import KambiProvider
@@ -139,12 +138,9 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             # 1X2 por ahora; el bloqueo de IP de datacenter/VPN es solo de la web, esta API
             # responde igual sin cookies (ver providers/williamhill.py).
             WilliamHillProvider(),
-            # Betfair Exchange API oficial (Delayed App Key gratuita), aparte del scraper DOM
-            # de la web de apuestas fijas (BetfairProvider): otro precio del mismo operador,
-            # útil como referencia "sharp" adicional. Opcional y sin verificar en vivo todavía
-            # (hace falta una app key + cuenta que solo el usuario puede generar/dar) - sin
-            # BETFAIR_APP_KEY/USERNAME/PASSWORD en .env se salta sola, ver providers/betfair_exchange.py.
-            BetfairExchangeProvider(),
+            # Betfair Exchange (providers/betfair_exchange.py) funciona (verificado 2026-10-01) pero
+            # está FUERA a propósito: el usuario no quiere apostar contra otros jugadores. Para
+            # reactivarlo, volver a añadir BetfairExchangeProvider() aquí.
         ],
     )
 

@@ -29,14 +29,10 @@ pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden co
 - [ ] Con la lista cerrada: verificar a mano las licencias DGOJ de las que se queden con ⚠️ y añadirlas
       al panel (`docs/app.js`).
 
-### Fase 1 — Betfair Exchange (el cambio de enfoque con más impacto)
-- [x] Delayed App Key generada (2026-10-01, app `surebets-bot-da544d`, en el `.env` de la VM) y
-      `providers/betfair_exchange.py` probado en vivo: 16 partidos de LaLiga (1X2). Login en .es,
-      consultas en .com. Hoy solo lee 1X2 de LaLiga: ampliar a más ligas/mercados y precio "en contra".
-- [ ] Validar cada pata contra el precio del Exchange (pata muy por encima = error que la casa anulará).
-- [ ] Surebets back-lay: apostar en casa normal + "en contra" en el Exchange (2 patas en cualquier mercado,
-      el Exchange no limita, cada surebet gasta una sola cuenta). Leer el dinero disponible en cada precio
-      (el Exchange español solo tiene liquidez de España).
+### Fase 1 — Betfair Exchange: DESCARTADA (2026-10-01)
+El usuario no quiere apostar contra otros jugadores (ni back-lay ni Exchange como casa). Se llegó a
+crear la Delayed App Key y a verificar el provider en vivo (16 partidos de LaLiga), pero se quitó del
+escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reconsidera.
 
 ### Fase 2 — motor continuo (velocidad)
 - [ ] Un servicio permanente con un trabajador por fuente, cada una a su ritmo (APIs baratas cada 30-60 s).
