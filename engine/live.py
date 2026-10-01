@@ -23,7 +23,10 @@ Lo que cambia respecto al ciclo de un disparo, a propósito:
 """
 
 import asyncio
+import ctypes
+import gc
 import logging
+import sys
 import time
 from collections.abc import Awaitable, Callable
 from concurrent.futures import ThreadPoolExecutor
@@ -106,6 +109,29 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def release_memory() -> None:
+    """Devuelve al sistema la memoria que Python ya liberó. Medido en la VM el 2026-10-01: las
+    cuotas en memoria ocupan ~200 MB, pero el proceso llegó a 2,5 GB (RAM + swap) en 30 min y agotó
+    la swap: cada lectura grande (miles de fichas JSON en hilos) deja huecos que glibc no devuelve
+    por sí solo. Con `malloc_trim` (y MALLOC_ARENA_MAX=2 en el servicio) sí."""
+    gc.collect()
+    if sys.platform.startswith("linux"):
+        try:
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except (OSError, AttributeError):
+            pass
+
+
+def memory_mb() -> float | None:
+    """RAM + swap de este proceso en MB (Linux), o None donde no se puede saber."""
+    try:
+        with open("/proc/self/status", encoding="ascii") as status:
+            fields = dict(line.split(":", 1) for line in status if line.startswith(("VmRSS", "VmSwap")))
+        return sum(int(value.split()[0]) for value in fields.values()) / 1024
+    except (OSError, ValueError):
+        return None
+
+
 async def run_lane(
     lane: Lane,
     lanes: list[Lane],
@@ -158,6 +184,8 @@ async def run_lane(
             f" (esperó turno {lane.wait_seconds:.1f}s)" if lane.wait_seconds >= 0.5 else "",
             "" if lane.ok else " (FALLÓ)",
         )
+        fetched = None
+        release_memory()
 
         if health is not None and provider.parkable:
             health.record(provider.name, good=bool(fetched), now=lane.attempted_at)
@@ -212,6 +240,7 @@ async def run_detector(
             await detect(views)
         except Exception:
             logger.exception("Fallo en un análisis del modo continuo (se reintenta con los siguientes datos)")
+        release_memory()
         runs += 1
         remaining = min_interval.total_seconds() - (time.monotonic() - started)
         if remaining > 0 and (max_runs is None or runs < max_runs):

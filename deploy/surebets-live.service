@@ -8,6 +8,9 @@ Type=simple
 User=__USER__
 WorkingDirectory=__APP_DIR__
 Environment=PYTHONPATH=__APP_DIR__
+# Menos "zonas" de memoria de glibc por hilo: sin esto el proceso crecía hasta agotar la swap
+# (ver engine/live.py:release_memory).
+Environment=MALLOC_ARENA_MAX=2
 ExecStart=__APP_DIR__/.venv/bin/python scripts/run_live.py
 Restart=always
 RestartSec=30

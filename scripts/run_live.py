@@ -29,7 +29,7 @@ from bot.telegram_bot import notify_admin, notify_opportunity  # noqa: E402
 from engine.alerts import SourceAlerts  # noqa: E402
 from engine.cache import CachedProvider, ComparatorCache  # noqa: E402
 from engine.health import SourceHealth  # noqa: E402
-from engine.live import Lane, run_detector, run_lane, utcnow  # noqa: E402
+from engine.live import Lane, memory_mb, run_detector, run_lane, utcnow  # noqa: E402
 from engine.peers import PeerEvents  # noqa: E402
 from engine.scan import _run_scan_cycle, normalize_state  # noqa: E402
 from scripts.scan_once_action import (  # noqa: E402
@@ -84,7 +84,9 @@ async def main() -> None:
     peers = PeerEvents(config.PEER_EVENTS_PATH)
     health = SourceHealth(config.SOURCE_HEALTH_PATH, config.SOURCE_PARK_AFTER) if config.SOURCE_PARK_AFTER else None
     alerts = SourceAlerts(config.SOURCE_ALERTS_PATH, config.SOURCE_ALERT_AFTER, config.SOURCE_ALERT_IGNORE)
-    executor = ThreadPoolExecutor(max_workers=4 * len(lanes) + 8, thread_name_prefix="carril")
+    # Un hilo por lectura y otro por segunda pasada de cada carril, más el análisis: más hilos solo
+    # reparten la memoria en más zonas de glibc (ver engine.live.release_memory).
+    executor = ThreadPoolExecutor(max_workers=2 * len(lanes) + 4, thread_name_prefix="carril")
     sem = asyncio.Semaphore(config.MAX_CONCURRENT_FETCHES) if config.MAX_CONCURRENT_FETCHES else None
     updated = asyncio.Event()
     last_export = 0.0
@@ -115,6 +117,15 @@ async def main() -> None:
             log_sources=False,
         )
         write_atomic(STATE_PATH, json.dumps(active_state, ensure_ascii=False, indent=2))
+        used = memory_mb()
+        if used is not None and used > config.LIVE_MAX_MEMORY_MB:
+            # Red de seguridad: antes de que la VM se quede sin memoria (y el kernel mate lo que
+            # pille, navegadores incluidos), salir limpio; systemd lo reinicia en 30 s y el estado
+            # de avisos ya está guardado arriba.
+            logger.warning(
+                "Memoria del modo continuo %.0f MB > %d MB: reinicio limpio", used, config.LIVE_MAX_MEMORY_MB
+            )
+            os._exit(0)
         if time.monotonic() - last_export < config.LIVE_EXPORT_SECONDS:
             return
         last_export = time.monotonic()
@@ -144,7 +155,8 @@ async def main() -> None:
             logger.warning("No se pudo guardar los partidos para la segunda pasada", exc_info=True)
 
     logger.info(
-        "Modo continuo: %s",
+        "Modo continuo (memoria al arrancar %s MB): %s",
+        f"{memory_mb():.0f}" if memory_mb() is not None else "?",
         ", ".join(f"{lane.name} cada {lane.interval.total_seconds():.0f}s" for lane in lanes),
     )
     tasks = [
