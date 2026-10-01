@@ -21,7 +21,7 @@ pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden co
 - [—] Limpiar el historial de git: descartado por el usuario (2026-10-01), no hace falta: ya no crece.
 
 ### Antes de la Fase 1 — quedarnos con las casas que interesan
-- [ ] El usuario marca en [casas_comparador.md](casas_comparador.md) qué casas del comparador se quedan
+- [x] (2026-10-01: quitadas 11 + Betfair Exchange, CGM se queda de momento) El usuario marca en [casas_comparador.md](casas_comparador.md) qué casas del comparador se quedan
       (criterio: tener o ir a abrir cuenta ahí). Luego se ponen las descartadas en `EXCLUDED_BOOKIES`
       (`providers/casasdeapuestas.py`) y se despliega.
 - [x] Betfair Exchange del comparador excluido (cuota bruta sin comisión) y DAZN Bet unificado

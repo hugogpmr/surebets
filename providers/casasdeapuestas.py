@@ -228,7 +228,18 @@ _BOOKMAKER_ALIASES = {
 # Lista elegida por el usuario en `casas_comparador.md`. "betfair_exchange" fuera desde el
 # 2026-10-01: es la cuota bruta del Exchange, sin descontar la comisión (~5 %) que sí se paga
 # al ganar, así que sobrevalora esa pata (el provider directo betfair_exchange.py ya la descuenta).
-EXCLUDED_BOOKIES = frozenset({"betfair_exchange"})
+# 2026-10-01, elegidas por el usuario con datos de la VM: Golden Park, OlyBet y Casino Barcelona
+# (misma plataforma GiG/Sportnco) dieron dos errores de lectura distintos la misma semana (hándicap
+# de sets como de juegos en tenis, y "Menos de 7,5/8,5 goles" a ~1,9 en 6 partidos); el resto son
+# casas de casino que apenas aportan cuotas y donde no hay cuenta. CGM Apuestas se queda de momento.
+EXCLUDED_BOOKIES = frozenset(
+    {
+        "betfair_exchange",
+        "goldenpark", "olybet", "casino_barcelona",
+        "tonybet", "solcasino", "yaasscasino", "enracha",
+        "ijuego", "ebingo", "casumo", "goldenbull",
+    }
+)
 
 
 def _canonical_bookie(bookie: str) -> str:

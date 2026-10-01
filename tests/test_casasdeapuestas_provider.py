@@ -58,7 +58,7 @@ def test_1x2_dc_btts_dnb_and_oe():
             odd("Doble oportunidad", "Malaga o Espanyol", "1xbet_es", "1.37"),
             odd("Ambos equipos marcan", "Sí", "bet365", "1.81"),
             odd("Ambos equipos marcan", "No", "codere", "2.00"),
-            odd("Empate, apuesta no válida", "Malaga", "ijuego", "1.87"),
+            odd("Empate, apuesta no válida", "Malaga", "luckia", "1.87"),
             odd("Empate, apuesta no válida", "Espanyol", "888sport", "1.95"),
             odd("Par/Impar", "Par", "bet365", "1.95"),
             odd("Par/Impar", "Impar", "codere", "1.85"),
@@ -70,7 +70,7 @@ def test_1x2_dc_btts_dnb_and_oe():
     assert odds(markets["BTTS"]) == {"Yes": 1.81, "No": 2.00}
     assert odds(markets["DNB"]) == {"1": 1.87, "2": 1.95}
     assert odds(markets["OE"]) == {"Even": 1.95, "Odd": 1.85}
-    assert all(o.bookmaker in ("bet365", "codere", "retabet", "888sport", "1xbet_es", "ijuego") for m in markets.values() for o in m.outcomes)
+    assert all(o.bookmaker in ("bet365", "codere", "retabet", "888sport", "1xbet_es", "luckia") for m in markets.values() for o in m.outcomes)
 
 
 def test_winner_market_without_draw_is_ml_not_1x2():
@@ -232,7 +232,10 @@ def test_betfair_handicap_is_dropped_in_nfl_and_basketball_but_kept_in_tennis():
     assert {o.bookmaker for o in tennis["AH_-1.5"].outcomes} == {"1xbet_es", "betfair"}
 
 
-def test_tennis_sets_handicap_labelled_as_games_is_dropped():
+def test_tennis_sets_handicap_labelled_as_games_is_dropped(monkeypatch):
+    from providers import casasdeapuestas
+
+    monkeypatch.setattr(casasdeapuestas, "EXCLUDED_BOOKIES", frozenset())  # probar la regla, no la exclusión
     # Goldenpark/Olybet publican el hándicap de SETS ±1.5 como "de juegos" (1-oct-2026: falsas del
     # 18-23 % en Alcaraz-Michelsen). Sus ±1.5 se descartan; los de las demás casas y sus otras
     # líneas no.
@@ -253,8 +256,11 @@ def test_tennis_sets_handicap_labelled_as_games_is_dropped():
     assert {o.bookmaker for o in markets["AH_-3.5"].outcomes} == {"goldenpark"}
 
 
-def test_sanitize_cached_market_drops_tennis_sets_as_games():
+def test_sanitize_cached_market_drops_tennis_sets_as_games(monkeypatch):
     from engine.models import Market, Outcome
+    from providers import casasdeapuestas
+
+    monkeypatch.setattr(casasdeapuestas, "EXCLUDED_BOOKIES", frozenset())
     from providers.casasdeapuestas import sanitize_cached_market
 
     bad = Market(
