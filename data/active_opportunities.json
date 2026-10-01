@@ -1,61 +1,66 @@
 {
   "Sara Bejlek vs. Maddison Inglis||tenis||ML_SET2||888sport,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 27,
+    "cycles": 28,
     "notified": true
   },
   "Krka vs. KK Buducnost||baloncesto||ML||1xbet_es,bwin": {
-    "margin": 0.010606060606060508,
-    "cycles": 10,
+    "margin": 0.016955266955267057,
+    "cycles": 11,
     "notified": true
   },
   "Virtus Bolonia vs. Olympiacos||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "China vs. Palestina||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.014050387596899139,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Azerbaiyán vs. Liechtenstein||futbol||CARDS_OU_AWAY_1.5||bet777,betinia": {
     "margin": 0.011904761904761862,
-    "cycles": 2,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||CARDS_OU_4.5||paston,pokerstars": {
-    "margin": 0.01098901098901095,
-    "cycles": 1,
-    "notified": true
-  },
-  "Israel vs. Kosovo||futbol||CARDS_OU_5.5||betinia,pokerstars": {
-    "margin": 0.06485671191553544,
-    "cycles": 1,
+    "cycles": 3,
     "notified": true
   },
   "Crvena Zvezda vs. Anadolu Efes||baloncesto||ML||1xbet_es,interwetten": {
     "margin": 0.015348288075560879,
+    "cycles": 2,
+    "notified": true
+  },
+  "Dayana Yastremska vs. Maja Chwalinska||tenis||ML||888sport,paf": {
+    "margin": 0.017168589924007827,
     "cycles": 1,
     "notified": true
   },
-  "Kyrian Jacquet vs. Luciano Darderi||tenis||ML||1xbet_es,daznbet": {
-    "margin": 0.01501501501501512,
+  "Dayana Yastremska vs. Maja Chwalinska||tenis||AH_+1.5||888sport,paf": {
+    "margin": 0.012797939094572497,
+    "cycles": 1,
+    "notified": true
+  },
+  "Dayana Yastremska vs. Maja Chwalinska||tenis||AH_+2.5||888sport,paf": {
+    "margin": 0.011028966185916866,
+    "cycles": 1,
+    "notified": true
+  },
+  "Balingen-Weilstetten vs. Bergischer HC||balonmano||1X2||1xbet_es,paston": {
+    "margin": 0.03406332371734344,
     "cycles": 1,
     "notified": true
   }
