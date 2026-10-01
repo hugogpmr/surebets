@@ -120,6 +120,8 @@ BETFAIR_PASSWORD = os.getenv("BETFAIR_PASSWORD", "")
 # verdad para el arbitraje. 0.05 = 5%, la tarifa por defecto habitual; ajústala
 # si tu cuenta tiene una comisión distinta (Betfair la muestra en "Mi cuenta").
 BETFAIR_EXCHANGE_COMMISSION = float(os.getenv("BETFAIR_EXCHANGE_COMMISSION", "0.05"))
+# Dominio de la cuenta de Betfair: "es" para cuentas españolas (betfair.es), "com" para el resto.
+BETFAIR_DOMAIN = os.getenv("BETFAIR_DOMAIN", "es")
 
 # Histórico de surebets para el backtest (engine/backtest.py, scripts/backtest_report.py): cada
 # surebet detectada se guarda como un episodio (cuándo apareció, con qué cuotas, cuándo y por qué

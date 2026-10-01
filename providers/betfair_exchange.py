@@ -50,8 +50,10 @@ from providers.filters import exclude_esports_default, exclude_womens_default, i
 
 logger = logging.getLogger(__name__)
 
-IDENTITY_LOGIN_URL = "https://identitysso.betfair.com/api/login"
-BETTING_API_URL = "https://api.betfair.com/exchange/betting/json-rpc/v1"
+# Las cuentas españolas (betfair.es) usan sus propios servidores: con los de .com el login da
+# INVALID_USERNAME_OR_PASSWORD aunque los datos sean buenos. Comprobado en vivo el 2026-10-01.
+IDENTITY_LOGIN_URL = f"https://identitysso.betfair.{config.BETFAIR_DOMAIN}/api/login"
+BETTING_API_URL = f"https://api.betfair.{config.BETFAIR_DOMAIN}/exchange/betting/json-rpc/v1"
 SOCCER_EVENT_TYPE_ID = "1"
 MATCH_ODDS = "MATCH_ODDS"
 DRAW_RUNNER_NAME = "The Draw"
@@ -121,9 +123,10 @@ class BetfairExchangeProvider(OddsProvider):
         )
         response.raise_for_status()
         data = response.json()
-        if data.get("loginStatus") != "SUCCESS" or not data.get("sessionToken"):
-            raise BetfairApiError(f"login fallido: {data.get('loginStatus')}")
-        return data["sessionToken"]
+        # Respuesta real (2026-10-01): {"token": ..., "status": "SUCCESS", "error": ""}.
+        if data.get("status") != "SUCCESS" or not data.get("token"):
+            raise BetfairApiError(f"login fallido: {data.get('status')} {data.get('error')}")
+        return data["token"]
 
     def _rpc(self, client: httpx.Client, session_token: str, method: str, params: dict) -> object:
         response = client.post(
