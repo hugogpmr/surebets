@@ -14,7 +14,13 @@ APP_DIR="$HOME/surebets"
 # lectura (/hoy /ahora /stats) más dos timers (`--mode fast` cada 12 min, `--mode
 # slow` cada 30 min), igual que scripts/local_scan.ps1 + local_slow_scan.ps1 en
 # Windows.
+# Desde 2026-10-01 el escaneo rápido es un proceso continuo (surebets-live, scripts/run_live.py)
+# en vez del timer de 12 min (surebets-fast, que se instala pero se deja DESACTIVADO como vuelta
+# atrás: `systemctl disable --now surebets-live && systemctl enable --now surebets-fast.timer`).
+# La subida del panel a GitHub va en su propio timer (surebets-publish, cada 10 min).
 BOT_SERVICE_NAME="surebets-bot"
+LIVE_SERVICE_NAME="surebets-live"
+PUBLISH_SERVICE_NAME="surebets-publish"
 FAST_SERVICE_NAME="surebets-fast"
 SLOW_SERVICE_NAME="surebets-slow"
 RELAY_SERVICE_NAME="surebets-relay"
@@ -79,7 +85,12 @@ sed \
   "$APP_DIR/deploy/surebets-fast.service" | sudo tee /etc/systemd/system/${FAST_SERVICE_NAME}.service > /dev/null
 sudo cp "$APP_DIR/deploy/surebets-fast.timer" /etc/systemd/system/${FAST_SERVICE_NAME}.timer
 
-echo "== Instalando servicio + timer systemd (ciclo lento, cada 30 min) =="
+echo "== Instalando servicio continuo (modo live) y timer de publicación =="
+sed   -e "s#__APP_DIR__#$APP_DIR#g"   -e "s#__USER__#$(whoami)#g"   "$APP_DIR/deploy/surebets-live.service" | sudo tee /etc/systemd/system/${LIVE_SERVICE_NAME}.service > /dev/null
+sed   -e "s#__APP_DIR__#$APP_DIR#g"   -e "s#__USER__#$(whoami)#g"   "$APP_DIR/deploy/surebets-publish.service" | sudo tee /etc/systemd/system/${PUBLISH_SERVICE_NAME}.service > /dev/null
+sudo cp "$APP_DIR/deploy/surebets-publish.timer" /etc/systemd/system/${PUBLISH_SERVICE_NAME}.timer
+
+echo "== Instalando servicio + timer systemd (ciclo lento, seguido: 2 min tras terminar) =="
 sed \
   -e "s#__APP_DIR__#$APP_DIR#g" \
   -e "s#__USER__#$(whoami)#g" \
@@ -93,9 +104,10 @@ sed \
   "$APP_DIR/deploy/surebets-relay.service" | sudo tee /etc/systemd/system/${RELAY_SERVICE_NAME}.service > /dev/null
 
 sudo systemctl daemon-reload
-sudo systemctl enable "$BOT_SERVICE_NAME" "${FAST_SERVICE_NAME}.timer" "${SLOW_SERVICE_NAME}.timer" "$RELAY_SERVICE_NAME"
+sudo systemctl disable --now "${FAST_SERVICE_NAME}.timer" 2>/dev/null || true  # sustituido por el modo continuo
+sudo systemctl enable "$BOT_SERVICE_NAME" "$LIVE_SERVICE_NAME" "${PUBLISH_SERVICE_NAME}.timer" "${SLOW_SERVICE_NAME}.timer" "$RELAY_SERVICE_NAME"
 
-# vm_fast_scan.sh hace "git commit"+"git push" tras cada ciclo (igual que
+# vm_publish.sh (antes vm_fast_scan.sh) hace "git commit"+"git push" (igual que
 # local_scan.ps1): sin identidad de git configurada para $(whoami), esos commits
 # fallarían en el primer ciclo rápido. No se sobreescribe si ya existe (p.ej. en
 # una reinstalación).
@@ -111,10 +123,10 @@ if [ ! -f "$APP_DIR/data/relay.session" ]; then
 fi
 
 echo "== Listo. Para arrancar el bot, los timers y el relay: =="
-echo "  sudo systemctl start $BOT_SERVICE_NAME ${FAST_SERVICE_NAME}.timer ${SLOW_SERVICE_NAME}.timer $RELAY_SERVICE_NAME"
-echo "  sudo systemctl status $BOT_SERVICE_NAME ${FAST_SERVICE_NAME}.timer ${SLOW_SERVICE_NAME}.timer $RELAY_SERVICE_NAME"
+echo "  sudo systemctl start $BOT_SERVICE_NAME $LIVE_SERVICE_NAME ${PUBLISH_SERVICE_NAME}.timer ${SLOW_SERVICE_NAME}.timer $RELAY_SERVICE_NAME"
+echo "  sudo systemctl status $BOT_SERVICE_NAME $LIVE_SERVICE_NAME ${PUBLISH_SERVICE_NAME}.timer ${SLOW_SERVICE_NAME}.timer $RELAY_SERVICE_NAME"
 echo "  journalctl -u $BOT_SERVICE_NAME -f      # logs en vivo del bot (/hoy /ahora /stats)"
-echo "  journalctl -u $FAST_SERVICE_NAME -f     # logs del último ciclo rápido"
+echo "  journalctl -u $LIVE_SERVICE_NAME -f     # logs en vivo del modo continuo"
 echo "  journalctl -u $SLOW_SERVICE_NAME -f     # logs del último ciclo lento"
 echo "  journalctl -u $RELAY_SERVICE_NAME -f    # logs en vivo del relay"
 echo "  systemctl list-timers                   # próxima ejecución de cada timer"

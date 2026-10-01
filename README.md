@@ -67,6 +67,23 @@ scripts\start_local_web.ps1 -Lan     # también desde el móvil (imprime las URL
 - **Desde cualquier sitio**: instala [Tailscale](https://tailscale.com) (gratis) en el PC y el móvil, con la misma cuenta,
   y abre la URL `100.x.x.x:8000` que imprime el script. Es una red privada: no queda nada expuesto a internet.
 
+## Modo continuo (desde 2026-10-01)
+
+En la VM el escaneo ya no es un ciclo cada 12 min, sino un proceso siempre encendido
+(`scripts/run_live.py`, servicio `surebets-live`, código en `engine/live.py`):
+
+- Cada fuente se lee en bucle a su propio ritmo (`LIVE_INTERVALS` en `config.py`): el comparador
+  (caché) cada 2 min, Bet777 cada 3, Kambi cada 4, Altenar y 888sport cada 6, las de navegador cada
+  12 como antes.
+- En cuanto una fuente trae datos nuevos se cruzan las cuotas de todas (como mucho un análisis por
+  minuto) y se avisa. Antes una surebet podía tardar hasta ~18 min en avisarse.
+- El ciclo lento (comparador) ya no para entre vueltas: empieza otra 2 min después de terminar.
+- El panel se regenera cada 3 min y se sube a GitHub cada 10 (`deploy/vm_publish.sh`, timer
+  `surebets-publish`).
+- Logs: `journalctl -u surebets-live -f`. Si el proceso muere, avisa al canal de administración y
+  se reinicia solo.
+- Volver al modo antiguo: `systemctl disable --now surebets-live && systemctl enable --now surebets-fast.timer`.
+
 ## Backtest: qué pasó con cada surebet
 
 Cada ciclo guarda todas las surebets detectadas (también las descartadas por error de datos) en

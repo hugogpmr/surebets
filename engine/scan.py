@@ -62,6 +62,8 @@ def normalize_state(raw: dict) -> dict[str, dict]:
                 "cycles": int(value.get("cycles", 1)),
                 "notified": bool(value.get("notified", False)),
             }
+            if value.get("since"):
+                state[key]["since"] = value["since"]
         else:
             state[key] = {"margin": float(value), "cycles": 1, "notified": True}
     return state
@@ -368,6 +370,8 @@ async def _run_scan_cycle(
     notify_admin: NotifyFn | None = None,
     backtest: SurebetLog | None = None,
     executor: ThreadPoolExecutor | None = None,
+    verify_min_age: timedelta | None = None,
+    log_sources: bool = True,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -381,6 +385,11 @@ async def _run_scan_cycle(
     margen muy alto (> `verify_margin`) se verifican además con una segunda
     lectura directa en el mismo escaneo (avisan enseguida si se confirman) o,
     si no se pueden verificar así, necesitan `verify_cycles` escaneos seguidos.
+
+    `verify_min_age` (modo continuo, engine/live.py): en vez de `verify_cycles` escaneos, las de
+    margen muy alto sin verificar deben llevar al menos ese tiempo apareciendo. Con un análisis
+    por minuto, "3 escaneos seguidos" serían 3 minutos con los mismos datos de un comparador que
+    se refresca cada ~20: no demostraría nada.
     """
     raw_by_provider: dict[str, list] = {}
     # Las fuentes se leen A LA VEZ (cada una en su hilo, con su propio navegador si lo
@@ -476,7 +485,7 @@ async def _run_scan_cycle(
         }
         for p in providers
     }
-    for name, info in sources.items():
+    for name, info in sources.items() if log_sources else ():
         if info.get("parked"):
             logger.info(
                 "Fuente %s: aparcada (%d lecturas malas seguidas), próximo intento en %d min",
@@ -500,7 +509,7 @@ async def _run_scan_cycle(
             except Exception:
                 logger.warning("No se pudo enviar el aviso de fuentes", exc_info=True)
     slowest = max(sources.items(), key=lambda item: item[1]["seconds"] + item[1]["wait_seconds"], default=None)
-    if slowest is not None:
+    if slowest is not None and log_sources:
         logger.info(
             "Fuente más lenta: %s (%.1fs de lectura + %.1fs de espera de turno)",
             slowest[0],
@@ -541,10 +550,12 @@ async def _run_scan_cycle(
             cycles = entry["cycles"] + 1
             previous_margin = entry["margin"]
             notified = entry["notified"]
+            since = entry.get("since") or now.isoformat()
         else:  # clave nueva (o formato antiguo sin normalizar)
             cycles = 1
             previous_margin = float(entry) if entry is not None else None
             notified = entry is not None
+            since = now.isoformat()
 
         if comparison.verification == "verificada":
             needed = 1  # ya leída dos veces en directo dentro de este escaneo
@@ -553,6 +564,8 @@ async def _run_scan_cycle(
         else:
             needed = confirm_cycles
         confirmed = cycles >= needed
+        if comparison.verification == "pendiente" and verify_min_age is not None:
+            confirmed = cycles >= confirm_cycles and now - datetime.fromisoformat(since) >= verify_min_age
         should_notify = confirmed and (
             not notified or abs(comparison.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
         )
@@ -564,6 +577,7 @@ async def _run_scan_cycle(
             "margin": comparison.margin,
             "cycles": cycles,
             "notified": notified,
+            "since": since,
         }
 
         if not should_notify:

@@ -1,9 +1,13 @@
 [Unit]
-Description=Dispara el ciclo lento cada 25 min
+Description=Dispara el ciclo lento 2 min despues de que termine el anterior
 
 [Timer]
 OnBootSec=1min
-OnUnitActiveSec=25min
+# Desde 2026-10-01 (Fase 2, modo continuo): el ciclo lento tarda ~18 min de sus 25 de presupuesto,
+# y antes se disparaba cada 25 min desde su INICIO (~7 min parado por vuelta). Ahora vuelve a
+# empezar 2 min despues de TERMINAR: el comparador, de donde salen la mayoria de las surebets, se
+# refresca casi seguido. Su consumo es bajo (~3 min de CPU por vuelta, httpx sin navegador).
+OnUnitInactiveSec=2min
 AccuracySec=30s
 
 [Install]

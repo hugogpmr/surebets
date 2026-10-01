@@ -102,6 +102,36 @@ ADMIN_ALERT_CHAT_ID = os.getenv("ADMIN_ALERT_CHAT_ID", "")
 SOURCE_ALERT_AFTER = int(os.getenv("SOURCE_ALERT_AFTER", "3"))
 SOURCE_ALERT_IGNORE = frozenset(n.strip() for n in os.getenv("SOURCE_ALERT_IGNORE", "").split(",") if n.strip())
 SOURCE_ALERTS_PATH = os.getenv("SOURCE_ALERTS_PATH", "cache/source_alerts.json")
+# Modo continuo (engine/live.py, scripts/run_live.py, Fase 2 de la hoja de ruta): segundos entre el
+# inicio de dos lecturas de cada fuente. Si una lectura tarda más, la siguiente empieza enseguida
+# (Altenar tarda ~300 s: va casi seguida). Las de navegador mantienen el ritmo del antiguo ciclo
+# rápido (12 min): con 2 vCPU, más Chromium a la vez satura la máquina. Formato en .env:
+# LIVE_INTERVALS="altenar=360,kambi=240" (se mezcla con estos valores).
+LIVE_INTERVALS = {
+    "casasdeapuestas": 120,  # solo lee la caché del ciclo lento (~1 s)
+    "bet777": 180,
+    "kambi": 240,
+    "altenar": 360,
+    "williamhill": 300,
+    "888sport": 360,
+    **{
+        name.strip(): int(seconds)
+        for name, _, seconds in (item.partition("=") for item in os.getenv("LIVE_INTERVALS", "").split(","))
+        if name.strip() and seconds.strip()
+    },
+}
+LIVE_BROWSER_INTERVAL = int(os.getenv("LIVE_BROWSER_INTERVAL", "720"))
+LIVE_DEFAULT_INTERVAL = int(os.getenv("LIVE_DEFAULT_INTERVAL", "300"))
+# Como mucho un análisis (cruce + avisos + base de datos, ~30 s de CPU) cada tantos segundos.
+LIVE_MIN_DETECT_SECONDS = int(os.getenv("LIVE_MIN_DETECT_SECONDS", "60"))
+# Cada cuánto se regenera docs/data.json (el panel); lo sube a GitHub deploy/vm_publish.sh.
+LIVE_EXPORT_SECONDS = int(os.getenv("LIVE_EXPORT_SECONDS", "180"))
+# Minutos que una surebet de margen muy alto sin verificar debe seguir apareciendo antes de avisarse
+# (equivale a los VERIFY_CYCLES=3 ciclos de 12 min del modo antiguo, con una vuelta del comparador).
+LIVE_VERIFY_MINUTES = int(os.getenv("LIVE_VERIFY_MINUTES", "30"))
+# Al arrancar, el primer análisis espera a que todas las fuentes hayan leído una vez, como mucho esto.
+LIVE_STARTUP_MINUTES = int(os.getenv("LIVE_STARTUP_MINUTES", "10"))
+
 # Partidos que listaban las demás casas en el ciclo anterior, para adelantar la segunda pasada de
 # PokerStars (engine/peers.py). Fuera de git, propio de cada máquina.
 PEER_EVENTS_PATH = os.getenv("PEER_EVENTS_PATH", "cache/peer_events.json")

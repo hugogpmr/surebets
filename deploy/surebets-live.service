@@ -1,0 +1,18 @@
+[Unit]
+Description=Surebets - modo continuo (cada fuente a su ritmo, aviso en cuanto cruza)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__APP_DIR__
+Environment=PYTHONPATH=__APP_DIR__
+ExecStart=__APP_DIR__/.venv/bin/python scripts/run_live.py
+Restart=always
+RestartSec=30
+# Si el proceso muere (p.ej. el OOM killer), avisa al canal de administración antes de reiniciar.
+ExecStopPost=/bin/sh -c '[ "$SERVICE_RESULT" = success ] || __APP_DIR__/.venv/bin/python __APP_DIR__/scripts/alert_admin.py "🔴 El modo continuo de la VM se ha parado ($SERVICE_RESULT, codigo $EXIT_STATUS) y se reinicia en 30 s. Mira: journalctl -u surebets-live"'
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Surebets - sube el panel y el estado a GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__USER__
+WorkingDirectory=__APP_DIR__
+ExecStart=__APP_DIR__/deploy/vm_publish.sh

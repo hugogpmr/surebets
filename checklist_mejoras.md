@@ -35,7 +35,12 @@ crear la Delayed App Key y a verificar el provider en vivo (16 partidos de LaLig
 escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reconsidera.
 
 ### Fase 2 — motor continuo (velocidad)
-- [ ] Un servicio permanente con un trabajador por fuente, cada una a su ritmo (APIs baratas cada 30-60 s).
+- [x] Un servicio permanente con un trabajador por fuente, cada una a su ritmo (2026-10-01:
+      `engine/live.py` + `scripts/run_live.py`, servicio `surebets-live`; ciclo lento seguido;
+      panel a GitHub cada 10 min). Medido antes del cambio: Altenar ~300 s por lectura (1.350
+      partidos), 888sport ~200 s, Kambi ~160 s, cruce ~24 s.
+- [ ] Altenar/Kambi/comparador por ventana de kickoff: fichas de los partidos de las próximas horas en
+      cada vuelta, las de dentro de varios días cada 30-60 min (hoy Altenar relee los 1.350 cada vez).
 - [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
 - [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
       patas justo antes de avisar. Publicar el panel sin git en cada ciclo.
