@@ -1,91 +1,91 @@
 {
   "Deportes Concepción vs. O&#039;Higgins||futbol||CORNERS_OU_7.5||betway,jokerbet": {
     "margin": 0.05555555555555558,
-    "cycles": 57,
+    "cycles": 58,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||DNB||cgmapuestas,retabet": {
     "margin": 0.014768192850384665,
-    "cycles": 34,
+    "cycles": 35,
     "notified": true
   },
   "Unión San Felipe vs. San Luis||futbol||1X2||1xbet_es,cgmapuestas,luckia": {
     "margin": 0.01534859368289776,
-    "cycles": 32,
+    "cycles": 33,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2||jokerbet,winamax": {
     "margin": 0.014146772767462457,
-    "cycles": 25,
+    "cycles": 26,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_2.5||cgmapuestas,enracha": {
     "margin": 0.016908212560386437,
-    "cycles": 24,
+    "cycles": 25,
     "notified": true
   },
   "Torque vs. Peñarol||futbol||OU_3||jokerbet,winamax": {
     "margin": 0.021505376344086002,
-    "cycles": 24,
+    "cycles": 25,
     "notified": true
   },
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||interwetten,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 22,
+    "cycles": 23,
     "notified": true
   },
   "Grecia vs. Países Bajos||futbol||CORNERS_OU_10.5||paf,pokerstars": {
     "margin": 0.012204424103737566,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true
   },
   "Internacional de Bogotá vs. Once Caldas||futbol||1X2||1xbet_es,enracha,luckia": {
     "margin": 0.011369274486366931,
-    "cycles": 15,
+    "cycles": 16,
     "notified": true
   },
   "China vs. Palestina||futbol||OU_2.5||bet365,betfair": {
     "margin": 0.011363636363636354,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true
   },
   "Sara Bejlek vs. Maddison Inglis||tenis||ML_SET2||888sport,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_9.5||betfair,leovegas": {
     "margin": 0.02721999107541273,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,leovegas": {
     "margin": 0.02762224710712946,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true
   },
   "Boca Juniors vs. Unión Santa Fe||futbol||AH_-1||bet365,speedybet": {
     "margin": 0.012339657611081245,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true
   },
   "Islas Vírgenes Británicas vs. Montserrat||futbol||AH_0||1xbet_es,bet365": {
     "margin": 0.03585049580472921,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Dominica vs. Guyana||futbol||AH_0||1xbet_es,interwetten": {
     "margin": 0.1344839371155161,
-    "cycles": 2,
-    "notified": true
-  },
-  "Santa Lucía vs. Guadalupe||futbol||AH_0||1xbet_es,bet365": {
-    "margin": 0.013368739126453644,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true
   },
   "Japón vs. Ecuador||futbol||AH_-1.5||1xbet_es,bet365": {
     "margin": 0.020372956543169396,
+    "cycles": 2,
+    "notified": true
+  },
+  "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_11.5||betfair,leovegas": {
+    "margin": 0.02608695652173909,
     "cycles": 1,
     "notified": true
   }
