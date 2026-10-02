@@ -1,110 +1,158 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.0646853146853148,
-    "cycles": 369,
+    "cycles": 371,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 326,
-    "notified": true,
-    "since": "2026-10-01T20:33:14.653579+00:00"
-  },
-  "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
-    "margin": 0.010752688172043001,
-    "cycles": 316,
+    "cycles": 328,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.0357582147250044,
-    "cycles": 313,
+    "cycles": 315,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.024390243902438935,
-    "cycles": 247,
+    "cycles": 249,
     "notified": true,
     "since": "2026-10-01T22:02:13.131531+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 246,
+    "cycles": 248,
     "notified": true,
     "since": "2026-10-01T22:17:05.420880+00:00"
   },
   "Piratas Veracruz vs. Alebrijes de Oaxaca||futbol||BTTS||888sport,leovegas": {
     "margin": 0.021739130434782594,
-    "cycles": 138,
+    "cycles": 140,
     "notified": true,
     "since": "2026-10-02T01:23:23.992281+00:00"
   },
-  "Liverpool Montevideo vs. Progreso||futbol||CORNERS_OU_11.5||betway,paf": {
-    "margin": 0.02411347517730489,
-    "cycles": 87,
-    "notified": true,
-    "since": "2026-10-02T03:13:30.934547+00:00"
-  },
   "Boca Juniors vs. Union de Santa Fe||futbol||CORNERS_OU_HOME_4.5||jokerbet,paf": {
     "margin": 0.010011123470522798,
-    "cycles": 73,
+    "cycles": 75,
     "notified": true,
     "since": "2026-10-02T03:51:53.040167+00:00"
   },
   "Veraguas vs. Tauro||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.019579926507478085,
-    "cycles": 31,
+    "cycles": 33,
     "notified": true,
     "since": "2026-10-02T05:44:04.615233+00:00"
   },
   "Veraguas vs. Tauro||futbol||DNB||888sport,speedybet": {
     "margin": 0.024676850763807323,
-    "cycles": 31,
+    "cycles": 33,
     "notified": true,
     "since": "2026-10-02T05:44:04.615233+00:00"
   },
   "Juventude vs. Operário||futbol||AH_-1||bet365,cgmapuestas": {
     "margin": 0.028068705488060397,
-    "cycles": 24,
+    "cycles": 26,
     "notified": true,
     "since": "2026-10-02T06:02:22.451388+00:00"
   },
   "Kazajistán vs. Moldavia||futbol||AH_-1||cgmapuestas,interwetten": {
     "margin": 0.012345679012345734,
-    "cycles": 18,
+    "cycles": 20,
     "notified": true,
     "since": "2026-10-02T06:19:52.288429+00:00"
   },
-  "Deportivo vs. Oporto||futbol||DNB||betway,retabet": {
-    "margin": 0.013605442176870763,
-    "cycles": 15,
-    "notified": true,
-    "since": "2026-10-02T06:24:14.574144+00:00"
-  },
   "THW Kiel vs. Gummersbach||balonmano||ML||interwetten,sportium": {
     "margin": 0.04785077047850772,
-    "cycles": 10,
+    "cycles": 12,
     "notified": true,
     "since": "2026-10-02T06:38:05.744716+00:00"
   },
   "Letonia vs. Montenegro||futbol||ML||1xbet_es,sportium": {
     "margin": 0.24836601307189543,
-    "cycles": 8,
-    "notified": false,
+    "cycles": 10,
+    "notified": true,
     "since": "2026-10-02T06:47:05.195595+00:00"
+  },
+  "PWD Sports Club vs. Brothers Union||futbol||ML||888sport,interwetten": {
+    "margin": 0.22623434045689017,
+    "cycles": 2,
+    "notified": false,
+    "since": "2026-10-02T07:16:40.769518+00:00"
+  },
+  "San Francisco FC vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,paf": {
+    "margin": 0.044061302681992265,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||paf,pokerstars": {
     "margin": 0.015444015444015413,
-    "cycles": 6,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T06:55:58.663903+00:00"
+    "since": "2026-10-02T07:26:54.376855+00:00"
   },
-  "Debreceni Egyetem KE vs. Budapesti Honved SE||baloncesto||ML||888sport,betway": {
-    "margin": 0.016862170087976636,
-    "cycles": 6,
+  "Sao Bernardo vs. CRB Maceio||futbol||OU_3.5||888sport,bet365": {
+    "margin": 0.012204424103737566,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T06:55:58.663903+00:00"
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "San Francisco vs. UMECIT||futbol||DNB||betway,paf": {
+    "margin": 0.0646853146853148,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Besiktas vs. Barcelona||baloncesto||OU_HT_83.5||betfair,williamhill": {
+    "margin": 0.056271723349025526,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Panathinaikos vs. Maccabi Tel Aviv||baloncesto||OU_HT_81.5||888sport,williamhill": {
+    "margin": 0.019079685746352437,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Defensa y Justicia vs. San Lorenzo||futbol||CORNERS_OU_7.5||betway,yosports": {
+    "margin": 0.010011123470522798,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Melbourne United vs. Cairns Taipans||baloncesto||AH_-8.5||paston,yosports": {
+    "margin": 0.012195121951219523,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Melbourne United vs. Cairns Taipans||baloncesto||AH_-7.5||betway,yosports": {
+    "margin": 0.013476827612953324,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Melbourne United vs. Cairns Taipans||baloncesto||AH_-6.5||betway,yosports": {
+    "margin": 0.015259895088221231,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "Melbourne United vs. Cairns Taipans||baloncesto||AH_-5.5||betway,yosports": {
+    "margin": 0.01612716092354094,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
+  },
+  "AL Hedood vs. Al-Masafi||futbol||DNB||paf,paston": {
+    "margin": 0.02412280701754388,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T07:26:54.376855+00:00"
   }
 }
