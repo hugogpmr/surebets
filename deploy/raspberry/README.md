@@ -51,7 +51,8 @@ cada 5 min y avisa al mismo canal de administración:
 - la caché del comparador (ciclo lento) tiene más de 60 min;
 - el puerto SSH de la VM no responde;
 - el servicio `surebets-tunnel` no está activo;
-- el disco de los backups no está montado en `/mnt/backup`.
+- el disco de los backups no está montado en `/mnt/backup`;
+- la copia en Google Drive lleva más de 30 h sin subirse.
 
 Avisa tras 2 fallos seguidos, lo recuerda cada 6 h y avisa al recuperarse.
 Solo usa la biblioteca estándar de Python. Token y canal en
@@ -65,3 +66,26 @@ systemctl --user daemon-reload
 systemctl --user enable --now surebets-watchdog.timer
 python3 ~/surebets-watchdog.py --dry-run   # ver el estado sin avisar
 ```
+
+## Copia en Google Drive (montada el 2026-10-02)
+
+Tras guardar la copia en el disco externo, `surebets-backup-pull.sh` la sube
+también a `gdrive:surebets-backups/{daily,weekly}` con la misma retención (30
+días y 26 semanas, ~400 MB). Si la subida falla, la copia local sigue hecha y
+el vigilante avisa cuando pasan 30 h sin subir.
+
+- rclone instalado sin sudo en `~/bin/rclone` (binario oficial de
+  downloads.rclone.org, comprobado con su SHA256SUMS).
+- Remoto `gdrive` con `scope=drive.file`: solo ve lo que sube él, no el resto
+  del Drive. Autorizado con un túnel al puerto de rclone desde el PC, que tiene
+  navegador:
+  ```sh
+  ssh -L 53682:127.0.0.1:53682 pi@192.168.1.17 '~/bin/rclone config create gdrive drive scope=drive.file'
+  ```
+  y abrir en el navegador del PC el enlace `http://127.0.0.1:53682/auth?...` que imprime.
+- Usa el client_id compartido de rclone, que Google va a retirar durante 2026.
+  Si las subidas empiezan a fallar, crear un client_id propio
+  (https://rclone.org/drive/#making-your-own-client-id) y repetir el paso de arriba
+  con `client_id=... client_secret=...`.
+- Restaurar: `~/bin/rclone copy gdrive:surebets-backups/daily/AAAA-MM-DD ./restaurar`
+  y `gunzip` de los `.db.gz`.

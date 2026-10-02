@@ -81,6 +81,18 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 ### Fase 3 — nodo en casa (webs que la VM no puede leer)
 - [ ] Mini PC / Raspberry Pi en la conexión de casa con las fuentes de navegador (Sportium, Versus, bwin,
       Winamax, William Hill), mandando sus lecturas a la VM por Tailscale. Es tu conexión, no un proxy.
+- [x] (2026-10-02) Raspberry montada: túnel SOCKS hacia la VM, copia nocturna de la BD al disco externo
+      y a Google Drive, y vigilante que avisa al canal de administración si la VM, el panel, el
+      comparador, el túnel o las copias fallan (`deploy/raspberry/README.md`).
+- [ ] **bwin por Proton VPN — APLAZADO por el usuario (2026-10-02)** por la memoria de la VM: bwin se
+      lee con navegador y la prueba completa llegó a 2,2 GB de pico, con la VM ya justa en los ciclos.
+      Funciona: por la IP de casa, 10.168 mercados/227 partidos en 119 s; por Proton Madrid desde el PC,
+      685 mercados de 10 fichas en 24 s. No usar la IP de casa: William Hill la bloqueó el 2-oct tras un
+      solo ciclo y el usuario podría perder el acceso o que le limiten la cuenta. Plan cuando se retome:
+      wireproxy en la Raspberry (WireGuard en espacio de usuario, sin sudo ni tocar rutas) como segunda
+      salida SOCKS (`-R 127.0.0.1:1081`, añadir ese `permitlisten` a `pitunnel` en la VM), con la config
+      WireGuard de Proton (servidor España, sin NetShield; el plan gratuito solo admite 1 dispositivo).
+      Empezar con pocas fichas, medir memoria y tráfico, y leerlo fuera del ciclo rápido.
 
 ### Fase 4 — cuentas y ejecución
 - [ ] Botón "he apostado" en Telegram, registro de beneficio y de límites por casa (puntos 18-20).

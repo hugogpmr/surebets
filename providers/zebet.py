@@ -112,6 +112,7 @@ from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+from providers.browser import block_heavy_resources
 
 DEFAULT_COMPETITION_URLS = {
     "futbol": "https://www.zebet.es/es/competition/306-laliga",
@@ -247,7 +248,7 @@ class ZebetProvider(OddsProvider):
         markets: list[Market] = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page(user_agent=USER_AGENT)
+            page = await block_heavy_resources(await browser.new_page(user_agent=USER_AGENT))
             for sport in sports:
                 primary = self.competition_urls.get(sport)
                 jobs = ([(primary, True)] if primary else []) + [(url, False) for url in self.extra_urls.get(sport, [])]

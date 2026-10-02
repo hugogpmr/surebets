@@ -5,6 +5,7 @@ from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
+from providers.browser import block_heavy_resources
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +135,7 @@ class MarcaApuestasProvider(OddsProvider):
         markets: list[Market] = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
+            page = await block_heavy_resources(await browser.new_page())
             for sport in sports:
                 url = self.competition_urls.get(sport)
                 if not url:
