@@ -136,9 +136,10 @@ DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
 
 logger = logging.getLogger(__name__)
 
-# Pestañas a la vez dentro del navegador de Zebet. Leídas de una en una tardaba ~135 s por ciclo en
-# la VM (2026-10-02), la fuente con navegador más lenta.
-DEFAULT_CONCURRENCY = 3
+# Pestañas a la vez dentro del navegador de Zebet. Con 3 bajaba de ~140 s a ~70 s, pero le quitaba CPU
+# a las demás fuentes (VM de 2 vCPU ya al límite, 2026-10-02: 888sport ~118 s -> ~150 s, Marca ~82 s
+# -> ~130 s) y el ciclo no bajaba. Subirlo solo con una máquina con CPU de sobra.
+DEFAULT_CONCURRENCY = 1
 
 # La web manda esta cabecera; verificado en vivo el 2026-09-24 sin ningún reto
 # anti-bot con ella (misma UA que usan ya providers/bet777.py y otros de este repo).
