@@ -101,6 +101,12 @@ _SOCKET_JS = """async ({routes, concurrency, quietMs, maxMs}) => {
 _HALF_RE = re.compile(r"^\s*(1|2)\s*[ªº°]\s*mitad\s*-\s*", re.IGNORECASE)
 _LINE_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*$")
 _NUMBER_RE = re.compile(r"([+-]?\d+(?:[.,]\d+)?)\s*$")
+# Títulos (sin el prefijo de mitad) de hándicap asiático que se leen; cualquier otro
+# "Hándicap asiático ..." se ignora
+_HANDICAP_TITLES = {
+    "hándicap asiático (handicap)": "AH",
+    "hándicap asiático córner": "CORNERS_AH",
+}
 
 
 def _num(text: str) -> float:
@@ -226,7 +232,10 @@ def parse_match_state(state: dict, match_id, bookmaker: str = "winamax") -> list
                 line = _num(match_line.group(1))
                 pair = [("Over" if code == "over" else "Under" if code == "under" else None, price) for _, code, price in pairs]
                 add(_emit(event, bookmaker, f"OU{team}{suffix}_{_fmt_line(line)}", pair, {"Over", "Under"}))
-        elif low.startswith("hándicap asiático"):
+        elif low in _HANDICAP_TITLES:
+            # "Hándicap asiático córner" lleva las mismas etiquetas ("Equipo -0.5") que el
+            # de goles: tomarlo por goles dio una surebet falsa del 5,8 % (2026-10-02)
+            base = _HANDICAP_TITLES[low]
             sides = {}
             for label, _code, price in pairs:
                 number = _NUMBER_RE.search(label)
@@ -235,7 +244,7 @@ def parse_match_state(state: dict, match_id, bookmaker: str = "winamax") -> list
                     sides["1" if team == "_HOME" else "2"] = (_num(number.group(1)), price)
             if set(sides) == {"1", "2"} and sides["1"][0] == -sides["2"][0]:
                 line = sides["1"][0]
-                add(_emit(event, bookmaker, f"AH{suffix}_{_fmt_line(line, signed=True)}", [("1", sides["1"][1]), ("2", sides["2"][1])], {"1", "2"}))
+                add(_emit(event, bookmaker, f"{base}{suffix}_{_fmt_line(line, signed=True)}", [("1", sides["1"][1]), ("2", sides["2"][1])], {"1", "2"}))
     return list(built.values())
 
 

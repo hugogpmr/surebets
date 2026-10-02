@@ -102,6 +102,20 @@ def test_asian_handicap_is_expressed_from_the_home_side_and_validated():
     assert not any(key.startswith("AH_+2.5") for key in markets)
 
 
+def test_corner_handicap_is_not_read_as_goal_handicap():
+    # Caso real (Sao Paulo-Santos, 2026-10-02): el de córneres trae las mismas etiquetas
+    state = main_state()
+    state.bet("Hándicap asiático córner", [("Alavés -0.5", "yes", 1.49), ("Atl. Madrid +0.5", "no", 2.2)])
+    state.bet("Hándicap asiático córner", [("Alavés -1.5", "yes", 1.78), ("Atl. Madrid +1.5", "no", 1.78)])
+    state.bet("Hándicap asiático (handicap)", [("Alavés -1.5", "yes", 3.7), ("Atl. Madrid +1.5", "no", 1.24)])
+    state.bet("Hándicap asiático tarjetas", [("Alavés -0.5", "yes", 2.0), ("Atl. Madrid +0.5", "no", 1.8)])
+    markets = state.markets()
+    assert "AH_-0.5" not in markets
+    assert prices(markets["AH_-1.5"]) == [("1", 3.7), ("2", 1.24)]
+    assert prices(markets["CORNERS_AH_-0.5"]) == [("1", 1.49), ("2", 2.2)]
+    assert prices(markets["CORNERS_AH_-1.5"]) == [("1", 1.78), ("2", 1.78)]
+
+
 def test_bets_with_an_unavailable_selection_are_dropped():
     state = main_state().bet("Ambos equipos marcan", [("Sí", "74", 1.76), ("No", "76", 2.05, False)])
     assert "BTTS" not in state.markets()

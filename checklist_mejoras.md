@@ -65,7 +65,9 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [x] Tarjetas de Bet777 = solo amarillas, cruzadas con el total de tarjetas (8 %, nunca se movió). Separadas (YELLOW_).
 - [ ] Tarjetas Altenar contra Kambi: 12 casos, margen 3,2 %, ninguno terminó por movimiento de cuota.
       Sospechoso (¿cuentan distinto la roja?), sin probar. Seguir con el backtest antes de tocar nada.
-- [ ] São Paulo-Santos AH -0.5 (bet365 contra Winamax) vivo 13 h al 5,8 %: revisar el hándicap de Winamax.
+- [x] São Paulo-Santos AH -0.5 (bet365 contra Winamax) vivo 13 h al 5,8 %: el 2,20 de Winamax era el
+      hándicap asiático de CÓRNERES (mismas etiquetas "Equipo -0.5") leído como de goles. Separado
+      (`CORNERS_AH`, 2026-10-02). Winamax no tenía AH -0.5 de goles en ese partido.
 
 ### Avisos (detectado 2026-10-02)
 - [x] (2026-10-02: un mensaje por partido, máx. 6 surebets; repetir solo si el margen sube >= 1 punto; las ya avisadas que parpadean se recuerdan 60 min. `engine/scan.py` REALERT_*) Agrupar avisos: 290 avisos de 86 partidos en 8 h (modo antiguo, 1-oct), hasta 26 del mismo partido
