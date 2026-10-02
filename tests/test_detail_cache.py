@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
+import pytest
+
 from engine.models import Market, Outcome
-from providers.detail_cache import FALLBACK_MAX_AGE, MID_REFRESH, DetailCache, DetailStore, collect, plan
+from providers.detail_cache import FALLBACK_MAX_AGE, LATE, MID_REFRESH, DetailCache, DetailStore, collect, plan
 from tests.test_altenar_provider import DETAILS, _event, _FakeProvider
 
 NOW = datetime(2026, 10, 2, 12, 0, tzinfo=timezone.utc)
@@ -124,3 +126,26 @@ def test_altenar_next_cycle_reads_only_near_cards_from_disk(tmp_path):
     second = provider()  # ciclo siguiente: proceso nuevo
     assert len(second._fetch_football(client=None)) == len(first_markets)
     assert sorted(calls) == [1, 1]
+
+
+def test_far_rereads_are_spread_across_cycles_instead_of_all_at_once():
+    # 2-oct, ciclo de 12 min: todo lo de 6-24 h se leyó a la vez y caducaba a la vez
+    # (~550 fichas un ciclo, ~3.500 el siguiente)
+    cache = DetailCache()
+    jobs = [f"p{i}" for i in range(300)]
+    starts = {job: NOW + timedelta(hours=18) for job in jobs}
+    for job in jobs:
+        cache.put(job, [market()], NOW)
+    cache.last_plan = NOW
+    reads, oldest = [], timedelta(0)
+    for cycle in range(1, 16):  # 3 h
+        now = NOW + timedelta(minutes=12 * cycle)
+        to_read, cached = plan(jobs, starts.get, cache, now)
+        oldest = max([oldest] + [now - cache._entries[job][0] for job in cached])
+        for job in to_read:
+            cache.put(job, [market()], now)
+        reads.append(len(to_read))
+    steady = reads[3:]
+    assert max(steady) - min(steady) <= 40, reads  # ~180 por ciclo (300 cada 20 min)
+    assert sum(reads) / len(reads) == pytest.approx(300 * 12 / 20, rel=0.15)
+    assert oldest <= MID_REFRESH * LATE
