@@ -1,0 +1,8 @@
+[Unit]
+Description=Copia nocturna de las bases de datos para la Raspberry (deploy/vm_backup_db.sh)
+
+[Service]
+Type=oneshot
+ExecStart=/root/surebets/deploy/vm_backup_db.sh
+Nice=10
+IOSchedulingClass=idle

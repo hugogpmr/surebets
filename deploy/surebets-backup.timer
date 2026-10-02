@@ -1,0 +1,9 @@
+[Unit]
+Description=Dispara la copia de las bases de datos cada noche (la Raspberry la descarga a las 04:00 UTC)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

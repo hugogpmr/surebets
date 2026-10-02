@@ -1,0 +1,6 @@
+[Unit]
+Description=Descarga la copia de las bases de datos de la VM al disco externo
+
+[Service]
+Type=oneshot
+ExecStart=%h/surebets-backup-pull.sh

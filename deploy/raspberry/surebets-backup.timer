@@ -1,0 +1,10 @@
+[Unit]
+Description=Descarga cada noche la copia de las bases de datos (la VM la prepara a las 03:30 UTC)
+
+[Timer]
+OnCalendar=*-*-* 04:00:00 UTC
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target
