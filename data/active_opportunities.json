@@ -1,7 +1,7 @@
 {
   "Piratas Veracruz vs. Alebrijes de Oaxaca||futbol||BTTS||888sport,leovegas": {
     "margin": 0.021739130434782594,
-    "cycles": 275,
+    "cycles": 276,
     "notified": true,
     "since": "2026-10-02T01:23:23.992281+00:00",
     "notified_margin": 0.021739130434782594
@@ -10,34 +10,33 @@
     "margin": 0.02675822874733602,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T22:32:26.648584+00:00",
-    "notified_margin": 0.02675822874733602,
-    "gone_at": "2026-10-02T22:39:25.790975+00:00"
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.02675822874733602
   },
   "Hassania Agadir vs. Maghreb Fez||futbol||1X2||1xbet_es,cgmapuestas": {
     "margin": 0.014275956284153013,
-    "cycles": 53,
+    "cycles": 54,
     "notified": true,
     "since": "2026-10-02T14:03:21.078541+00:00",
     "notified_margin": 0.014275956284153013
   },
   "FMP vs. Estrella Roja||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.01730371900826444,
-    "cycles": 40,
+    "cycles": 41,
     "notified": true,
     "since": "2026-10-02T16:43:04.044795+00:00",
     "notified_margin": 0.01730371900826444
   },
   "Chicago Bears vs. New York Jets||americano||AH_2.5||1xbet_es,interwetten": {
     "margin": 0.011837364899639713,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.011837364899639713
   },
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
@@ -52,7 +51,7 @@
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||OU_HT_19.5||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.012260004626416854
@@ -70,7 +69,8 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
-    "notified_margin": 0.0280199976746891
+    "notified_margin": 0.0280199976746891,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Puerto Montt vs. Universidad de Concepción||baloncesto||ML||betway,paf": {
     "margin": 0.020803443328550997,
@@ -82,22 +82,22 @@
   },
   "Newell's vs. Lanus||futbol||CORNERS_OU_HOME_3.5||jokerbet,paf": {
     "margin": 0.019079685746352437,
-    "cycles": 2,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T22:25:14.996085+00:00",
-    "notified_margin": 0.019079685746352437,
-    "gone_at": "2026-10-02T22:39:25.790975+00:00"
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.019079685746352437
   },
   "Nordstrand vs. Valerenga 2||futbol||DNB||betway,botemania": {
     "margin": 0.02675822874733602,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
-    "notified_margin": 0.02675822874733602
+    "notified_margin": 0.02675822874733602,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 20,
+    "cycles": 21,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -114,16 +114,16 @@
     "margin": 0.0280199976746891,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T22:25:14.996085+00:00",
-    "notified_margin": 0.0280199976746891,
-    "gone_at": "2026-10-02T22:32:26.648584+00:00"
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.0280199976746891
   },
   "CA Deportivo Paraguayo vs. Club Mercedes||futbol||1X2||betway,paf,pokerstars": {
     "margin": 0.030608435983575988,
     "cycles": 2,
     "notified": true,
     "since": "2026-10-02T22:32:26.648584+00:00",
-    "notified_margin": 0.056140350877192935
+    "notified_margin": 0.056140350877192935,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Finlandia vs. Albania||futbol||CARDS_OU_3.5||betinia,leovegas": {
     "margin": 0.024390243902438935,
@@ -146,7 +146,8 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
-    "notified_margin": 0.019079685746352437
+    "notified_margin": 0.019079685746352437,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Nordstrand vs. Valerenga 2||futbol||DNB||betway,speedybet": {
     "margin": 0.02675822874733602,
@@ -156,17 +157,9 @@
     "notified_margin": 0.02675822874733602,
     "gone_at": "2026-10-02T22:32:26.648584+00:00"
   },
-  "Argentina vs. Burkina Faso||futbol||BTTS||bet777,daznbet": {
-    "margin": 0.02972399150743099,
-    "cycles": 5,
-    "notified": true,
-    "since": "2026-10-02T21:08:39.834120+00:00",
-    "notified_margin": 0.02972399150743099,
-    "gone_at": "2026-10-02T21:43:26.798830+00:00"
-  },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_51.5||interwetten,leovegas": {
     "margin": 0.03078024337866858,
-    "cycles": 13,
+    "cycles": 14,
     "notified": true,
     "since": "2026-10-02T21:16:04.389164+00:00",
     "notified_margin": 0.03078024337866858
@@ -175,48 +168,15 @@
     "margin": 0.030608435983575988,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T22:25:14.996085+00:00",
-    "notified_margin": 0.056140350877192935,
-    "gone_at": "2026-10-02T22:32:26.648584+00:00"
-  },
-  "Reipas vs. Union Plaani||futbol||1X2||888sport,betway,yosports": {
-    "margin": 0.010017748651785174,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-02T21:36:26.179191+00:00",
-    "notified_margin": 0.010017748651785174,
-    "gone_at": "2026-10-02T21:43:26.798830+00:00"
-  },
-  "Juan Cruz Martin Manzano vs. Matthew William Donald||tenis||ML||888sport,paf": {
-    "margin": 0.014563106796116498,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-02T21:36:26.179191+00:00",
-    "notified_margin": 0.014563106796116498,
-    "gone_at": "2026-10-02T21:43:26.798830+00:00"
-  },
-  "Juan Cruz Martin Manzano vs. Matthew William Donald||tenis||AH_0.5||888sport,paf": {
-    "margin": 0.012195121951219523,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-02T21:36:26.179191+00:00",
-    "notified_margin": 0.012195121951219523,
-    "gone_at": "2026-10-02T21:43:26.798830+00:00"
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.056140350877192935
   },
   "Houston Texans vs. Dallas Cowboys||americano||AH_3.5||1xbet_es,bwin": {
     "margin": 0.016359060402684533,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-02T21:36:26.179191+00:00",
     "notified_margin": 0.016359060402684533
-  },
-  "Livingston vs. Ayr United||futbol||CORNERS_OU_10.5||betway,paf": {
-    "margin": 0.017145617000724478,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-02T21:36:26.179191+00:00",
-    "notified_margin": 0.017145617000724478,
-    "gone_at": "2026-10-02T21:43:26.798830+00:00"
   },
   "Surinam vs. Guatemala||futbol||1X2||luckia,paf,pokerstars": {
     "margin": 0.01681598131758555,
@@ -323,11 +283,11 @@
     "gone_at": "2026-10-02T22:39:25.790975+00:00"
   },
   "Puerto Montt vs. Universidad de Concepción||baloncesto||ML||betway,bwin": {
-    "margin": 0.014705882352941235,
-    "cycles": 8,
+    "margin": 0.04577464788732388,
+    "cycles": 9,
     "notified": true,
     "since": "2026-10-02T21:50:43.406511+00:00",
-    "notified_margin": 0.014705882352941235
+    "notified_margin": 0.04577464788732388
   },
   "Atlético Mineiro vs. Bragantino||futbol||CORNERS_OU_6.5||cgmapuestas,retabet": {
     "margin": 0.12184873949579833,
@@ -365,9 +325,8 @@
     "margin": 0.017145617000724478,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-02T22:25:14.996085+00:00",
-    "notified_margin": 0.017145617000724478,
-    "gone_at": "2026-10-02T22:32:26.648584+00:00"
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.017145617000724478
   },
   "ALS Andrezieux-Boutheon vs. Loon Plage||baloncesto||ML||betinia,daznbet": {
     "margin": 0.035625874502206445,
@@ -422,7 +381,8 @@
     "cycles": 5,
     "notified": true,
     "since": "2026-10-02T22:11:24.639666+00:00",
-    "notified_margin": 0.02857142857142858
+    "notified_margin": 0.02857142857142858,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Alcorcón vs. Juventud Torremolinos||futbol||AH_-2||bet365,jokerbet": {
     "margin": 0.013071895424836555,
@@ -469,7 +429,8 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
-    "notified_margin": 0.017145617000724478
+    "notified_margin": 0.017145617000724478,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Colombia vs. Paraguay||futbol||AH_-1.5||1xbet_es,bet365": {
     "margin": 0.01098901098901095,
@@ -497,14 +458,14 @@
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,bet365": {
     "margin": 0.032109032109032154,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true,
     "since": "2026-10-02T22:25:14.996085+00:00",
     "notified_margin": 0.05129619415333719
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2||1xbet_es,bet365": {
     "margin": 0.020295548073325786,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true,
     "since": "2026-10-02T22:25:14.996085+00:00",
     "notified_margin": 0.02981814837804908
@@ -514,7 +475,8 @@
     "cycles": 3,
     "notified": true,
     "since": "2026-10-02T22:25:14.996085+00:00",
-    "notified_margin": 0.1333333333333333
+    "notified_margin": 0.1333333333333333,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Ostersund (F) vs. IK Eos Lund (F)||baloncesto||DNB_Q1||betinia,jokerbet": {
     "margin": 0.07139188495120696,
@@ -526,7 +488,7 @@
   },
   "New York Giants vs. Arizona Cardinals||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.033302497687326515,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-02T22:32:26.648584+00:00",
     "notified_margin": 0.033302497687326515
@@ -536,34 +498,57 @@
     "cycles": 2,
     "notified": true,
     "since": "2026-10-02T22:32:26.648584+00:00",
-    "notified_margin": 0.023824583596879556
+    "notified_margin": 0.023824583596879556,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "Alcorcón vs. Juventud Torremolinos||futbol||1X2||1xbet_es,interwetten,yosports": {
     "margin": 0.018881118881118764,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
-    "notified_margin": 0.018881118881118764
+    "notified_margin": 0.018881118881118764,
+    "gone_at": "2026-10-02T22:46:29.662477+00:00"
   },
   "CBK Mersin (W) vs. OGM Ormanspor (W)||baloncesto||ML||888sport,betway": {
     "margin": 0.012820512820512775,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
     "notified_margin": 0.012820512820512775
   },
   "CBK Mersin (W) vs. OGM Ormanspor (W)||baloncesto||OU_Q1_38.5||888sport,jokerbet": {
     "margin": 0.032710280373831724,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
     "notified_margin": 0.032710280373831724
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||betfair,retabet": {
     "margin": 0.020390070921985748,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-02T22:39:25.790975+00:00",
     "notified_margin": 0.020390070921985748
+  },
+  "Alcorcón vs. Juventud Torremolinos||futbol||1X2||1xbet_es,botemania,interwetten": {
+    "margin": 0.018881118881118764,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.018881118881118764
+  },
+  "Victoria Sporting Club vs. Bengal Nagpur Railway||futbol||1X2||888sport,betway": {
+    "margin": 0.022684279191128365,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.022684279191128365
+  },
+  "Bisons Loimaa vs. Kataja Basket||baloncesto||ML||daznbet,jokerbet": {
+    "margin": 0.01218013185830824,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T22:46:29.662477+00:00",
+    "notified_margin": 0.01218013185830824
   }
 }
