@@ -1,104 +1,134 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 195,
+    "cycles": 201,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 152,
+    "cycles": 158,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "San Francisco vs. UMECIT||futbol||1X2||1xbet_es,jokerbet,speedybet": {
     "margin": 0.020917469193331262,
-    "cycles": 145,
+    "cycles": 151,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 142,
+    "cycles": 148,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.04279279279279291,
-    "cycles": 139,
+    "cycles": 145,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islandia vs. Bulgaria||futbol||ML||1xbet_es,interwetten": {
     "margin": 0.17724251057584384,
-    "cycles": 137,
+    "cycles": 143,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Martinica vs. Honduras||futbol||ML||1xbet_es,888sport": {
     "margin": 0.22679454295379364,
-    "cycles": 130,
+    "cycles": 136,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_4||jokerbet,winamax": {
     "margin": 0.012195121951219523,
-    "cycles": 92,
+    "cycles": 98,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Teplice vs. Dynamo Dresden||futbol||OU_5||jokerbet,winamax": {
     "margin": 0.014985014985014922,
-    "cycles": 92,
+    "cycles": 98,
     "notified": true,
     "since": "2026-10-01T21:29:43.703771+00:00"
   },
   "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.031425891181988685,
-    "cycles": 73,
+    "cycles": 79,
     "notified": true,
     "since": "2026-10-01T22:02:13.131531+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 72,
+    "cycles": 78,
     "notified": true,
     "since": "2026-10-01T22:17:05.420880+00:00"
   },
   "Panteras vs. Dorados||baloncesto||ML||betway,paf": {
     "margin": 0.015873015873015928,
-    "cycles": 45,
+    "cycles": 51,
     "notified": true,
     "since": "2026-10-01T23:02:03.207194+00:00"
   },
   "República Dominicana vs. Haití||futbol||AH_1||1xbet_es,bet365": {
     "margin": 0.024276377217553602,
-    "cycles": 34,
+    "cycles": 40,
     "notified": true,
     "since": "2026-10-01T23:15:30.101235+00:00"
   },
   "Kazajistán vs. Moldavia||futbol||AH_-1||cgmapuestas,interwetten": {
     "margin": 0.019079685746352437,
-    "cycles": 33,
+    "cycles": 39,
     "notified": true,
     "since": "2026-10-01T23:16:30.591217+00:00"
   },
   "Veraguas vs. Tauro||futbol||DNB||cgmapuestas,speedybet": {
     "margin": 0.04279279279279291,
-    "cycles": 17,
+    "cycles": 23,
     "notified": true,
     "since": "2026-10-01T23:36:26.502704+00:00"
   },
   "Karolina Muchova vs. Katie Boulter||tenis||ML_SET1||888sport,paf": {
     "margin": 0.01831339067508808,
-    "cycles": 9,
+    "cycles": 15,
     "notified": true,
     "since": "2026-10-01T23:46:18.474891+00:00"
   },
   "LPS Laajasalon vs. TiPS||futbol||OU_4.5||betway,paf": {
     "margin": 0.028301886792452935,
-    "cycles": 2,
+    "cycles": 8,
     "notified": true,
     "since": "2026-10-01T23:54:53.012096+00:00"
+  },
+  "India vs. Brasil||futbol||AH_3.5||1xbet_es,bet365": {
+    "margin": 0.02981814837804908,
+    "cycles": 5,
+    "notified": true,
+    "since": "2026-10-01T23:59:08.181889+00:00"
+  },
+  "India vs. Brasil||futbol||AH_4||1xbet_es,bet365": {
+    "margin": 0.024390243902438935,
+    "cycles": 5,
+    "notified": true,
+    "since": "2026-10-01T23:59:08.181889+00:00"
+  },
+  "Novorizontino vs. Goiás||futbol||1X2||1xbet_es,betway,cgmapuestas": {
+    "margin": 0.012987012987012991,
+    "cycles": 2,
+    "notified": true,
+    "since": "2026-10-02T00:02:12.987347+00:00"
+  },
+  "Novorizontino vs. Goiás||futbol||AH_-1||1xbet_es,betway": {
+    "margin": 0.021531100478468845,
+    "cycles": 2,
+    "notified": true,
+    "since": "2026-10-02T00:02:12.987347+00:00"
+  },
+  "Veraguas vs. Tauro||futbol||1X2||1xbet_es,jokerbet,speedybet": {
+    "margin": 0.029660571668768454,
+    "cycles": 2,
+    "notified": true,
+    "since": "2026-10-02T00:02:12.987347+00:00"
   }
 }
