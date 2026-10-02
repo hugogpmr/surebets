@@ -16,7 +16,7 @@ SSH="ssh -i $KEY -o BatchMode=yes -o StrictHostKeyChecking=yes"
 mountpoint -q "$MOUNT" || { echo "El disco externo no está montado en $MOUNT" >&2; exit 1; }
 
 mkdir -p "$DEST/latest" "$DEST/daily" "$DEST/weekly"
-rsync -t --timeout=300 --include='*.db.gz' --exclude='*' -e "$SSH" "$VM:./" "$DEST/latest/"
+rsync -rt --timeout=300 --include='*.db.gz' --exclude='*' -e "$SSH" "$VM:./" "$DEST/latest/"
 
 day="$(date -u +%F)"
 rm -rf "$DEST/daily/$day"
