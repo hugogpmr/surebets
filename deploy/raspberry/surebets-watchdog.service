@@ -1,0 +1,8 @@
+[Unit]
+Description=Vigila desde casa que la VM de surebets siga escaneando y publicando
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/surebets-watchdog.py
+TimeoutStartSec=3min
