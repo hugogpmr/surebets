@@ -83,7 +83,6 @@ from engine.matching import peer_coverage
 from engine.models import Market, Outcome
 from providers.altenar import _fmt_line
 from providers.base import OddsProvider
-from providers.browser import block_heavy_resources
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -460,7 +459,7 @@ class PokerStarsProvider(OddsProvider):
     async def _fetch_markets_async(self) -> list[Market]:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await block_heavy_resources(await browser.new_page())
+            page = await browser.new_page()
             try:
                 await page.goto(self.url, timeout=20000, wait_until="domcontentloaded")
                 await page.wait_for_selector('[data-testid="event-list"]', timeout=20000)
@@ -536,7 +535,7 @@ class PokerStarsProvider(OddsProvider):
                 if remaining_ms < MIN_TAB_BUDGET_MS:
                     skipped += 1
                     return []
-                page = await block_heavy_resources(await browser.new_page())
+                page = await browser.new_page()
                 try:
                     await page.goto(
                         f"{SITE_ORIGIN}{href}#{tab}", timeout=min(20000, remaining_ms), wait_until="domcontentloaded"

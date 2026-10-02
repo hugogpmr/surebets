@@ -9,7 +9,6 @@ from playwright.async_api import async_playwright
 from engine.models import Market, Outcome
 from providers.altenar import _fmt_line
 from providers.base import OddsProvider
-from providers.browser import block_heavy_resources
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -310,7 +309,7 @@ class WinamaxProvider(OddsProvider):
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             try:
-                page = await block_heavy_resources(await browser.new_page())
+                page = await browser.new_page()
                 await page.goto(HOST_PAGE, timeout=30000, wait_until="domcontentloaded")
                 routes = [f"tournament:{self.competitions[key].split('/')[-1]}" for key in keys]
                 listings = await self._socket(page, routes, self.concurrency, 500, 8000)

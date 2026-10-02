@@ -112,7 +112,6 @@ from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
-from providers.browser import block_heavy_resources
 
 DEFAULT_COMPETITION_URLS = {
     "futbol": "https://www.zebet.es/es/competition/306-laliga",
@@ -136,6 +135,10 @@ DEFAULT_EXTRA_URLS: dict[str, list[str]] = {
 }
 
 logger = logging.getLogger(__name__)
+
+# Pestañas a la vez dentro del navegador de Zebet. Leídas de una en una tardaba ~135 s por ciclo en
+# la VM (2026-10-02), la fuente con navegador más lenta.
+DEFAULT_CONCURRENCY = 3
 
 # La web manda esta cabecera; verificado en vivo el 2026-09-24 sin ningún reto
 # anti-bot con ella (misma UA que usan ya providers/bet777.py y otros de este repo).
@@ -236,38 +239,60 @@ class ZebetProvider(OddsProvider):
     name = "zebet"
     uses_browser = True  # lanza Chromium: el escaneo limita cuantos a la vez (MAX_CONCURRENT_FETCHES)
 
-    def __init__(self, competition_urls: dict[str, str] | None = None, extra_urls: dict[str, list[str]] | None = None):
+    def __init__(
+        self,
+        competition_urls: dict[str, str] | None = None,
+        extra_urls: dict[str, list[str]] | None = None,
+        concurrency: int = DEFAULT_CONCURRENCY,
+    ):
         self.competition_urls = competition_urls or DEFAULT_COMPETITION_URLS
         # Con `competition_urls` propias (tests, pruebas sueltas) no se añaden las ligas por defecto.
         self.extra_urls = extra_urls if extra_urls is not None else ({} if competition_urls else DEFAULT_EXTRA_URLS)
+        self.concurrency = max(1, concurrency)
+        self._cookies_seen: set[int] = set()
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         return asyncio.run(self._fetch_markets_async(sports))
 
     async def _fetch_markets_async(self, sports: list[str]) -> list[Market]:
-        markets: list[Market] = []
+        jobs = []
+        for sport in sports:
+            primary = self.competition_urls.get(sport)
+            jobs += ([(sport, primary, True)] if primary else []) + [(sport, url, False) for url in self.extra_urls.get(sport, [])]
+        results: list[list[Market]] = [[] for _ in jobs]
+        pending = iter(enumerate(jobs))
+        self._cookies_seen = set()
+
+        async def worker(browser) -> None:
+            # Una pestaña por trabajador; se reparten las competiciones en orden (la primera es la que
+            # lleva fichas de partido, la más larga). Una competición rota no para las demás.
+            page = None
+            for index, (sport, url, with_extras) in pending:
+                if page is None:
+                    page = await browser.new_page(user_agent=USER_AGENT)
+                try:
+                    results[index] = await self._fetch_competition(page, url, sport, with_extras)
+                except Exception:
+                    logger.warning("Zebet: no se pudo leer %s", url, exc_info=True)
+
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await block_heavy_resources(await browser.new_page(user_agent=USER_AGENT))
-            for sport in sports:
-                primary = self.competition_urls.get(sport)
-                jobs = ([(primary, True)] if primary else []) + [(url, False) for url in self.extra_urls.get(sport, [])]
-                for url, with_extras in jobs:
-                    try:
-                        markets.extend(await self._fetch_competition(page, url, sport, with_extras))
-                    except Exception:
-                        logger.warning("Zebet: no se pudo leer %s", url, exc_info=True)
+            await asyncio.gather(*(worker(browser) for _ in range(min(self.concurrency, len(jobs)))))
             await browser.close()
-        return markets
+        return [market for found in results for market in found]
 
     async def _fetch_competition(self, page, url: str, sport: str, with_extras: bool) -> list[Market]:
         """1X2 del listado de una competición y, con `with_extras`, los mercados de la ficha de
-        cada partido. Cookiebot se acepta una vez por sesión (si sigue el banner, se acepta)."""
+        cada partido. El banner de Cookiebot sale en la primera carga de cada pestaña (cada una
+        tiene sus propias cookies): solo entonces se espera para aceptarlo (antes se esperaban
+        3 s en cada listado, ~36 s por ciclo)."""
         await page.goto(url, timeout=20000, wait_until="load")
-        try:
-            await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=3000)
-        except Exception:
-            pass  # ya aceptado en una sesión previa, o el banner no apareció
+        if id(page) not in self._cookies_seen:
+            self._cookies_seen.add(id(page))
+            try:
+                await page.click(_COOKIE_ACCEPT_SELECTOR, timeout=3000)
+            except Exception:
+                pass  # el banner no apareció
         await page.wait_for_selector("#event", timeout=20000)
         raw_events = await page.eval_on_selector("#event", _EXTRACT_EVENTS_JS)
         markets: list[Market] = []

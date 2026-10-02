@@ -6,7 +6,6 @@ from playwright.async_api import async_playwright
 from engine.models import Market, Outcome
 from providers.altenar import _fmt_line
 from providers.base import OddsProvider
-from providers.browser import block_heavy_resources
 
 logger = logging.getLogger(__name__)
 
@@ -308,7 +307,7 @@ class SportiumProvider(OddsProvider):
         markets: list[Market] = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await block_heavy_resources(await browser.new_page())
+            page = await browser.new_page()
             for sport in sports:
                 url = self.competition_urls.get(sport)
                 if not url:
@@ -352,7 +351,7 @@ class SportiumProvider(OddsProvider):
 
         async def fetch_one(home: str, away: str, href: str) -> list[Market]:
             async with semaphore:
-                page = await block_heavy_resources(await browser.new_page())
+                page = await browser.new_page()
                 try:
                     await page.goto(f"{SITE_ORIGIN}{href}", timeout=20000, wait_until="domcontentloaded")
                     # Las pestañas de categoría (Handicap/Mitades) tardan más en
