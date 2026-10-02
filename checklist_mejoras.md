@@ -39,6 +39,11 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
       `engine/live.py` + `scripts/run_live.py`, servicio `surebets-live`; ciclo lento seguido;
       panel a GitHub cada 10 min). Medido antes del cambio: Altenar ~300 s por lectura (1.350
       partidos), 888sport ~200 s, Kambi ~160 s, cruce ~24 s.
+- [!] **3ª prueba (2026-10-01 22:28 → 10-02 12:09, con caché de fichas)**: estable (sin OOM, swap ~600 MB)
+      pero se reinició 52 veces por pasar de 2 GB, al final cada 10 min: el volumen subió (viernes: 262k
+      mercados, Altenar 176k, cruce 181 s con la CPU llena). En la práctica, un análisis cada ~10 min:
+      sin ventaja sobre el ciclo de 12. Vuelto al ciclo de 12 min. Con 4 GB / 2 vCPU no da: hace falta
+      VM más grande o leer menos (recortar mercados que nunca dan surebets, con datos del backtest).
 - [!] **En pausa por memoria (2026-10-01)**: probado 2 veces en la VM. Funciona (avisos cada 1-2 min,
       sin re-avisos al arrancar) pero en una VM de 4 GB agota la swap: 1ª prueba swap 100 % en 35 min;
       2ª (malloc_trim + MALLOC_ARENA_MAX=2 + menos hilos) aguantó 40 min sin reiniciarse pero la swap
@@ -51,6 +56,11 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
 - [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
       patas justo antes de avisar. Publicar el panel sin git en cada ciclo.
+
+### Avisos (detectado 2026-10-02)
+- [ ] Agrupar avisos: 290 avisos de 86 partidos en 8 h (modo antiguo, 1-oct), hasta 26 del mismo partido
+      (un aviso por cada línea de más/menos o hándicap, y otro cada vez que el margen cambia 0,5 puntos).
+      Un mensaje por partido con todas sus surebets y re-avisar solo si mejora de verdad.
 
 ### Fase 3 — nodo en casa (webs que la VM no puede leer)
 - [ ] Mini PC / Raspberry Pi en la conexión de casa con las fuentes de navegador (Sportium, Versus, bwin,
