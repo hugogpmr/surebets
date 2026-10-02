@@ -114,8 +114,6 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] 19. Botón "he apostado" en Telegram/web: registrar apuesta, beneficio real y qué casas te limitan.
 - [ ] 20. Tracking de bankroll y rentabilidad por casa y por tipo de mercado.
 - [ ] 21. Ranking de surebets ponderando margen, liquidez y riesgo de anulación (solo Winamax permite cancelar).
-- [ ] 22. Alertas priorizadas: solo margen mínimo y estables durante 2 ciclos; resto en resumen.
-- [ ] 23. Enlaces directos al partido en cada casa dentro de la alerta.
 
 ## E. Velocidad
 - [ ] 24. Arrancar el refine de PokerStars en cuanto Altenar/Kambi tengan sus listas de eventos (sin esperar a los detalles).
