@@ -465,6 +465,7 @@ async def _run_scan_cycle(
     executor: ThreadPoolExecutor | None = None,
     verify_min_age: timedelta | None = None,
     log_sources: bool = True,
+    expected_seconds: dict[str, float] | None = None,
 ) -> dict:
     """Ejecuta un ciclo de escaneo. Muta `active_state` in-place (clave ->
     {margin, cycles, notified}) para que el caller pueda persistirlo entre
@@ -483,6 +484,11 @@ async def _run_scan_cycle(
     margen muy alto sin verificar deben llevar al menos ese tiempo apareciendo. Con un análisis
     por minuto, "3 escaneos seguidos" serían 3 minutos con los mismos datos de un comparador que
     se refresca cada ~20: no demostraría nada.
+
+    `expected_seconds` ({fuente: segundos de lectura del ciclo anterior}): las fuentes cogen turno
+    de navegador de la más larga a la más corta (con 3 navegadores para 7 fuentes, las largas que
+    entraban al final alargaban la lectura ~20-25 s, VM 2026-10-02). El orden de `providers` no
+    cambia: decide qué nombre de evento gana en el cruce.
     """
     raw_by_provider: dict[str, list] = {}
     # Las fuentes se leen A LA VEZ (cada una en su hilo, con su propio navegador si lo
@@ -515,19 +521,36 @@ async def _run_scan_cycle(
     previous_peers = peers.load(read_at) if peers is not None and any(p.refines for p in to_read) else None
     refined_early: set[str] = set()
 
-    async def read(provider: OddsProvider) -> list | None:
-        fetched = await _fetch(provider, sports, logger, sem, fetch_timings, executor)
-        if fetched is None or not provider.refines or previous_peers is None:
+    async def read_both(provider: OddsProvider) -> list | None:
+        fetched = await _fetch(provider, sports, logger, None, fetch_timings, executor)
+        if fetched is None:
             return fetched
         logger.info(
             "%s: segunda pasada adelantada con los partidos del ciclo anterior (hace %.0f min)",
             provider.name, (peers.age(read_at) or timedelta(0)).total_seconds() / 60,
         )
-        fetched.extend(await _refine(provider, sports, previous_peers, logger, sem, fetch_timings, executor))
+        fetched.extend(await _refine(provider, sports, previous_peers, logger, None, fetch_timings, executor))
         refined_early.add(provider.name)
         return fetched
 
-    fetched_all = await asyncio.gather(*(read(provider) for provider in to_read))
+    async def read(provider: OddsProvider) -> list | None:
+        if not provider.refines or previous_peers is None:
+            return await _fetch(provider, sports, logger, sem, fetch_timings, executor)
+        if sem is None or not provider.uses_browser:
+            return await read_both(provider)
+        # Las dos pasadas con el mismo turno de navegador: soltándolo entre una y otra, la segunda
+        # volvía a la cola detrás de todas las demás (PokerStars esperaba ~2 min por ciclo).
+        asked = time.perf_counter()
+        async with sem:
+            fetch_timings.setdefault(provider.name, {"wait": 0.0, "run": 0.0})["wait"] += time.perf_counter() - asked
+            return await read_both(provider)
+
+    # Turnos de navegador de la fuente más larga a la más corta (ver docstring).
+    order = sorted(range(len(to_read)), key=lambda i: -(expected_seconds or {}).get(to_read[i].name, 0.0))
+    in_order = await asyncio.gather(*(read(to_read[i]) for i in order))
+    fetched_all: list = [None] * len(to_read)
+    for position, i in enumerate(order):
+        fetched_all[i] = in_order[position]
     phases["lectura"] = time.perf_counter() - cycle_start
     for provider, fetched in zip(to_read, fetched_all):
         if fetched is not None:
