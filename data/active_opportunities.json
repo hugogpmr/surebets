@@ -1,116 +1,134 @@
 {
   "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.031425891181988685,
-    "cycles": 327,
+    "cycles": 328,
     "notified": true,
     "since": "2026-10-01T22:02:13.131531+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 326,
+    "cycles": 327,
     "notified": true,
     "since": "2026-10-01T22:17:05.420880+00:00"
   },
   "Piratas Veracruz vs. Alebrijes de Oaxaca||futbol||BTTS||888sport,leovegas": {
     "margin": 0.021739130434782594,
-    "cycles": 218,
+    "cycles": 219,
     "notified": true,
     "since": "2026-10-02T01:23:23.992281+00:00"
   },
   "Besiktas vs. Barcelona||baloncesto||OU_HT_83.5||betfair,williamhill": {
     "margin": 0.056271723349025526,
-    "cycles": 79,
+    "cycles": 80,
     "notified": true,
     "since": "2026-10-02T07:26:54.376855+00:00"
   },
   "Panathinaikos vs. Maccabi Tel Aviv||baloncesto||OU_HT_81.5||888sport,williamhill": {
     "margin": 0.019079685746352437,
-    "cycles": 79,
+    "cycles": 80,
     "notified": true,
     "since": "2026-10-02T07:26:54.376855+00:00"
   },
-  "Kazajistán vs. Moldavia||futbol||AH_-1||1xbet_es,cgmapuestas": {
-    "margin": 0.02300381916688865,
-    "cycles": 54,
-    "notified": true,
-    "since": "2026-10-02T08:51:21.014617+00:00"
-  },
-  "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
-    "margin": 0.045454545454545414,
-    "cycles": 43,
-    "notified": true,
-    "since": "2026-10-02T09:38:04.266786+00:00"
-  },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.03219391475351874,
-    "cycles": 8,
+    "cycles": 9,
     "notified": true,
     "since": "2026-10-02T11:40:24.320875+00:00"
   },
-  "España vs. República Checa||futbol||CORNERS_OU_7.5||betfair,cgmapuestas": {
-    "margin": 0.010011123470522798,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-02T12:00:46.368834+00:00"
-  },
-  "España vs. República Checa||futbol||CORNERS_OU_8.5||betfair,retabet": {
-    "margin": 0.015481373971939938,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-02T12:00:46.368834+00:00"
-  },
-  "España vs. República Checa||futbol||CORNERS_OU_9.5||betfair,retabet": {
-    "margin": 0.01520467836257311,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-02T12:00:46.368834+00:00"
-  },
-  "España vs. República Checa||futbol||CORNERS_OU_10.5||betfair,retabet": {
-    "margin": 0.014985014985014922,
-    "cycles": 6,
-    "notified": true,
-    "since": "2026-10-02T12:00:46.368834+00:00"
-  },
   "Dundalk vs. Bohemian||futbol||AH_1||bet365,cgmapuestas": {
-    "margin": 0.024935703902493556,
-    "cycles": 6,
+    "margin": 0.0357582147250044,
+    "cycles": 7,
     "notified": true,
     "since": "2026-10-02T12:00:46.368834+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||AH_-1.5||betfair,paf": {
     "margin": 0.05159494754870475,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-02T12:30:48.311443+00:00"
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||bet365,luckia": {
     "margin": 0.01775254573308105,
-    "cycles": 2,
-    "notified": true,
-    "since": "2026-10-02T12:50:14.272751+00:00"
-  },
-  "Helmond vs. Heracles||futbol||AH_2||interwetten,jokerbet": {
-    "margin": 0.033033033033033066,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-02T12:50:14.272751+00:00"
   },
   "Cedevita Junior vs. Furnir||baloncesto||ML||luckia,winamax": {
     "margin": 0.03446925186055627,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-02T13:05:26.476497+00:00"
-  },
-  "Bélgica vs. Turquía||futbol||CORNERS_OU_10.5||betway,interwetten": {
-    "margin": 0.010011123470522798,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-02T13:05:26.476497+00:00"
   },
   "Nordstrand vs. Valerenga 2||futbol||DNB||betway,paf": {
     "margin": 0.02675822874733602,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-02T13:05:26.476497+00:00"
+  },
+  "Sao Paulo FC vs. Santos||futbol||AH_-0.5||cgmapuestas,winamax": {
+    "margin": 0.03525046382189245,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Kazajistán vs. Moldavia||futbol||AH_-1||cgmapuestas,interwetten": {
+    "margin": 0.02557319223985899,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Bélgica vs. Turquía||futbol||CORNERS_OU_10.5||cgmapuestas,interwetten": {
+    "margin": 0.010011123470522798,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Juventude vs. Operário||futbol||AH_-1||cgmapuestas,interwetten": {
+    "margin": 0.011666299801893043,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Helmond vs. Heracles||futbol||AH_2||bet365,interwetten": {
+    "margin": 0.030303030303030276,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Wolfsberger vs. ASK Voitsberg||futbol||AH_-1.5||1xbet_es,jokerbet": {
+    "margin": 0.04785485976680315,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Finlandia vs. Albania||futbol||CARDS_OU_4.5||betway,paf": {
+    "margin": 0.04554865424430643,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Rodinghausen vs. VfL Sportfreunde Lotte 1929||futbol||OU_2.5||betway,daznbet": {
+    "margin": 0.02083333333333337,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Rodinghausen vs. VfL Sportfreunde Lotte 1929||futbol||OU_4.5||betway,daznbet": {
+    "margin": 0.03256704980842906,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Rodinghausen vs. VfL Sportfreunde Lotte 1929||futbol||BTTS||betway,daznbet": {
+    "margin": 0.033033033033033066,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
+  },
+  "Rodinghausen vs. VfL Sportfreunde Lotte 1929||futbol||OU_AWAY_1.5||betway,daznbet": {
+    "margin": 0.02777777777777768,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T13:18:01.544769+00:00"
   }
 }
