@@ -169,10 +169,6 @@ BETFAIR_DOMAIN = os.getenv("BETFAIR_DOMAIN", "es")
 # providers/detail_cache.py). Vacío = cada ciclo lo relee todo, como antes del 2026-10-02.
 DETAIL_CACHE_DIR = os.getenv("DETAIL_CACHE_DIR", "cache")
 
-# Segundos que tardó cada fuente en el ciclo anterior: el siguiente da turno de navegador primero
-# a las más largas (engine/scan.py, `expected_seconds`).
-SOURCE_SECONDS_PATH = os.getenv("SOURCE_SECONDS_PATH", "cache/source_seconds.json")
-
 # Histórico de surebets para el backtest (engine/backtest.py, scripts/backtest_report.py): cada
 # surebet detectada se guarda como un episodio (cuándo apareció, con qué cuotas, cuándo y por qué
 # dejó de aparecer). Va en su propio .db en cache/ (fuera de git, propio de cada máquina) porque

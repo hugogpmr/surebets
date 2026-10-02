@@ -275,28 +275,6 @@ def open_backtest() -> SurebetLog | None:
         return None
 
 
-def load_source_seconds() -> dict[str, float]:
-    """Segundos de lectura de cada fuente en el ciclo anterior ({} si no hay o está roto)."""
-    try:
-        data = json.loads(pathlib.Path(config.SOURCE_SECONDS_PATH).read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
-    return {name: float(seconds) for name, seconds in data.items()} if isinstance(data, dict) else {}
-
-
-def save_source_seconds(sources: dict) -> None:
-    """Guarda lo que tardó cada fuente leída en este ciclo; las no leídas (aparcadas, fallidas)
-    conservan su último valor."""
-    seconds = load_source_seconds()
-    seconds.update({name: info["seconds"] for name, info in sources.items() if info.get("ok")})
-    try:
-        path = pathlib.Path(config.SOURCE_SECONDS_PATH)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(seconds, indent=2), encoding="utf-8")
-    except OSError:
-        logger.warning("No se pudo guardar los tiempos de las fuentes", exc_info=True)
-
-
 async def run_scan(mode: str) -> None:
     pathlib.Path(config.DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     init_db(config.DB_PATH)
@@ -337,13 +315,11 @@ async def run_scan(mode: str) -> None:
         source_alerts=SourceAlerts(config.SOURCE_ALERTS_PATH, config.SOURCE_ALERT_AFTER, config.SOURCE_ALERT_IGNORE),
         notify_admin=lambda text: notify_admin(bot, text),
         backtest=open_backtest(),
-        expected_seconds=load_source_seconds(),
     )
 
     # Estado de cada fuente en el panel/snapshot: una con 0 mercados, o vacía en
     # la caché, es señal de que algo va mal. De las cacheadas se añade su edad.
     sources = result["sources"]
-    save_source_seconds(sources)
     for provider in middle:
         if isinstance(provider, CachedProvider) and provider.name in sources:
             sources[provider.name]["cache"] = provider.summary
