@@ -164,6 +164,11 @@ BETFAIR_EXCHANGE_COMMISSION = float(os.getenv("BETFAIR_EXCHANGE_COMMISSION", "0.
 # Dominio de la cuenta de Betfair: "es" para cuentas españolas (betfair.es), "com" para el resto.
 BETFAIR_DOMAIN = os.getenv("BETFAIR_DOMAIN", "es")
 
+# Carpeta donde Altenar y Kambi guardan las fichas de partido leídas, para que el ciclo siguiente
+# solo relea las que tocan (a < 6 h siempre, 6-24 h cada 20 min, más lejos cada 45 min; ver
+# providers/detail_cache.py). Vacío = cada ciclo lo relee todo, como antes del 2026-10-02.
+DETAIL_CACHE_DIR = os.getenv("DETAIL_CACHE_DIR", "cache")
+
 # Histórico de surebets para el backtest (engine/backtest.py, scripts/backtest_report.py): cada
 # surebet detectada se guarda como un episodio (cuándo apareció, con qué cuotas, cuándo y por qué
 # dejó de aparecer). Va en su propio .db en cache/ (fuera de git, propio de cada máquina) porque

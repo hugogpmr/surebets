@@ -11,7 +11,7 @@ import httpx
 from engine.models import Market, Outcome
 from providers.altenar import DEFAULT_HORIZON_HOURS, _fmt_line
 from providers.base import OddsProvider
-from providers.detail_cache import DetailCache, collect, plan
+from providers.detail_cache import DetailStore, collect, plan
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -357,13 +357,15 @@ class KambiProvider(OddsProvider):
         max_workers: int = 2,
         exclude_esports: bool | None = None,
         exclude_women: bool | None = None,
+        details_path: str | None = None,
     ):
         self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
         self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.operators = operators or OPERATORS
         self.horizon_hours = horizon_hours or int(os.environ.get("KAMBI_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
-        # Fichas ya leídas (modo continuo): las de partidos lejanos no se releen en cada vuelta.
-        self.details = DetailCache()
+        # Fichas ya leídas: las de partidos lejanos no se releen en cada vuelta. Con `details_path`
+        # se guardan en disco para el ciclo siguiente (ciclo de un solo disparo).
+        self.details = DetailStore(details_path)
         self.max_workers = max_workers
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
@@ -374,6 +376,7 @@ class KambiProvider(OddsProvider):
             markets: list[Market] = []
             for sport in requested:
                 markets.extend(self._fetch_sport(client, sport))
+            self.details.save()
             return markets
 
     def _get_json(self, client, operator: str, path: str, **params) -> dict:
@@ -441,7 +444,7 @@ class KambiProvider(OddsProvider):
         ]
         now = datetime.now(timezone.utc)
         to_read, cached = plan(
-            jobs, lambda job: datetime.fromisoformat(reference[job[1]]["start"].replace("Z", "+00:00")), self.details, now
+            jobs, lambda job: datetime.fromisoformat(reference[job[1]]["start"].replace("Z", "+00:00")), self.details.for_sport(sport), now
         )
 
         def fetch(job):
@@ -465,7 +468,7 @@ class KambiProvider(OddsProvider):
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
             results = list(pool.map(fetch, to_read))
-        markets, summary = collect(jobs, to_read, results, cached, self.details, now)
+        markets, summary = collect(jobs, to_read, results, cached, self.details.for_sport(sport), now)
         logger.info(
             "Kambi %s: %d eventos comparables, %d fichas leídas, %d de caché, %d fallos (%d con respaldo)",
             sport, len({j[1] for j in jobs}), summary["leidas"], summary["de_cache"], summary["fallos"], summary["respaldo"],

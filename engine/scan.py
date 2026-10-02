@@ -8,6 +8,7 @@ programada local, con el estado cargado/guardado en un JSON entre ejecuciones).
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
+from contextlib import nullcontext
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
@@ -399,10 +400,15 @@ async def _verify_high_margins(
             ", ".join(sorted(involved)),
         )
         refreshed = False
+        starts = [c.market.start_time for c in candidates.values()]
         for provider in rechecked:
             if provider.name not in involved:
                 continue
-            fresh = await _fetch(provider, sports, logger, executor=executor)
+            # Altenar/Kambi guardan las fichas de los partidos lejanos (providers/detail_cache.py):
+            # para confirmar hay que releer las de estos partidos, no devolver las mismas cuotas
+            store = getattr(provider, "details", None)
+            with store.forcing(starts) if hasattr(store, "forcing") else nullcontext():
+                fresh = await _fetch(provider, sports, logger, executor=executor)
             if fresh is not None:
                 raw_by_provider[provider.name] = fresh
                 refreshed = True
