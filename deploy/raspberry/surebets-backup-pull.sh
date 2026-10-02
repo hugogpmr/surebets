@@ -35,3 +35,22 @@ date -u +%FT%TZ > "$marker"
 rsync --timeout=60 -e "$SSH" "$marker" "$VM:./.pi_last_ok"
 rm -f "$marker"
 echo "Copia guardada en $DEST/daily/$day: $(du -sh "$DEST/daily/$day" | cut -f1)"
+
+# Segunda copia fuera de casa (Google Drive, remoto "gdrive" de rclone con scope drive.file: solo
+# ve lo que sube él). Si falla no tumba la copia local, que ya está hecha: el vigilante
+# (surebets-watchdog.py) avisa si DRIVE_MARKER envejece.
+RCLONE="$HOME/bin/rclone"
+DRIVE="gdrive:surebets-backups"
+DRIVE_MARKER="$HOME/.config/surebets-watchdog/drive_last_ok"
+if [ -x "$RCLONE" ] && "$RCLONE" listremotes | grep -qx 'gdrive:'; then
+  if "$RCLONE" copy "$DEST/daily/$day" "$DRIVE/daily/$day" \
+     && { [ "$(date -u +%u)" != 7 ] || "$RCLONE" copy "$DEST/weekly/$day" "$DRIVE/weekly/$day"; }; then
+    # Misma retención que en el disco (la edad cuenta desde el cp de arriba, es decir, el día de la copia).
+    "$RCLONE" delete "$DRIVE/daily" --min-age "$((KEEP_DAILY + 1))d" --rmdirs || true
+    "$RCLONE" delete "$DRIVE/weekly" --min-age "$((KEEP_WEEKLY * 7 + 1))d" --rmdirs || true
+    date -u +%FT%TZ > "$DRIVE_MARKER"
+    echo "Copia subida a Google Drive ($DRIVE/daily/$day)"
+  else
+    echo "No se pudo subir la copia a Google Drive" >&2
+  fi
+fi

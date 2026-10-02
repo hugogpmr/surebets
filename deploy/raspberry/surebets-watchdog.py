@@ -13,6 +13,7 @@ Comprobaciones:
   vm_ssh       el puerto SSH de la VM responde.
   tunel        el servicio surebets-tunnel de la Raspberry está activo.
   disco        el disco externo de los backups está montado.
+  drive        la copia nocturna se sigue subiendo a Google Drive.
 
 Solo avisa cuando una comprobación falla FAILS_TO_ALERT veces seguidas (evita avisos por un
 corte de un minuto), recuerda cada REMIND_HOURS si sigue igual y avisa al recuperarse. El estado
@@ -47,6 +48,9 @@ REMIND_HOURS = 6
 CONFIG_DIR = Path.home() / ".config" / "surebets-watchdog"
 ENV_FILE = CONFIG_DIR / "env"
 STATE_FILE = CONFIG_DIR / "state.json"
+DRIVE_MARKER = CONFIG_DIR / "drive_last_ok"
+# La copia se sube una vez al día (04:00 UTC); igual margen que la VM con .pi_last_ok.
+MAX_DRIVE_AGE_HOURS = 30
 
 
 def check_panel() -> tuple[bool, str, dict | None]:
@@ -100,6 +104,17 @@ def check_disk() -> tuple[bool, str]:
     return True, "disco de backups montado"
 
 
+def check_drive() -> tuple[bool, str]:
+    # surebets-backup-pull.sh lo deja tras subir la copia a Google Drive. Sin fichero = aún no
+    # se ha subido nunca (recién montado): no se avisa.
+    if not DRIVE_MARKER.exists():
+        return True, "copia en Google Drive aún sin estrenar"
+    age = (time.time() - DRIVE_MARKER.stat().st_mtime) / 3600
+    if age > MAX_DRIVE_AGE_HOURS:
+        return False, f"la copia en Google Drive lleva {age:.0f} h sin subirse"
+    return True, f"copia en Google Drive subida hace {age:.0f} h"
+
+
 def run_checks() -> dict[str, tuple[bool, str]]:
     panel_ok, panel_msg, data = check_panel()
     return {
@@ -108,6 +123,7 @@ def run_checks() -> dict[str, tuple[bool, str]]:
         "vm_ssh": check_vm_ssh(),
         "tunel": check_tunnel(),
         "disco": check_disk(),
+        "drive": check_drive(),
     }
 
 
