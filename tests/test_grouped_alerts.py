@@ -51,3 +51,22 @@ def test_state_keeps_the_new_fields():
     raw = {"k": {"margin": 0.02, "cycles": 2, "notified": True, "notified_margin": 0.03, "gone_at": "2026-10-02T10:00:00+00:00"}}
     state = normalize_state(raw)
     assert state["k"]["notified_margin"] == 0.03 and state["k"]["gone_at"].startswith("2026-10-02")
+
+
+def test_new_surebet_message_lists_the_ones_still_active_in_the_same_read(db):
+    state = {}
+    first = [FakeProvider("altenar", [ou("betway", 2.10, 1.80)]), FakeProvider("kambi", [ou("paf", 1.80, 2.05)])]
+    assert len(run(first, db, state, confirm_cycles=1)) == 1
+    both = providers()  # la de más/menos sigue y aparece la de ambos marcan
+    sent = run(both, db, state, confirm_cycles=1)
+    assert len(sent) == 1
+    assert sent[0].startswith("🚨 Nueva surebet") and "Ambos" in sent[0].split("Siguen activas")[0]
+    tail = sent[0].split("Siguen activas en este partido:")[1]
+    assert "betway / paf" in tail and tail.count("•") == 1
+    # Si en la siguiente lectura ya no sale la de más/menos, no se lista como activa.
+    only_btts_new = [
+        FakeProvider("altenar", [btts("betway", 2.2, "betway", 1.6), ou("betway", 2.6, 1.5, event="Otro vs. Partido")]),
+        FakeProvider("kambi", [btts("paf", 1.6, "paf", 2.0), ou("paf", 1.5, 2.5, event="Otro vs. Partido")]),
+    ]
+    for text in run(only_btts_new, db, state, confirm_cycles=1):
+        assert "Siguen activas" not in text

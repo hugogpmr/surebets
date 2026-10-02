@@ -102,12 +102,37 @@ def format_alert(comparison) -> str:
     return "\n".join(lines)
 
 
-def format_event_alert(comparisons: list, improved: dict[int, float] | None = None) -> str:
+def format_event_alert(
+    comparisons: list, improved: dict[int, float] | None = None, still_active: list | None = None
+) -> str:
     """Un solo mensaje con varias surebets del MISMO partido, de mayor a menor margen.
-    `improved` = {id(comparison): margen avisado antes} para las que se repiten porque mejoran."""
+    `improved` = {id(comparison): margen avisado antes} para las que se repiten porque mejoran.
+    `still_active` = surebets del mismo partido ya avisadas que siguen saliendo EN ESTA MISMA
+    LECTURA (no se repiten enteras: una línea corta cada una, al final)."""
     improved = improved or {}
+    still_active = still_active or []
     if len(comparisons) == 1 and not improved:
-        return format_alert(comparisons[0])
+        text = format_alert(comparisons[0])
+    else:
+        text = _format_group(comparisons, improved)
+    if still_active:
+        text += "\n" + "\n".join(_still_active_lines(still_active))
+    return text
+
+
+def _still_active_lines(comparisons: list) -> list[str]:
+    lines = ["➖➖➖", "Siguen activas en este partido:"]
+    for comparison in sorted(comparisons, key=lambda c: -c.margin)[:MAX_PER_MESSAGE]:
+        market = comparison.market
+        books = " / ".join(dict.fromkeys(o.bookmaker for o in market.outcomes))
+        title = market_title(market.market_type, market.event, market.sport)
+        lines.append(f"• {title} · {comparison.margin * 100:.2f}% ({books})")
+    if len(comparisons) > MAX_PER_MESSAGE:
+        lines.append(f"• y {len(comparisons) - MAX_PER_MESSAGE} más en el panel")
+    return lines
+
+
+def _format_group(comparisons: list, improved: dict[int, float]) -> str:
     ordered = sorted(comparisons, key=lambda c: -c.margin)
     first = ordered[0].market
     count = len(ordered)
@@ -667,12 +692,21 @@ async def _run_scan_cycle(
     # caído...) no debe tumbar el resto del ciclo: las surebets ya quedaron guardadas arriba y se
     # reintentará avisarlas en el próximo ciclo (`notified` solo pasa a True si el mensaje sale).
     messages = 0
-    for group in pending.values():
+    for event_key_, group in pending.items():
         notify_started = time.perf_counter()
         notified_count += len(group)
         improved = {id(c): before for _, c, before in group if before is not None}
+        in_message = {key for key, _, _ in group}
+        still_active = [
+            c
+            for c in comparisons
+            if c.is_surebet
+            and (c.market.sport, c.market.event) == event_key_
+            and opportunity_key(c) not in in_message
+            and active_state.get(opportunity_key(c), {}).get("notified")
+        ]
         try:
-            await notify(format_event_alert([c for _, c, _ in group], improved))
+            await notify(format_event_alert([c for _, c, _ in group], improved, still_active))
             messages += 1
         except Exception:
             logger.warning(
