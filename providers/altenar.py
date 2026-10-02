@@ -10,7 +10,7 @@ import httpx
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
-from providers.detail_cache import DetailCache, collect, plan
+from providers.detail_cache import DetailStore, collect, plan
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -684,14 +684,16 @@ class AltenarProvider(OddsProvider):
         max_workers: int = 3,
         exclude_esports: bool | None = None,
         exclude_women: bool | None = None,
+        details_path: str | None = None,
     ):
         self.exclude_esports = exclude_esports_default() if exclude_esports is None else exclude_esports
         self.exclude_women = exclude_womens_default() if exclude_women is None else exclude_women
         self.integrations = integrations or INTEGRATIONS
         self.horizon_hours = horizon_hours or int(os.environ.get("ALTENAR_HORIZON_HOURS", DEFAULT_HORIZON_HOURS))
         self.max_workers = max_workers
-        # Fichas ya leídas (modo continuo): las de partidos lejanos no se releen en cada vuelta.
-        self.details = DetailCache()
+        # Fichas ya leídas: las de partidos lejanos no se releen en cada vuelta. Con `details_path`
+        # se guardan en disco para el ciclo siguiente (ciclo de un solo disparo).
+        self.details = DetailStore(details_path)
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         requested = {key.split("_", 1)[0] for key in sports} & set(SPORT_IDS)
@@ -701,6 +703,7 @@ class AltenarProvider(OddsProvider):
             markets: list[Market] = []
             for sport in requested:
                 markets.extend(self._fetch_sport(client, sport))
+            self.details.save()
             return markets
 
     def _get_json(self, client, endpoint: str, integration: str, **params) -> dict:
@@ -797,7 +800,7 @@ class AltenarProvider(OddsProvider):
             if seen_by[event_id] >= 2
         ]
         now = datetime.now(timezone.utc)
-        to_read, cached = plan(jobs, lambda job: starts[job[1]], self.details, now)
+        to_read, cached = plan(jobs, lambda job: starts[job[1]], self.details.for_sport(sport), now)
 
         def fetch(job):
             integration, event_id = job
@@ -817,7 +820,7 @@ class AltenarProvider(OddsProvider):
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
             results = list(pool.map(fetch, to_read))
-        markets, summary = collect(jobs, to_read, results, cached, self.details, now)
+        markets, summary = collect(jobs, to_read, results, cached, self.details.for_sport(sport), now)
         logger.info(
             "Altenar %s: %d eventos comparables, %d fichas leídas, %d de caché, %d fallos (%d con respaldo)",
             sport, len({j[1] for j in jobs}), summary["leidas"], summary["de_cache"], summary["fallos"], summary["respaldo"],

@@ -71,10 +71,17 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 logger = logging.getLogger("surebets.action")
 
-def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
+def direct_providers(details_dir: str = "") -> tuple[list[OddsProvider], list[OddsProvider]]:
     """(antes, después): fuentes directas de la casa. Se devuelven en dos grupos
     para conservar el orden histórico (los comparadores van en medio: la primera
-    fuente que lista un partido fija el nombre del evento en el cruce)."""
+    fuente que lista un partido fija el nombre del evento en el cruce).
+
+    `details_dir`: carpeta donde Altenar y Kambi guardan las fichas leídas para el ciclo
+    siguiente (providers/detail_cache.py); vacío = solo en memoria (modo continuo)."""
+
+    def details(name: str) -> str | None:
+        return str(pathlib.Path(details_dir) / f"details_{name}.pkl") if details_dir else None
+
     return (
         # Winamax (socket de su web) y bwin (API de su web): cientos de mercados por partido,
         # incluidos hándicap asiático y mercados por mitad (bwin también córners y tarjetas).
@@ -125,11 +132,11 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             # baloncesto (hándicap/total/par-impar por cuarto y mitad, incl.
             # prórroga) y tenis (hándicap/total de juegos y sets, por set) - antes
             # esas dos claves solo las cubría CuotasAhoraProvider (1X2 vía comparador).
-            AltenarProvider(),
+            AltenarProvider(details_path=details("altenar")),
             # Paf + LeoVegas vía la API pública de Kambi (otra plataforma B2B, otro
             # feed de precios: permite arbitraje ENTRE plataformas). Mismos tres
             # deportes que Altenar desde 2026-09-24.
-            KambiProvider(),
+            KambiProvider(details_path=details("kambi")),
             # Bet777 vía la API de su plataforma Sportify (cuotas de FeedConstruct): tercera
             # fuente de precios distinta de Altenar y Kambi. Goles, hándicap asiático y
             # mitades; sin córners ni tarjetas.
@@ -272,7 +279,7 @@ async def run_scan(mode: str) -> None:
     pathlib.Path(config.DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     init_db(config.DB_PATH)
 
-    before, after = direct_providers()
+    before, after = direct_providers(config.DETAIL_CACHE_DIR)
     if mode == "fast":
         cache = ComparatorCache(config.COMPARATOR_CACHE_PATH)
         max_age = timedelta(hours=config.COMPARATOR_MAX_AGE_HOURS)
