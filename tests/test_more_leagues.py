@@ -16,8 +16,7 @@ CASES = [
 
 
 class FakePage:
-    async def route(self, *args, **kwargs):
-        pass
+    pass
 
 
 class FakeBrowser:

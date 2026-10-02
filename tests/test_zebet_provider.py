@@ -206,8 +206,7 @@ def test_a_league_that_fails_does_not_stop_the_others(monkeypatch):
         return [Market(event="A vs. B", sport=sport, market_type="1X2", outcomes=[Outcome("1", "zebet", 2.0)])]
 
     class FakePage:
-        async def route(self, *args, **kwargs):
-            pass
+        pass
 
     class FakeBrowser:
         async def new_page(self, **kwargs):

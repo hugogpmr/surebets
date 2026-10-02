@@ -98,7 +98,6 @@ from playwright.async_api import async_playwright
 
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
-from providers.browser import block_heavy_resources
 from providers.filters import exclude_esports_default, exclude_womens_default, is_excluded
 
 logger = logging.getLogger(__name__)
@@ -297,7 +296,7 @@ class Sport888Provider(OddsProvider):
         markets: list[Market] = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await block_heavy_resources(await browser.new_page(user_agent=USER_AGENT))
+            page = await browser.new_page(user_agent=USER_AGENT)
             await page.goto(self.lobby_url, timeout=20000, wait_until="load")
             await page.wait_for_timeout(2000)  # deja terminar el chequeo de sesión/antifraude propio
             for sport, tournament in wanted:
@@ -316,7 +315,7 @@ class Sport888Provider(OddsProvider):
         markets: list[Market] = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await block_heavy_resources(await browser.new_page(user_agent=USER_AGENT))
+            page = await browser.new_page(user_agent=USER_AGENT)
             await page.goto(self.lobby_url, timeout=20000, wait_until="load")
             await page.wait_for_timeout(2000)  # deja terminar el chequeo de sesión/antifraude propio
             for sport in sports:
