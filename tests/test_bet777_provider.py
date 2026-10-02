@@ -177,8 +177,10 @@ def test_corners_and_cards_use_the_same_naming_as_altenar_and_kambi():
     assert odds(markets["CORNERS_OE"]) == {"Odd": 1.83, "Even": 1.83}
     assert odds(markets["CORNERS_FIRST"]) == {"1": 1.29, "2": 3.00}
     assert odds(markets["CORNERS_LAST"]) == {"1": 1.38, "2": 2.58}
-    assert odds(markets["CARDS_OU_5.5"]) == {"Over": 1.98, "Under": 1.70}
-    assert odds(markets["CARDS_1X2"]) == {"1": 2.5, "X": 3.2, "2": 2.6}
+    # Solo amarillas: no cruzan con el total de tarjetas de las demás plataformas.
+    assert odds(markets["YELLOW_OU_5.5"]) == {"Over": 1.98, "Under": 1.70}
+    assert odds(markets["YELLOW_1X2"]) == {"1": 2.5, "X": 3.2, "2": 2.6}
+    assert not any(t.startswith("CARDS_") for t in markets)
 
 
 def test_corners_bands_race_to_and_red_cards_are_left_out():

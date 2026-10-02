@@ -521,3 +521,32 @@ def test_excluded_and_aliased_bookies():
     cleaned = sanitize_cached_market(cached)
     assert [(o.name, o.bookmaker) for o in cleaned.outcomes] == [("Under", "daznbet")]
     assert casasdeapuestas.EXCLUDED_BOOKIES >= {"betfair_exchange"}
+
+
+def test_football_winner_without_draw_is_still_1x2_never_ml():
+    # Frosinone-Benevento (2026-10-02): el sitio daba "Final del partido (1X2)" sin "Empate". Como
+    # ML cruzaba 1 contra 2 y salían falsas surebets del 14-25 % (sin cubrir el empate).
+    html = page(
+        "Frosinone",
+        "Benevento",
+        [
+            odd("Final del partido (1X2)", "Frosinone", "jokerbet", "1.80"),
+            odd("Final del partido (1X2)", "Benevento", "cgmapuestas", "3.60"),
+        ],
+    )
+    markets = by_type(parse_event_markets(html, "futbol"))
+    assert "ML" not in markets
+    assert odds(markets["1X2"]) == {"1": 1.80, "2": 3.60}  # incompleto: el control de calidad lo descarta si nadie da el X
+    plain_winner = by_type(parse_event_markets(page("A", "B", [odd("Ganador", "A", "x", "1.5"), odd("Ganador", "B", "y", "2.9")]), "futbol"))
+    assert "ML" not in plain_winner
+
+
+def test_sanitize_drops_old_football_ml_from_cache():
+    from engine.models import Market, Outcome
+    from providers.casasdeapuestas import sanitize_cached_market
+
+    old = Market(event="Frosinone vs. Benevento", sport="futbol", market_type="ML",
+                 outcomes=[Outcome("1", "jokerbet", 1.8), Outcome("2", "cgmapuestas", 3.6)])
+    assert sanitize_cached_market(old) is None
+    tennis = Market(event="A vs. B", sport="tenis", market_type="ML", outcomes=[Outcome("1", "bet365", 1.8), Outcome("2", "1xbet_es", 2.1)])
+    assert sanitize_cached_market(tennis) is tennis

@@ -157,7 +157,12 @@ _HALF_SUFFIX = {"1st": "_HT", "2nd": "_2H"}
 # que en providers/altenar.py y providers/kambi.py, para que crucen entre las tres
 # plataformas.
 _METRIC_RE = re.compile(r"^(Corners|Yellow Cards): (?:(1st|2nd) Half )?(.+)$")
-_METRIC_PREFIX = {"Corners": "CORNERS", "Yellow Cards": "CARDS"}
+# "Yellow Cards" cuenta SOLO amarillas; los CARDS_ de Altenar/Kambi/PokerStars cuentan todas las
+# tarjetas. Cruzarlos daba falsas surebets (backtest 1-2 oct 2026: Bet777 contra Kambi, margen
+# mediano 8 % en 10 casos y ninguno terminó porque se moviera una cuota; Kazajistán-Moldavia avisada
+# varias veces): con una roja, "Más de 4,5" en Bet777 y "Menos de 4,5" en Paf pueden perder las dos.
+# Por eso van con su propio prefijo YELLOW_ y solo cruzarían con otra fuente de solo amarillas.
+_METRIC_PREFIX = {"Corners": "CORNERS", "Yellow Cards": "YELLOW"}
 _METRIC_SUB: dict[str, tuple[str, str]] = {
     "Total": ("OU", _TOTAL),
     "Team 1 Total": ("OU_HOME", _TOTAL),

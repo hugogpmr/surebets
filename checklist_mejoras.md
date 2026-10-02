@@ -57,6 +57,16 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
       patas justo antes de avisar. Publicar el panel sin git en cada ciclo.
 
+### Backtest del 1-2 oct (18 h, 382 surebets válidas, 359 avisadas)
+- Duración real: mediana 9,5 min; las de solo fuentes directas 3,4 min; 25 % desaparecen en <= 2 min.
+  Con el ciclo de 12 min casi todas las directas llegan tarde: argumento de datos para la Fase 2.
+- Margen > 5 %: casi nunca terminan por movimiento de cuota (5-15 %: 10 de 35; > 15 %: 0 de 25) → errores.
+- [x] Fútbol "ML" del comparador = 1X2 sin la cuota del empate (14-25 %, varias avisadas). Arreglado.
+- [x] Tarjetas de Bet777 = solo amarillas, cruzadas con el total de tarjetas (8 %, nunca se movió). Separadas (YELLOW_).
+- [ ] Tarjetas Altenar contra Kambi: 12 casos, margen 3,2 %, ninguno terminó por movimiento de cuota.
+      Sospechoso (¿cuentan distinto la roja?), sin probar. Seguir con el backtest antes de tocar nada.
+- [ ] São Paulo-Santos AH -0.5 (bet365 contra Winamax) vivo 13 h al 5,8 %: revisar el hándicap de Winamax.
+
 ### Avisos (detectado 2026-10-02)
 - [ ] Agrupar avisos: 290 avisos de 86 partidos en 8 h (modo antiguo, 1-oct), hasta 26 del mismo partido
       (un aviso por cada línea de más/menos o hándicap, y otro cada vez que el margen cambia 0,5 puntos).

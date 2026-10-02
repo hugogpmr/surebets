@@ -39,6 +39,7 @@ _SPORT_UNIT = {
 _METRIC_NOUNS = {
     "CORNERS": "córners",
     "CARDS": "tarjetas",
+    "YELLOW": "tarjetas amarillas",
     "SOT": "tiros a puerta",
     "SHOTS": "tiros",
     "OFFSIDES": "fueras de juego",

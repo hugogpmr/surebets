@@ -287,12 +287,24 @@ def _outcome(name: str, bookie: str, price: float) -> Outcome:
     return Outcome(name=name, bookmaker=bookie, odds=price)
 
 
-def _winner_market(event: str, sport: str, period: str, items: list[_Odd], home: str, away: str) -> list[Market]:
+# Deportes cuyo resultado final puede ser empate: su "ganador" es SIEMPRE un 1X2.
+_DRAW_SPORTS = frozenset({"futbol", "balonmano"})
+
+
+def _winner_market(
+    event: str, sport: str, period: str, items: list[_Odd], home: str, away: str, base: str = ""
+) -> list[Market]:
     label_of = {home: "1", away: "2", "Empate": "X"}
     outcomes = [_outcome(label_of[o.nombre], o.bookie, o.price) for o in items if o.nombre in label_of]
     if not outcomes:
         return []
-    prefix = ("1X2" if any(o.name == "X" for o in outcomes) else "ML") + period
+    # El sitio publica a veces el "Final del partido (1X2)" SIN la cuota del empate (visto en vivo
+    # el 2026-10-02: Frosinone-Benevento solo con "1" y "2"). Tratarlo como ganador a 2 resultados
+    # ("ML") daba falsas surebets del 14-25 % en fútbol (backtest del 1-2 oct: Islandia-Bulgaria,
+    # Bélgica-Turquía, Barbados-Bermudas... varias avisadas), porque deja sin cubrir el empate.
+    # Con prefijo 1X2 el empate lo aporta otra casa, o el mercado queda incompleto y se descarta.
+    is_three_way = "1X2" in base or sport in _DRAW_SPORTS or any(o.name == "X" for o in outcomes)
+    prefix = ("1X2" if is_three_way else "ML") + period
     return [Market(event=event, sport=sport, market_type=prefix, outcomes=outcomes)]
 
 
@@ -457,6 +469,8 @@ def sanitize_cached_market(market: Market) -> Market | None:
     """Aplica a un mercado YA leído (caché del ciclo lento, hasta COMPARATOR_MAX_AGE_HOURS de antigüedad) las
     reglas de hándicap por mercado de `_ah_markets`, para que las lecturas malas guardadas antes
     de la corrección no sigan avisando. Devuelve el mercado limpio, o None si no queda nada."""
+    if market.sport in _DRAW_SPORTS and market.market_type.startswith("ML"):
+        return None  # 1X2 sin empate guardado antes de la corrección de `_winner_market`
     if any(o.bookmaker in EXCLUDED_BOOKIES or o.bookmaker in _BOOKMAKER_ALIASES for o in market.outcomes):
         kept = [
             dataclasses.replace(o, bookmaker=_canonical_bookie(o.bookmaker))
@@ -515,7 +529,7 @@ def parse_event_markets(html: str, sport: str) -> list[Market]:
     for raw_market, items in by_market.items():
         base, period = _split_period(raw_market)
         if base in _WINNER_MARKETS:
-            markets.extend(_winner_market(event_name, sport, period, items, home, away))
+            markets.extend(_winner_market(event_name, sport, period, items, home, away, base))
         elif base in _TWO_WAY_MARKETS:
             market = _named_two_way(event_name, sport, _TWO_WAY_MARKETS[base] + period, items, home, away)
             if market is not None:
