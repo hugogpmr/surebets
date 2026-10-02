@@ -1,134 +1,140 @@
 {
   "Sao Paulo FC vs. Santos||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.05764966740576494,
-    "cycles": 314,
+    "cycles": 317,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Frigoríficos Morrazo vs. Atlético Valladolid||balonmano||DNB||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 271,
+    "cycles": 274,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Neptunas-Akvaservis Klaipeda vs. Omega Tauras LSU||baloncesto||ML||betway,daznbet": {
     "margin": 0.010752688172043001,
-    "cycles": 261,
+    "cycles": 264,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Islas Feroe vs. Eslovaquia||futbol||CARDS_OU_4.5||betinia,paf": {
     "margin": 0.0357582147250044,
-    "cycles": 258,
+    "cycles": 261,
     "notified": true,
     "since": "2026-10-01T20:33:14.653579+00:00"
   },
   "Atlético Mineiro vs. Bragantino SP||futbol||AH_-0.5||bet365,winamax": {
     "margin": 0.024390243902438935,
-    "cycles": 192,
+    "cycles": 195,
     "notified": true,
     "since": "2026-10-01T22:02:13.131531+00:00"
   },
   "Finlandia (F) vs. Suiza (F)||hockey||AH_-2.5||jokerbet,paf": {
     "margin": 0.010752688172043001,
-    "cycles": 191,
+    "cycles": 194,
     "notified": true,
     "since": "2026-10-01T22:17:05.420880+00:00"
   },
   "India vs. Brasil||futbol||AH_3.5||1xbet_es,bet365": {
     "margin": 0.026679613446155326,
-    "cycles": 118,
+    "cycles": 121,
     "notified": true,
     "since": "2026-10-01T23:59:08.181889+00:00"
   },
   "India vs. Brasil||futbol||AH_4||1xbet_es,bet365": {
     "margin": 0.012195121951219523,
-    "cycles": 118,
+    "cycles": 121,
     "notified": true,
     "since": "2026-10-01T23:59:08.181889+00:00"
   },
   "Piratas Veracruz vs. Alebrijes de Oaxaca||futbol||BTTS||888sport,leovegas": {
     "margin": 0.021739130434782594,
-    "cycles": 83,
+    "cycles": 86,
     "notified": true,
     "since": "2026-10-02T01:23:23.992281+00:00"
   },
   "Raja Casablanca vs. Renaissance Zemamra||futbol||DNB||bet365,cgmapuestas": {
     "margin": 0.012820512820512775,
-    "cycles": 62,
+    "cycles": 65,
     "notified": true,
     "since": "2026-10-02T02:04:38.358944+00:00"
   },
   "Raja Casablanca vs. Renaissance Zemamra||futbol||AH_-1.25||bet365,jokerbet": {
     "margin": 0.014473433631689181,
-    "cycles": 62,
+    "cycles": 65,
     "notified": true,
     "since": "2026-10-02T02:04:38.358944+00:00"
   },
   "Raja Casablanca vs. Renaissance Zemamra||futbol||AH_-1||bet365,jokerbet": {
     "margin": 0.03600464576074325,
-    "cycles": 62,
+    "cycles": 65,
     "notified": true,
     "since": "2026-10-02T02:04:38.358944+00:00"
   },
   "Raja Casablanca vs. Renaissance Zemamra||futbol||AH_-0.75||bet365,jokerbet": {
     "margin": 0.017048794826572733,
-    "cycles": 62,
+    "cycles": 65,
     "notified": true,
     "since": "2026-10-02T02:04:38.358944+00:00"
   },
   "Liverpool Montevideo vs. Progreso||futbol||CORNERS_OU_11.5||betway,paf": {
     "margin": 0.02411347517730489,
-    "cycles": 32,
+    "cycles": 35,
     "notified": true,
     "since": "2026-10-02T03:13:30.934547+00:00"
   },
   "Kiel vs. Gummersbach||balonmano||1X2||paf,paston": {
     "margin": 0.0111925111925113,
-    "cycles": 29,
+    "cycles": 32,
     "notified": true,
     "since": "2026-10-02T03:23:23.573979+00:00"
   },
   "Veraguas vs. Tauro||futbol||1X2||1xbet_es,jokerbet,yosports": {
     "margin": 0.019579926507478085,
-    "cycles": 26,
+    "cycles": 29,
     "notified": true,
     "since": "2026-10-02T03:35:43.435632+00:00"
   },
   "Boca Juniors vs. Union de Santa Fe||futbol||CORNERS_OU_HOME_4.5||jokerbet,paf": {
     "margin": 0.010011123470522798,
-    "cycles": 18,
+    "cycles": 21,
     "notified": true,
     "since": "2026-10-02T03:51:53.040167+00:00"
   },
-  "Melbourne United vs. Cairns Taipans||baloncesto||ML||888sport,paston": {
-    "margin": 0.014418999151823653,
-    "cycles": 5,
-    "notified": true,
-    "since": "2026-10-02T04:32:43.693193+00:00"
-  },
   "Surinam vs. Guatemala||futbol||ML||1xbet_es,retabet": {
     "margin": 0.23000567214974477,
-    "cycles": 5,
+    "cycles": 8,
     "notified": false,
     "since": "2026-10-02T04:32:43.693193+00:00"
   },
   "Ferro Carril Oeste vs. Deportivo Madryn||futbol||DNB||bet365,paf": {
     "margin": 0.016227180527383256,
-    "cycles": 4,
+    "cycles": 7,
     "notified": true,
     "since": "2026-10-02T04:34:01.817710+00:00"
   },
   "Kazajistán vs. Moldavia||futbol||AH_-1||cgmapuestas,interwetten": {
     "margin": 0.012345679012345734,
-    "cycles": 4,
+    "cycles": 7,
     "notified": true,
     "since": "2026-10-02T04:34:01.817710+00:00"
   },
   "Ucrania vs. Irlanda del Norte||futbol||CORNERS_OU_10.5||betfair,paf": {
     "margin": 0.010060362173038184,
-    "cycles": 4,
+    "cycles": 7,
     "notified": true,
     "since": "2026-10-02T04:34:01.817710+00:00"
+  },
+  "Arsenal Ceska Lipa vs. Ústí nad Labem||futbol||OU_2.5||bet777,cgmapuestas": {
+    "margin": 0.02564102564102566,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T04:47:36.718875+00:00"
+  },
+  "Karolína Muchová vs. Katie Boulter||tenis||OU_16.5||betway,interwetten": {
+    "margin": 0.016227180527383256,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-02T04:47:36.718875+00:00"
   }
 }
