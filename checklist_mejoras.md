@@ -63,8 +63,12 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - Margen > 5 %: casi nunca terminan por movimiento de cuota (5-15 %: 10 de 35; > 15 %: 0 de 25) → errores.
 - [x] Fútbol "ML" del comparador = 1X2 sin la cuota del empate (14-25 %, varias avisadas). Arreglado.
 - [x] Tarjetas de Bet777 = solo amarillas, cruzadas con el total de tarjetas (8 %, nunca se movió). Separadas (YELLOW_).
-- [ ] Tarjetas Altenar contra Kambi: 12 casos, margen 3,2 %, ninguno terminó por movimiento de cuota.
-      Sospechoso (¿cuentan distinto la roja?), sin probar. Seguir con el backtest antes de tocar nada.
+- [x] Tarjetas Altenar contra Kambi: 12 casos, margen 3,2 %, ninguno terminó por movimiento de cuota.
+      Revisado en vivo (2026-10-02): mismo mercado ("Total de Tarjetas" typeId 139 / Kambi "Total Cards",
+      occurrenceType CARDS) y en 35 líneas de 20 partidos comunes la probabilidad de "Más" difiere
+      0,4 puntos de media sin sesgo (19 Kambi más alta, 16 más baja). Si una contara la roja como 2
+      se vería un sesgo claro. Se dejan cruzar: los casos eran una casa descolgada (p. ej. Betinia
+      2,71 en Islas Feroe-Eslovaquia). No se han leído los reglamentos escritos de cada casa.
 - [x] São Paulo-Santos AH -0.5 (bet365 contra Winamax) vivo 13 h al 5,8 %: el 2,20 de Winamax era el
       hándicap asiático de CÓRNERES (mismas etiquetas "Equipo -0.5") leído como de goles. Separado
       (`CORNERS_AH`, 2026-10-02). Winamax no tenía AH -0.5 de goles en ese partido.
