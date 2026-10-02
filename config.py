@@ -22,6 +22,12 @@ BANKROLL = float(os.getenv("BANKROLL", "250"))
 MIN_MARGIN = float(os.getenv("MIN_MARGIN", "0.01"))
 FETCH_INTERVAL_SECONDS = int(os.getenv("FETCH_INTERVAL_SECONDS", "60"))
 DB_PATH = os.getenv("DB_PATH", "surebets.db")
+# Proxy SOCKS que sale por la conexión de casa: túnel inverso que abre la Raspberry hacia
+# la VM (deploy/raspberry/README.md), en la VM `socks5://127.0.0.1:1080`. Vacío = sin
+# proxy. Solo lo usan las fuentes que bloquean la IP de datacenter de la VM (William Hill
+# responde 403 desde la VM y 200 por el túnel, medido 2026-10-02); no se pasa por
+# variables de entorno estándar (ALL_PROXY) para no desviar también al resto de fuentes.
+RESIDENTIAL_PROXY = os.getenv("RESIDENTIAL_PROXY", "")
 
 # Una surebet solo se avisa cuando aparece en este nº de escaneos seguidos
 # (equivale al filtro de "edad del arb" de BetBurger: descarta cuotas que

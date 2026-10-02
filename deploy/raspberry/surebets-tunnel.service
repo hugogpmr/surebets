@@ -1,0 +1,11 @@
+[Unit]
+Description=Tunel SOCKS inverso hacia la VM de surebets (127.0.0.1:1080 en la VM)
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ssh -N -T -i %h/.ssh/vm_tunnel -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=yes -R 127.0.0.1:1080 pitunnel@194.62.96.198
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=default.target
