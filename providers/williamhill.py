@@ -342,15 +342,20 @@ class WilliamHillProvider(OddsProvider):
         horizon_hours: int = DEFAULT_HORIZON_HOURS,
         extra_markets_horizon_hours: int = DEFAULT_EXTRA_MARKETS_HORIZON_HOURS,
         extra_markets_concurrency: int = DEFAULT_EXTRA_MARKETS_CONCURRENCY,
+        proxy: str | None = None,
     ):
         self.horizon_hours = horizon_hours
         self.extra_markets_horizon_hours = extra_markets_horizon_hours
         self.extra_markets_concurrency = extra_markets_concurrency
+        # La API devuelve 403 a IPs de datacenter (la VM): ahí se pasa el proxy
+        # residencial de config.RESIDENTIAL_PROXY. Si el túnel está caído, la lectura
+        # falla como un error HTTP más y la fuente sale vacía, igual que sin proxy.
+        self.proxy = proxy or None
 
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         if not any(key.split("_", 1)[0] == "futbol" for key in sports):
             return []
-        with httpx.Client(headers=HEADERS, timeout=30) as client:
+        with httpx.Client(headers=HEADERS, timeout=30, proxy=self.proxy) as client:
             return self._fetch_football(client)
 
     def _fetch_day(self, client: httpx.Client, day: str) -> tuple[list[dict], list[dict]]:

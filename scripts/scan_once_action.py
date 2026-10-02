@@ -134,10 +134,10 @@ def direct_providers() -> tuple[list[OddsProvider], list[OddsProvider]]:
             # fuente de precios distinta de Altenar y Kambi. Goles, hándicap asiático y
             # mitades; sin córners ni tarjetas.
             Bet777Provider(),
-            # William Hill vía su propia API JSON (plataforma OpenBet), sin navegador. Solo
-            # 1X2 por ahora; el bloqueo de IP de datacenter/VPN es solo de la web, esta API
-            # responde igual sin cookies (ver providers/williamhill.py).
-            WilliamHillProvider(),
+            # William Hill vía su propia API JSON (plataforma OpenBet), sin navegador. La API
+            # también bloquea IPs de datacenter (403 desde la VM, 2026-10-02), así que en la VM
+            # sale por la conexión de casa con RESIDENTIAL_PROXY (túnel de la Raspberry).
+            WilliamHillProvider(proxy=config.RESIDENTIAL_PROXY),
             # Betfair Exchange (providers/betfair_exchange.py) funciona (verificado 2026-10-01) pero
             # está FUERA a propósito: el usuario no quiere apostar contra otros jugadores. Para
             # reactivarlo, volver a añadir BetfairExchangeProvider() aquí.
