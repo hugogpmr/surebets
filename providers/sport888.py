@@ -133,9 +133,25 @@ _FETCH_JS = """async (url) => {
     return response.ok ? await response.json() : null;
 }"""
 
-# Igual que _FETCH_MANY_JS de providers/bwin.py: varios fetch() concurrentes desde
-# la misma página, uno por partido, reutilizando la sesión ya establecida.
-_FETCH_MANY_JS = """async ({items, concurrency}) => {
+# Como _FETCH_MANY_JS de providers/bwin.py (varios fetch() concurrentes desde la misma página, uno
+# por partido, reutilizando la sesión ya establecida), pero devuelve solo
+# `event.markets.markets_selections` con la misma forma y, de cada selección (objeto con
+# `decimal_price`), solo los campos que lee el parser. Medido en la VM el 2026-10-02: 40 fichas
+# tardaban 1 s en descargarse y 19 s en pasar enteras del navegador a Python (~6 min por ciclo).
+_FETCH_EXTRAS_JS = """async ({items, concurrency}) => {
+    const KEEP = ['decimal_price', 'special_odds_value', 'active', 'betable', 'tradable', 'type',
+                  'name', 'selection_db_name', 'market_name'];
+    const prune = (node) => {
+        if (Array.isArray(node)) return node.map(prune);
+        if (node === null || typeof node !== 'object') return node;
+        const out = {};
+        if ('decimal_price' in node) {
+            for (const key of KEEP) if (key in node) out[key] = node[key];
+        } else {
+            for (const key of Object.keys(node)) out[key] = prune(node[key]);
+        }
+        return out;
+    };
     const out = {};
     let next = 0;
     async function worker() {
@@ -143,7 +159,12 @@ _FETCH_MANY_JS = """async ({items, concurrency}) => {
             const item = items[next++];
             try {
                 const response = await fetch(item.url, {credentials: 'include'});
-                out[item.id] = response.ok ? await response.json() : {error: response.status};
+                if (!response.ok) { out[item.id] = {error: response.status}; continue; }
+                const data = await response.json();
+                const selections = data && data.event && data.event.markets && data.event.markets.markets_selections;
+                out[item.id] = data && data.event
+                    ? {event: {markets: {markets_selections: prune(selections || {})}}}
+                    : data;
             } catch (error) {
                 out[item.id] = {error: String(error)};
             }
@@ -317,7 +338,7 @@ class Sport888Provider(OddsProvider):
         for start in range(0, len(events), EXTRAS_CHUNK):
             chunk = events[start : start + EXTRAS_CHUNK]
             results = await page.evaluate(
-                _FETCH_MANY_JS, {"items": [{"id": str(e["id"]), "url": e["url"]} for e in chunk], "concurrency": 5}
+                _FETCH_EXTRAS_JS, {"items": [{"id": str(e["id"]), "url": e["url"]} for e in chunk], "concurrency": 5}
             )
             for event in chunk:
                 data = results.get(str(event["id"]))
@@ -373,7 +394,7 @@ class Sport888Provider(OddsProvider):
         ]
         if not items:
             return []
-        results = await page.evaluate(_FETCH_MANY_JS, {"items": items, "concurrency": 5})
+        results = await page.evaluate(_FETCH_EXTRAS_JS, {"items": items, "concurrency": 5})
         markets: list[Market] = []
         for event_name, _, slug, event_id in events:
             if not slug or event_id is None:
