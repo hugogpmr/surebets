@@ -1,0 +1,10 @@
+[Unit]
+Description=Pasa el vigilante de la VM de surebets cada 5 min
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

@@ -40,3 +40,28 @@ usuario `pi`, por cable.
    ```
 4. Comprobar desde la VM:
    `curl --socks5-hostname 127.0.0.1:1080 https://ifconfig.me` debe dar la IP de casa.
+
+## Vigilante de la VM (montado el 2026-10-02)
+
+Los avisos de la VM (`scripts/alert_admin.py`) no llegan si la VM entera se
+cae: nadie queda vivo para mandarlos. `surebets-watchdog.py` mira desde casa
+cada 5 min y avisa al mismo canal de administración:
+
+- el panel publicado en GitHub (`docs/data.json`) tiene más de 30 min;
+- la caché del comparador (ciclo lento) tiene más de 60 min;
+- el puerto SSH de la VM no responde;
+- el servicio `surebets-tunnel` no está activo;
+- el disco de los backups no está montado en `/mnt/backup`.
+
+Avisa tras 2 fallos seguidos, lo recuerda cada 6 h y avisa al recuperarse.
+Solo usa la biblioteca estándar de Python. Token y canal en
+`~/.config/surebets-watchdog/env` (permisos 600, copiados de `.env` de la VM:
+`TELEGRAM_BOT_TOKEN` y `ADMIN_ALERT_CHAT_ID`); estado en `state.json` al lado.
+
+```sh
+cp surebets-watchdog.py ~/ && chmod 755 ~/surebets-watchdog.py
+cp surebets-watchdog.service surebets-watchdog.timer ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now surebets-watchdog.timer
+python3 ~/surebets-watchdog.py --dry-run   # ver el estado sin avisar
+```
