@@ -38,9 +38,17 @@ from .quality import (
     leg_flags,
 )
 
-# Margen mínimo de cambio para considerar que una oportunidad ya notificada
-# "cambió" y merece un nuevo aviso (en puntos porcentuales, no fracción).
-MARGIN_CHANGE_THRESHOLD = 0.005
+# Avisos agrupados (2026-10-02). Antes: un mensaje por surebet y otro cada vez que el margen se
+# movía 0,5 puntos (subiendo o bajando); el 1-oct salieron 290 avisos de 86 partidos en 8 h, hasta
+# 26 del mismo. Ahora:
+# - un mensaje por partido con todas sus surebets nuevas (como mucho MAX_PER_MESSAGE);
+# - una ya avisada solo se repite si su margen SUBE al menos REALERT_MARGIN_INCREASE;
+# - una ya avisada que deja de verse se recuerda REALERT_COOLDOWN: si vuelve en ese tiempo (una
+#   fuente que falló un ciclo, una cuota que parpadea) no se avisa otra vez.
+REALERT_MARGIN_INCREASE = 0.01
+REALERT_COOLDOWN = timedelta(minutes=60)
+MAX_PER_MESSAGE = 6
+MAX_MESSAGE_CHARS = 3800  # Telegram corta a 4096
 
 NotifyFn = Callable[[str], Awaitable[None]]
 
@@ -63,8 +71,9 @@ def normalize_state(raw: dict) -> dict[str, dict]:
                 "cycles": int(value.get("cycles", 1)),
                 "notified": bool(value.get("notified", False)),
             }
-            if value.get("since"):
-                state[key]["since"] = value["since"]
+            for extra in ("since", "notified_margin", "gone_at"):
+                if value.get(extra) is not None:
+                    state[key][extra] = value[extra]
         else:
             state[key] = {"margin": float(value), "cycles": 1, "notified": True}
     return state
@@ -89,6 +98,41 @@ def format_alert(comparison) -> str:
     ]
     lines.append(kickoff_line(market.start_time))
     lines.append(f"📈 Margen {comparison.margin * 100:.2f}%")
+    lines += _alert_details(comparison)
+    return "\n".join(lines)
+
+
+def format_event_alert(comparisons: list, improved: dict[int, float] | None = None) -> str:
+    """Un solo mensaje con varias surebets del MISMO partido, de mayor a menor margen.
+    `improved` = {id(comparison): margen avisado antes} para las que se repiten porque mejoran."""
+    improved = improved or {}
+    if len(comparisons) == 1 and not improved:
+        return format_alert(comparisons[0])
+    ordered = sorted(comparisons, key=lambda c: -c.margin)
+    first = ordered[0].market
+    count = len(ordered)
+    header = f"🚨 {count} surebets" if count > 1 else "🚨 Surebet mejorada"
+    lines = [f"{header} · {sport_name(first.sport)}", f"🎯 {first.event}", kickoff_line(first.start_time)]
+    shown = 0
+    for comparison in ordered[:MAX_PER_MESSAGE]:
+        market = comparison.market
+        title = market_title(market.market_type, market.event, market.sport)
+        before = improved.get(id(comparison))
+        trend = f" (antes {before * 100:.2f}%)" if before is not None else ""
+        block = ["➖➖➖", f"📌 {title} · 📈 {comparison.margin * 100:.2f}%{trend}", *_alert_details(comparison)]
+        if shown and len("\n".join(lines + block)) > MAX_MESSAGE_CHARS:
+            break
+        lines += block
+        shown += 1
+    if shown < count:
+        lines.append(f"➕ {count - shown} más en el panel")
+    return "\n".join(lines)
+
+
+def _alert_details(comparison) -> list[str]:
+    """Patas, notas y avisos de calidad de una surebet (todo menos la cabecera)."""
+    market = comparison.market
+    lines = []
     for o in market.outcomes:
         label = outcome_label(market.market_type, o.name, market.event, market.sport)
         lines.append(f"🏠 {o.bookmaker}: {label} @{o.odds:.2f}")
@@ -107,7 +151,7 @@ def format_alert(comparison) -> str:
     for flag in comparison.flags:
         if flag not in ("margen_verificado", "margen_a_verificar", "handicap_asiatico_ok"):  # ya explicados arriba
             lines.append(f"⚠️ {FLAG_DESCRIPTIONS.get(flag, flag)}")
-    return "\n".join(lines)
+    return lines
 
 
 def _invalidate(comparison) -> None:
@@ -555,6 +599,7 @@ async def _run_scan_cycle(
     seen_keys: set[str] = set()
     notify_seconds = 0.0
     notified_count = 0
+    pending: dict[tuple[str, str], list] = {}
     step = time.perf_counter()
 
     for comparison in comparisons:
@@ -565,14 +610,15 @@ async def _run_scan_cycle(
         seen_keys.add(key)
         entry = active_state.get(key)
         if isinstance(entry, dict):
-            cycles = entry["cycles"] + 1
-            previous_margin = entry["margin"]
+            returning = entry.get("gone_at") is not None  # ya avisada, desapareció y vuelve
+            cycles = 1 if returning else entry["cycles"] + 1
             notified = entry["notified"]
-            since = entry.get("since") or now.isoformat()
+            notified_margin = entry.get("notified_margin", entry["margin"])
+            since = now.isoformat() if returning else entry.get("since") or now.isoformat()
         else:  # clave nueva (o formato antiguo sin normalizar)
             cycles = 1
-            previous_margin = float(entry) if entry is not None else None
             notified = entry is not None
+            notified_margin = float(entry) if entry is not None else None
             since = now.isoformat()
 
         if comparison.verification == "verificada":
@@ -585,7 +631,7 @@ async def _run_scan_cycle(
         if comparison.verification == "pendiente" and verify_min_age is not None:
             confirmed = cycles >= confirm_cycles and now - datetime.fromisoformat(since) >= verify_min_age
         should_notify = confirmed and (
-            not notified or abs(comparison.margin - previous_margin) >= MARGIN_CHANGE_THRESHOLD
+            not notified or comparison.margin >= notified_margin + REALERT_MARGIN_INCREASE - 1e-9
         )
         # "notified" solo se marca True cuando el aviso de verdad sale (ver más abajo):
         # si `notify` falla (p.ej. timeout de red hacia Telegram), la surebet ya está
@@ -597,6 +643,8 @@ async def _run_scan_cycle(
             "notified": notified,
             "since": since,
         }
+        if notified and notified_margin is not None:
+            active_state[key]["notified_margin"] = notified_margin
 
         if not should_notify:
             continue
@@ -611,24 +659,35 @@ async def _run_scan_cycle(
             market.event,
             comparison.margin * 100,
         )
-        # Un fallo mandando el aviso (red, Telegram caído...) no debe tumbar el resto
-        # del ciclo: la surebet ya quedó guardada arriba, y `save_comparisons`/el
-        # volcado de estado que hace scan_once_action.py después de esta función
-        # también deben ejecutarse pase lo que pase con este aviso concreto.
+        pending.setdefault((market.sport, market.event), []).append(
+            (key, comparison, notified_margin if notified else None)
+        )
+
+    # Un mensaje por partido (ver REALERT_* arriba). Un fallo mandando un aviso (red, Telegram
+    # caído...) no debe tumbar el resto del ciclo: las surebets ya quedaron guardadas arriba y se
+    # reintentará avisarlas en el próximo ciclo (`notified` solo pasa a True si el mensaje sale).
+    messages = 0
+    for group in pending.values():
         notify_started = time.perf_counter()
-        notified_count += 1
+        notified_count += len(group)
+        improved = {id(c): before for _, c, before in group if before is not None}
         try:
-            await notify(format_alert(comparison))
+            await notify(format_event_alert([c for _, c, _ in group], improved))
+            messages += 1
         except Exception:
             logger.warning(
-                "Fallo mandando el aviso de Telegram de la surebet #%s (ya guardada; se reintentará avisar en el próximo ciclo)",
-                row_id,
+                "Fallo mandando el aviso de Telegram de %s (ya guardado; se reintentará en el próximo ciclo)",
+                group[0][1].market.event,
                 exc_info=True,
             )
         else:
-            active_state[key]["notified"] = True
+            for key, comparison, _ in group:
+                active_state[key]["notified"] = True
+                active_state[key]["notified_margin"] = comparison.margin
         finally:
             notify_seconds += time.perf_counter() - notify_started
+    if pending:
+        logger.info("Avisos: %d surebets en %d mensajes", notified_count, messages)
 
     phases["avisos"] = notify_seconds
     phases["confirmacion"] = time.perf_counter() - step - notify_seconds
@@ -661,10 +720,18 @@ async def _run_scan_cycle(
     save_comparisons(db_path, comparisons)
     phases["guardado_bd"] = time.perf_counter() - step
 
-    # Las que ya no aparecen en este scan se consideran cerradas: si vuelven a
-    # aparecer más adelante, se tratan como nuevas (y hay que confirmarlas otra vez).
+    # Las que ya no aparecen se consideran cerradas, salvo las ya avisadas, que se recuerdan
+    # REALERT_COOLDOWN para no avisarlas otra vez si solo han parpadeado (ver arriba).
     for key in list(active_state):
-        if key not in seen_keys:
+        entry = active_state[key]
+        if key in seen_keys:
+            entry.pop("gone_at", None)
+            continue
+        if not entry.get("notified"):
+            del active_state[key]
+            continue
+        gone_at = entry.setdefault("gone_at", now.isoformat())
+        if now - datetime.fromisoformat(gone_at) > REALERT_COOLDOWN:
             del active_state[key]
 
     phases["total"] = time.perf_counter() - cycle_start

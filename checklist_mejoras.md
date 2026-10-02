@@ -68,7 +68,7 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] São Paulo-Santos AH -0.5 (bet365 contra Winamax) vivo 13 h al 5,8 %: revisar el hándicap de Winamax.
 
 ### Avisos (detectado 2026-10-02)
-- [ ] Agrupar avisos: 290 avisos de 86 partidos en 8 h (modo antiguo, 1-oct), hasta 26 del mismo partido
+- [x] (2026-10-02: un mensaje por partido, máx. 6 surebets; repetir solo si el margen sube >= 1 punto; las ya avisadas que parpadean se recuerdan 60 min. `engine/scan.py` REALERT_*) Agrupar avisos: 290 avisos de 86 partidos en 8 h (modo antiguo, 1-oct), hasta 26 del mismo partido
       (un aviso por cada línea de más/menos o hándicap, y otro cada vez que el margen cambia 0,5 puntos).
       Un mensaje por partido con todas sus surebets y re-avisar solo si mejora de verdad.
 
