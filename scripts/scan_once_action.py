@@ -45,7 +45,7 @@ from engine.alerts import SourceAlerts
 from engine.backtest import SurebetLog
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.health import SourceHealth
-from engine.throttle import ThrottledProvider
+from engine.throttle import ThrottledProvider, limit_reads
 from engine.peers import PeerEvents
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
@@ -292,6 +292,7 @@ async def run_scan(mode: str) -> None:
             else p
             for p in before
         ]
+        limit_reads(before, config.THROTTLE_MAX_READS_PER_CYCLE)
     else:
         middle = comparator_providers()
     providers = before + middle + after
