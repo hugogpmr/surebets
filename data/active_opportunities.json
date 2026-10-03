@@ -1,25 +1,17 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 183,
+    "cycles": 184,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 167,
+    "cycles": 168,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
-  },
-  "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||1X2||bet365,luckia": {
-    "margin": 0.06637494080712769,
-    "cycles": 57,
-    "notified": true,
-    "since": "2026-10-03T08:32:33.217663+00:00",
-    "notified_margin": 0.06637494080712769,
-    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,bet365": {
     "margin": 0.025287356321839094,
@@ -41,17 +33,15 @@
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:57:54.484883+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T16:04:46.301006+00:00"
+    "since": "2026-10-03T16:39:44.935386+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,speedybet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:57:54.484883+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T16:04:46.301006+00:00"
+    "since": "2026-10-03T16:39:44.935386+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Deportivo Moron vs. All Boys||futbol||1X2||1xbet_es,betway,interwetten": {
     "margin": 0.032467532467532534,
@@ -87,7 +77,7 @@
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.03966131907308368,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.03966131907308368
@@ -99,14 +89,6 @@
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.0357142857142857,
     "gone_at": "2026-10-03T16:25:45.476248+00:00"
-  },
-  "Pustertal vs. Fehérvár||hockey||ML||botemania,williamhill": {
-    "margin": 0.03907496012759171,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T15:29:39.301623+00:00",
-    "notified_margin": 0.03907496012759171,
-    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||botemania,daznbet": {
     "margin": 0.03219391475351874,
@@ -358,42 +340,42 @@
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,interwetten": {
     "margin": 0.03313049357674103,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.03313049357674103
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||AH_1||1xbet_es,bet365": {
     "margin": 0.029872818692694425,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.029872818692694425
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||AH_1.5||1xbet_es,bet365": {
     "margin": 0.042553191489361764,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.042553191489361764
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||AH_2||1xbet_es,bet365": {
     "margin": 0.06701141995259641,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.06701141995259641
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||AH_2.5||1xbet_es,bet365": {
     "margin": 0.02777777777777779,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.02777777777777779
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||AH_3||1xbet_es,bet365": {
     "margin": 0.03703703703703709,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
     "notified_margin": 0.03703703703703709
@@ -403,13 +385,22 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T16:39:44.935386+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||daznbet,paf": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T16:32:33.762487+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T16:39:44.935386+00:00"
+  },
+  "Sloboda Uzice vs. KK Sloga Kraljevo||baloncesto||ML||betway,jokerbet": {
+    "margin": 0.038712921065862216,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T16:39:44.935386+00:00",
+    "notified_margin": 0.038712921065862216
   }
 }
