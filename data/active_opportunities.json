@@ -1,14 +1,14 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 203,
+    "cycles": 204,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 187,
+    "cycles": 188,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -74,61 +74,37 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T18:53:05.837452+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T18:58:50.167539+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,yosports": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T18:53:05.837452+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T18:58:50.167539+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||daznbet,paf": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T18:18:08.973110+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T18:25:08.489566+00:00"
+    "since": "2026-10-03T18:58:50.167539+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||daznbet,paf": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T18:18:08.973110+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T18:25:08.489566+00:00"
+    "since": "2026-10-03T18:58:50.167539+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||bet365,luckia": {
     "margin": 0.08398268398268405,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T18:45:58.093086+00:00",
     "notified_margin": 0.08398268398268405
-  },
-  "Canadá vs. Perú||futbol||OU_5.5||888sport,retabet": {
-    "margin": 0.04831932773109249,
-    "cycles": 7,
-    "notified": true,
-    "since": "2026-10-03T17:08:12.353629+00:00",
-    "notified_margin": 0.040476190476190554,
-    "gone_at": "2026-10-03T17:57:13.479421+00:00"
-  },
-  "Canadá vs. Perú||futbol||OU_5||retabet,winamax": {
-    "margin": 0.05384150030248025,
-    "cycles": 7,
-    "notified": true,
-    "since": "2026-10-03T17:08:12.353629+00:00",
-    "notified_margin": 0.045883940620782715,
-    "gone_at": "2026-10-03T17:57:13.479421+00:00"
-  },
-  "Canadá vs. Perú||futbol||OU_4.5||pokerstars,retabet": {
-    "margin": 0.0854166666666667,
-    "cycles": 2,
-    "notified": true,
-    "since": "2026-10-03T17:43:08.759579+00:00",
-    "notified_margin": 0.0758928571428572,
-    "gone_at": "2026-10-03T17:57:13.479421+00:00"
   },
   "Tampa Bay Buccaneers vs. Green Bay Packers||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.0444444444444444,
@@ -228,7 +204,7 @@
   },
   "Tampa Bay Buccaneers vs. Green Bay Packers||americano||ML_HT||interwetten,sportium": {
     "margin": 0.0444444444444444,
-    "cycles": 3,
+    "cycles": 4,
     "notified": true,
     "since": "2026-10-03T18:39:17.797316+00:00",
     "notified_margin": 0.0444444444444444
@@ -238,7 +214,8 @@
     "cycles": 3,
     "notified": true,
     "since": "2026-10-03T18:39:17.797316+00:00",
-    "notified_margin": 0.02846389084921186
+    "notified_margin": 0.02846389084921186,
+    "gone_at": "2026-10-03T18:58:50.167539+00:00"
   },
   "Le Puy vs. Thionville Lusitanos||futbol||AH_-1||bet777,interwetten": {
     "margin": 0.058392587804352525,
