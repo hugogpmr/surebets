@@ -1,14 +1,14 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 211,
+    "cycles": 212,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 195,
+    "cycles": 196,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -18,30 +18,30 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T19:47:48.266265+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T19:56:22.133418+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,speedybet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T19:47:48.266265+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T19:56:22.133418+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||betway,paf": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T19:26:52.352853+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T19:35:16.233279+00:00"
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,paf": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T19:26:52.352853+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T19:35:16.233279+00:00"
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||botemania,daznbet": {
     "margin": 0.03219391475351874,
@@ -93,7 +93,7 @@
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||bet365,luckia": {
     "margin": 0.08398268398268405,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-03T18:45:58.093086+00:00",
     "notified_margin": 0.08398268398268405
@@ -103,7 +103,8 @@
     "cycles": 11,
     "notified": true,
     "since": "2026-10-03T18:39:17.797316+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T19:56:22.133418+00:00"
   },
   "Chacarita Juniors vs. Patronato||futbol||CORNERS_OU_8.5||betway,paf": {
     "margin": 0.02846389084921186,
@@ -115,7 +116,7 @@
   },
   "New York Giants vs. Arizona Cardinals||americano||ML_HT||interwetten,marcaapuestas": {
     "margin": 0.0292397660818714,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true,
     "since": "2026-10-03T19:05:48.251641+00:00",
     "notified_margin": 0.0292397660818714
@@ -157,13 +158,57 @@
     "cycles": 4,
     "notified": true,
     "since": "2026-10-03T19:26:52.352853+00:00",
-    "notified_margin": 0.0357142857142857
+    "notified_margin": 0.0357142857142857,
+    "gone_at": "2026-10-03T19:56:22.133418+00:00"
   },
   "Fibwi Mallorca vs. CD Estela||baloncesto||ML||bwin,cgmapuestas": {
     "margin": 0.0714285714285714,
     "cycles": 3,
     "notified": true,
     "since": "2026-10-03T19:35:16.233279+00:00",
-    "notified_margin": 0.0714285714285714
+    "notified_margin": 0.0714285714285714,
+    "gone_at": "2026-10-03T19:56:22.133418+00:00"
+  },
+  "Aruba vs. Anguilla||futbol||BTTS||888sport,luckia": {
+    "margin": 0.028301886792452935,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.028301886792452935
+  },
+  "Cincinnati Bengals vs. Jacksonville Jaguars||americano||ML_HT||marcaapuestas,yosports": {
+    "margin": 0.026455026455026398,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.026455026455026398
+  },
+  "Fibwi Mallorca vs. CD Estela||baloncesto||ML||bet365,luckia": {
+    "margin": 0.0230825154489277,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.0230825154489277
+  },
+  "FC Zenit Saint Petersburg vs. BATE||futbol||OU_HOME_2.5||jokerbet,paston": {
+    "margin": 0.04395604395604402,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.04395604395604402
+  },
+  "FC Zenit Saint Petersburg vs. BATE||futbol||OU_HOME_3.5||jokerbet,paston": {
+    "margin": 0.03756124115405546,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.03756124115405546
+  },
+  "Sokol Nusle (F) vs. BK Havirov (F)||baloncesto||ML||betway,jokerbet": {
+    "margin": 0.054823039555863984,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T19:56:22.133418+00:00",
+    "notified_margin": 0.054823039555863984
   }
 }
