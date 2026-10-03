@@ -1,14 +1,14 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 221,
+    "cycles": 222,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 205,
+    "cycles": 206,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -31,49 +31,33 @@
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||betway,paf": {
     "margin": 0.0444444444444444,
-    "cycles": 2,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T20:33:16.650486+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T20:43:13.946611+00:00"
+    "since": "2026-10-03T20:48:50.756120+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,paf": {
     "margin": 0.03219391475351874,
-    "cycles": 2,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T20:33:16.650486+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T20:43:13.946611+00:00"
+    "since": "2026-10-03T20:48:50.756120+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||botemania,daznbet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T20:43:13.946611+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||botemania,daznbet": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T20:43:13.946611+00:00",
-    "notified_margin": 0.0444444444444444
-  },
-  "Angby IF vs. Helges IF||futbol||OU_3.5||daznbet,paf": {
-    "margin": 0.03219391475351874,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T19:40:50.165388+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T19:47:48.266265+00:00"
-  },
-  "Angby IF vs. Helges IF||futbol||OU_4.5||daznbet,paf": {
-    "margin": 0.0444444444444444,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T19:40:50.165388+00:00",
     "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T19:47:48.266265+00:00"
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||bet365,luckia": {
     "margin": 0.08398268398268405,
@@ -101,11 +85,10 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||ML_HT||betfair,interwetten": {
     "margin": 0.0357142857142857,
-    "cycles": 4,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T19:26:52.352853+00:00",
-    "notified_margin": 0.0357142857142857,
-    "gone_at": "2026-10-03T19:56:22.133418+00:00"
+    "since": "2026-10-03T20:48:50.756120+00:00",
+    "notified_margin": 0.0357142857142857
   },
   "Fibwi Mallorca vs. CD Estela||baloncesto||ML||bwin,cgmapuestas": {
     "margin": 0.0714285714285714,
@@ -136,7 +119,8 @@
     "cycles": 10,
     "notified": true,
     "since": "2026-10-03T19:56:22.133418+00:00",
-    "notified_margin": 0.0230825154489277
+    "notified_margin": 0.0230825154489277,
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   },
   "FC Zenit Saint Petersburg vs. BATE||futbol||OU_HOME_2.5||jokerbet,paston": {
     "margin": 0.04395604395604402,
@@ -212,7 +196,7 @@
   },
   "Cincinnati Bengals vs. Jacksonville Jaguars||americano||ML_HT||leovegas,marcaapuestas": {
     "margin": 0.026455026455026398,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T20:22:14.614322+00:00",
     "notified_margin": 0.026455026455026398
@@ -235,7 +219,7 @@
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||1xbet_es,luckia": {
     "margin": 0.09748479368732532,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T20:27:44.263058+00:00",
     "notified_margin": 0.09748479368732532
@@ -293,20 +277,23 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T20:43:13.946611+00:00",
-    "notified_margin": 0.022122234720659995
+    "notified_margin": 0.022122234720659995,
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   },
   "Bellona Kayseri (F) vs. Turgutlu Belediyespor (F)||baloncesto||AH_HT_-2.5||betway,daznbet": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T20:43:13.946611+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   },
   "Bellona Kayseri (F) vs. Turgutlu Belediyespor (F)||baloncesto||DNB_HT||betinia,daznbet": {
     "margin": 0.04714640198511166,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T20:43:13.946611+00:00",
-    "notified_margin": 0.04714640198511166
+    "notified_margin": 0.04714640198511166,
+    "gone_at": "2026-10-03T20:48:50.756120+00:00"
   }
 }
