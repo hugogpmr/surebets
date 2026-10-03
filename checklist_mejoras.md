@@ -54,8 +54,9 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
       o adelgazar antes lo que se guarda (siguiente punto).
 - [x] (2026-10-02, solo en modo continuo: `providers/detail_cache.py`; partidos a <6 h cada vuelta, 6-24 h cada 20 min, más lejos cada 45 min; navegadores a la vez 3 → 2) Altenar/Kambi/comparador por ventana de kickoff: fichas de los partidos de las próximas horas en
       cada vuelta, las de dentro de varios días cada 30-60 min (hoy Altenar relee los 1.350 cada vez).
-- [ ] Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
-- [ ] Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
+- [—] (2026-10-03: no compensa, arrancar los ~7 Chromium es ~3 % de la CPU del ciclo y exige un proceso
+      permanente, que no cabe en 4 GB) Navegadores persistentes con la sesión cargada en vez de ~8 Chromium nuevos por ciclo (CPU/RAM/OOM).
+- [ ] (2026-10-03: solo con VM más grande; el cruce son ~30 s) Cuotas en memoria y recálculo solo del partido que cambia → aviso en segundos, con relectura de las
       patas justo antes de avisar. Publicar el panel sin git en cada ciclo.
 
 ### Backtest del 1-2 oct (18 h, 382 surebets válidas, 359 avisadas)
@@ -138,9 +139,13 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] 21. Ranking de surebets ponderando margen, liquidez y riesgo de anulación (solo Winamax permite cancelar).
 
 ## E. Velocidad
-- [ ] 24. Arrancar el refine de PokerStars en cuanto Altenar/Kambi tengan sus listas de eventos (sin esperar a los detalles).
-- [ ] 25. Escaneo por ventana de kickoff: más frecuencia para partidos a <2 h, menos para los de 5 días.
-- [ ] 26. Reactivar los tiers de staleness de `engine/cache.py` (hoy el presupuesto lo cubre todo y no sirven).
+- [x] 24. (ya hecho: "segunda pasada adelantada" con los partidos del ciclo anterior, `engine/peers.py`) Arrancar el refine de PokerStars en cuanto Altenar/Kambi tengan sus listas de eventos (sin esperar a los detalles).
+- [x] 25. Escaneo por ventana de kickoff: más frecuencia para partidos a <2 h, menos para los de 5 días.
+      Altenar/Kambi ya lo hacían (`providers/detail_cache.py`). 2026-10-03: además Sportium, Marca, Zebet y Versus
+      (0 patas en ~3.000 surebets válidas del 1-3 oct) se leen 1 de cada 3 ciclos, como mucho 2 por ciclo
+      (`engine/throttle.py`), y el timer rápido pasa de 7 a 5 min. Medido (sáb. noche): ciclos de 2:14-3:21
+      (antes ~4:05), ~4:07 min de CPU cada 5 min (antes ~6:20 cada 7). Vigilar un viernes con más volumen.
+- [x] 26. (2026-10-03: ya actúan solos, el ciclo lento agotó el presupuesto 10 veces en 24 h y entonces lee primero lo más atrasado) Reactivar los tiers de staleness de `engine/cache.py` (hoy el presupuesto lo cubre todo y no sirven).
 
 ## F. Mantenimiento
 - [ ] 27. Tests de regresión con fixtures reales para los proveedores DOM.
