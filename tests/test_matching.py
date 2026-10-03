@@ -202,6 +202,25 @@ def test_similar_but_different_teams_are_not_grouped_even_with_same_kickoff(a, b
     assert len(group_by_event([_timed(a, "x"), _timed(b, "y")])) == 2
 
 
+def test_short_generic_name_merges_when_the_rival_anchors_the_match():
+    # Real 2026-10-03: Kambi/Altenar "Atlético" (que la tabla lleva a Atlético de
+    # Madrid) y el comparador "Atletico Goianiense", mismo rival y hora: quedaban en
+    # dos grupos con las mismas cuotas y la surebet se perdía.
+    a, b = "Atlético vs. América-MG", "Atletico Goianiense vs. América-MG"
+    assert len(group_by_event([_timed(a, "paf"), _timed(b, "bet365")])) == 1
+    # sin hora de inicio común no hay ancla
+    assert len(group_by_event([_timed(a, "paf"), _timed(b, "bet365", KICKOFF + timedelta(hours=3))])) == 2
+    # el ancla tampoco puede ser solo genérica
+    c, d = "Atlético vs. Nacional", "Atletico Goianiense vs. Nacional"
+    assert len(group_by_event([_timed(c, "paf"), _timed(d, "bet365")])) == 2
+
+
+def test_known_club_is_not_merged_by_text_similarity_without_kickoff():
+    # "América" (Club América, en la tabla) y "América-MG" (no está) se parecen un 0,875.
+    a, b = "América vs. Santos", "América-MG vs. Santos"
+    assert len(group_by_event([make_market(a, "x", {"1": 2.0}), make_market(b, "y", {"1": 2.0})])) == 2
+
+
 def test_club_alias_table_has_no_variant_in_two_groups():
     from engine.team_aliases import _CLUB_GROUPS
 

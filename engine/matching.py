@@ -67,6 +67,11 @@ def _token_match(a: str, b: str) -> bool:
     small, large = sorted((tokens_a, tokens_b), key=len)
     if " ".join(small) in COUNTRY_NAMES or all(token in GENERIC for token in small):
         return False
+    return _tokens_contained(small, large)
+
+
+def _tokens_contained(small: tuple[str, ...], large: tuple[str, ...]) -> bool:
+    """Cada palabra de `small` está en `large` (sin iniciales: "San" no es "Santos")."""
     remaining = list(large)
     for token in small:
         found = next((other for other in remaining if _token_equal(token, other, allow_initial=False)), None)
@@ -74,6 +79,32 @@ def _token_match(a: str, b: str) -> bool:
             return False
         remaining.remove(found)
     return True
+
+
+def _anchored_team_match(a: str, b: str) -> bool:
+    """Regla del rival fijado: si el OTRO equipo del partido ya casa sin dudas y ambos
+    empiezan a la misma hora, este basta con que sea una versión más corta del nombre,
+    aunque sea genérica ("Atlético" / "Atletico Goianiense", Kambi contra el comparador,
+    2026-10-03): un equipo no juega dos partidos a la vez. Sigue sin cruzar si la tabla
+    de alias conoce los dos y dice que son clubes distintos ("Independiente" /
+    "Independiente Rivadavia"), con marcas distintas o con una selección."""
+    canon_a, canon_b = canonical_team(a), canonical_team(b)
+    if canon_a is not None and canon_b is not None and canon_a != canon_b:
+        return False
+    tokens_a, markers_a = squash(a)
+    tokens_b, markers_b = squash(b)
+    if markers_a != markers_b or not tokens_a or not tokens_b:
+        return False
+    small, large = sorted((tokens_a, tokens_b), key=len)
+    if " ".join(small) in COUNTRY_NAMES or " ".join(large) in COUNTRY_NAMES:
+        return tokens_a == tokens_b
+    return _tokens_contained(small, large)
+
+
+def _is_anchor(a: str, b: str) -> bool:
+    """El equipo casa por la regla estricta y su nombre no es solo genérico."""
+    tokens, _ = squash(a)
+    return _team_matches(a, b) and not all(token in GENERIC for token in tokens)
 
 
 # Función pura y llamada miles de veces con los mismos pares de equipos por
@@ -104,6 +135,10 @@ def _team_matches(a: str, b: str, loose: bool = False) -> bool:
             return True
         if loose and _token_match(a, b):
             return True
+    elif not loose:
+        # Solo uno está en la tabla: la similitud de texto juntaba "América" (México)
+        # con "América-MG" (0,875). Sin hora de inicio común no hay con qué confirmarlo.
+        return False
     return _similarity(a, b) >= FALLBACK_SIMILARITY_THRESHOLD
 
 
@@ -119,7 +154,13 @@ def _events_match(a: str, b: str, loose: bool = False) -> bool:
         return _similarity(a, b) >= FALLBACK_SIMILARITY_THRESHOLD
     home_a, away_a = teams_a
     home_b, away_b = teams_b
-    return _team_matches(home_a, home_b, loose) and _team_matches(away_a, away_b, loose)
+    if _team_matches(home_a, home_b, loose) and _team_matches(away_a, away_b, loose):
+        return True
+    if not loose:
+        return False
+    return (_is_anchor(home_a, home_b) and _anchored_team_match(away_a, away_b)) or (
+        _is_anchor(away_a, away_b) and _anchored_team_match(home_a, home_b)
+    )
 
 
 def event_key(event: str) -> tuple | str:

@@ -99,14 +99,18 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] Ordenar surebets por lo que "gastan" de cada cuenta, no solo por margen (evitar mercados que delatan).
 
 ## A. Fiabilidad de la VM
-- [ ] 1. Diagnosticar el bloqueo por IP de datacenter (Sportium, Versus, Betfair, bwin, William Hill, Winamax dan 0 mercados en la VM). Opciones: escaneo desde tu PC, otra VM con IP menos "datacenter". Sin proxies ni evasión.
+- [—] 1. (duplicado: se sigue en la Fase 3 — nodo en casa) Diagnosticar el bloqueo por IP de datacenter (Sportium, Versus, Betfair, bwin, William Hill, Winamax dan 0 mercados en la VM). Opciones: escaneo desde tu PC, otra VM con IP menos "datacenter". Sin proxies ni evasión.
 - [x] 3. ⭐ Alerta a Telegram de "fuente muerta" y de ciclo muerto por OOM: hecho, desplegado y probado en la VM (2026-09-30), enviando al supergrupo "admin surebets".
   - [ ] 3b. Alternativa al canal: un tema nuevo dentro del grupo de surebets, creado por el bot y cerrado para que solo escriban los admins. Limitación: Telegram no permite ocultar un tema a los miembros del grupo, así que lo leería todo el grupo. Pendiente de decidir; no implementado.
-- [ ] 4. Verificar que el swap y el OOM quedaron arreglados (`dmesg`, `journalctl ... Failed with result`) tras varios días.
+- [x] 4. (2026-10-03) Verificar que el swap y el OOM quedaron arreglados (`dmesg`, `journalctl ... Failed with result`) tras varios días.
+      Últimas 24 h: 194 ciclos rápidos, 0 OOM. Los únicos OOM desde el 28-sep son del 2-oct (13:20 y 13:32 en pruebas
+      manuales con `systemd-run`, y 18:52 en el ciclo durante los experimentos de esa tarde). Los 2 fallos `signal`
+      del 3-oct 06:06 son `apt-daily-upgrade` reiniciando servicios, no memoria. Pico por ciclo: 3,0 GB + 0,2-1,2 GB
+      de swap (de 2 GB); la VM sigue justa, pero estable.
 - [ ] 5. Diagnosticar de verdad (con captura, desde la VM) la ficha de Sportium y el DC de PokerStars, ambos desactivados sin causa raíz.
 
 ## B. Cobertura de mercados y casas
-- [ ] 6. Betfair Exchange con Delayed Key gratuita (falta que generes la clave) + ángulo back-lay en el motor.
+- [—] 6. DESCARTADO por el usuario (2026-10-01, ver Fase 1). Betfair Exchange con Delayed Key gratuita (falta que generes la clave) + ángulo back-lay en el motor.
 - [x] 7. Más ligas en 888sport, Zebet, Versus y Marca Apuestas (2026-09-29): 888 todas las ligas por listado diario; Zebet +11 ligas (solo 1X2) + NHL; Marca y Versus +4 ligas cada una (con 9 el ciclo de la VM subía a 330 s). Ojo: Versus/Sportium no leen desde la VM (IP de centro de datos).
 - [x] 8. Mercados extra de Zebet y Bet777 (2026-09-29): Zebet goles por equipo, primer gol y BTTS 1ª mitad (el más/menos por mitades ya estaba); Bet777 primer equipo en marcar. El resto de mercados de Bet777 auditados no tienen socio con el que cruzar.
 - [ ] 9. Pinnacle vía pinnapi como señal "sharp" de coherencia en `engine/quality.py`.
@@ -118,12 +122,17 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 - [ ] 13. Filtro por antigüedad de cuota (Kambi expone `changedDate` por outcome).
 - [ ] 14. Penalizar cuotas de comparador cerca del kickoff (divergen hasta ~7%).
 - [ ] 15. Puntuación de confianza por casa según su tasa histórica de cuotas que desaparecen o cambian.
-- [ ] 16. Arreglar el matching de equipos parecidos ("América"/"América-MG"): competición + hora de inicio como criterio duro.
+- [x] 16. (2026-10-03, `engine/matching.py`) Arreglar el matching de equipos parecidos ("América"/"América-MG"): competición + hora de inicio como criterio duro.
+      Hecho sin campo de competición (ninguna fuente lo pasa al `Market`), con la hora de inicio: (a) si solo uno de los
+      dos nombres está en la tabla de alias, la similitud de texto ya no basta sin hora común ("América"/"América-MG"
+      0,875); (b) regla del rival fijado: con un equipo que casa sin dudas y la misma hora (±30 min), el otro puede ser
+      una versión corta aunque sea genérica ("Atlético"/"Atletico Goianiense", que hoy quedaba en dos grupos con las
+      mismas cuotas), salvo que la tabla diga que son clubes distintos. Con el panel del 3-oct solo cambia ese partido.
 - [ ] 17. Cruce de selecciones nacionales (la tabla de alias solo conoce clubes).
 
 ## D. Utilidad para apostar
 - [ ] 18. Calculadora de stakes con límites reales por casa (ir anotando el límite real al apostar en `docs/limites.json`).
-- [ ] 19. Botón "he apostado" en Telegram/web: registrar apuesta, beneficio real y qué casas te limitan.
+- [ ] 19. (mismo trabajo que la Fase 4) Botón "he apostado" en Telegram/web: registrar apuesta, beneficio real y qué casas te limitan.
 - [ ] 20. Tracking de bankroll y rentabilidad por casa y por tipo de mercado.
 - [ ] 21. Ranking de surebets ponderando margen, liquidez y riesgo de anulación (solo Winamax permite cancelar).
 
