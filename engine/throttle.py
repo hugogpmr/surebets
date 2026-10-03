@@ -14,6 +14,10 @@ a contar, y las surebets con esa pata desaparecerían y volverían cada 3 ciclos
 
 Una lectura que falla o viene vacía no se guarda y no cuenta: el ciclo siguiente vuelve a leer, así
 que el aparcado de engine/health.py ve las mismas lecturas malas seguidas que antes.
+
+`limit_reads` reparte las lecturas entre ciclos: medido en la VM el 3-oct con el timer de 7 min, el
+ciclo que leía las 4 a la vez tardaba ~4:00 y los otros dos ~2:20. Con un máximo de 2 por ciclo se
+desfasan solas (las aplazadas leen en el ciclo siguiente y desde ahí siguen a su ritmo).
 """
 
 import logging
@@ -50,6 +54,12 @@ class ThrottledProvider(OddsProvider):
         self.due = self.saved_at is None or not self.markets or self.now - self.saved_at >= every
         self.uses_browser = inner.uses_browser if self.due else False
 
+    def defer(self) -> None:
+        """Deja la lectura para el ciclo siguiente sirviendo la guardada (solo si la hay)."""
+        if self.due and self.markets:
+            self.due = False
+            self.uses_browser = False
+
     def fetch_markets(self, sports: list[str]) -> list[Market]:
         if not self.due:
             age = (self.now - self.saved_at).total_seconds() / 60
@@ -67,3 +77,15 @@ class ThrottledProvider(OddsProvider):
             except OSError:
                 logger.warning("No se pudo guardar la lectura de %s", self.name, exc_info=True)
         return markets
+
+
+def limit_reads(providers: list[OddsProvider], max_reads: int) -> None:
+    """Como mucho `max_reads` ThrottledProvider leen en este ciclo: las que llevan más tiempo
+    sin leer primero (las que no tienen nada guardado siempre leen); el resto se aplaza."""
+    throttled = sorted(
+        (p for p in providers if isinstance(p, ThrottledProvider) and p.due and p.markets),
+        key=lambda p: p.saved_at,
+    )
+    must = sum(1 for p in providers if isinstance(p, ThrottledProvider) and p.due and not p.markets)
+    for p in throttled[max(max_reads - must, 0):]:
+        p.defer()

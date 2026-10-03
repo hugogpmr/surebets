@@ -61,3 +61,37 @@ def test_corrupt_file_means_read_now(tmp_path):
     path = tmp_path / "throttled_zebet.pkl"
     path.write_bytes(b"no es un pickle")
     assert ThrottledProvider(FakeBrowserSource([market()]), EVERY, str(path), now=T0).due
+
+
+def test_at_most_two_throttled_sources_read_in_the_same_cycle(tmp_path):
+    from engine.throttle import limit_reads
+
+    names = ["sportium", "marcaapuestas", "zebet", "versus"]
+    for i, name in enumerate(names):  # todas leídas hace tiempo, la más antigua primero
+        source = FakeBrowserSource([market()])
+        source.name = name
+        ThrottledProvider(source, EVERY, str(tmp_path / name), now=T0 + timedelta(minutes=i)).fetch_markets(["futbol"])
+
+    def cycle(now):
+        providers = []
+        for name in names:
+            source = FakeBrowserSource([market(now)])
+            source.name = name
+            providers.append(ThrottledProvider(source, EVERY, str(tmp_path / name), now=now))
+        limit_reads(providers, 2)
+        for p in providers:
+            p.fetch_markets(["futbol"])
+        return [p.name for p in providers if p.inner.calls]
+
+    late = T0 + timedelta(minutes=30)
+    assert cycle(late) == ["sportium", "marcaapuestas"]  # las 2 más antiguas
+    assert cycle(late + timedelta(minutes=5)) == ["zebet", "versus"]  # las aplazadas, en el siguiente
+    assert cycle(late + timedelta(minutes=10)) == []
+
+
+def test_source_without_saved_reading_always_reads(tmp_path):
+    from engine.throttle import limit_reads
+
+    providers = [ThrottledProvider(FakeBrowserSource([market()]), EVERY, str(tmp_path / f"s{i}"), now=T0) for i in range(3)]
+    limit_reads(providers, 2)
+    assert all(p.due for p in providers)
