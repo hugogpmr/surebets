@@ -1,14 +1,14 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 174,
+    "cycles": 175,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 158,
+    "cycles": 159,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -18,7 +18,8 @@
     "cycles": 57,
     "notified": true,
     "since": "2026-10-03T08:32:33.217663+00:00",
-    "notified_margin": 0.06637494080712769
+    "notified_margin": 0.06637494080712769,
+    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_51.5||interwetten,leovegas": {
     "margin": 0.03078024337866858,
@@ -52,22 +53,6 @@
     "notified_margin": 0.033882783882783984,
     "gone_at": "2026-10-03T14:39:46.056852+00:00"
   },
-  "Ferrol vs. Pontevedra||futbol||DNB||bet365,cgmapuestas": {
-    "margin": 0.03219391475351874,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T14:26:34.713821+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T14:32:30.741260+00:00"
-  },
-  "Cipolletti vs. Sol de America||futbol||OU_2.5||betway,botemania": {
-    "margin": 0.033882783882783984,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T14:26:34.713821+00:00",
-    "notified_margin": 0.033882783882783984,
-    "gone_at": "2026-10-03T14:32:30.741260+00:00"
-  },
   "Racing Ferrol vs. Pontevedra||futbol||DNB||bet365,cgmapuestas": {
     "margin": 0.03219391475351874,
     "cycles": 1,
@@ -81,7 +66,8 @@
     "cycles": 7,
     "notified": true,
     "since": "2026-10-03T14:47:48.055929+00:00",
-    "notified_margin": 0.030458033015577812
+    "notified_margin": 0.030458033015577812,
+    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Tina Marie Li vs. Emma Scaldalai||tenis||ML||betinia,speedybet": {
     "margin": 0.04507257448433921,
@@ -181,7 +167,7 @@
   },
   "Cipolletti vs. Sol de America||futbol||OU_2.5||daznbet,paf": {
     "margin": 0.033882783882783984,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.033882783882783984
@@ -190,28 +176,26 @@
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:15:43.979128+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T15:22:45.734886+00:00"
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,speedybet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:15:43.979128+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T15:22:45.734886+00:00"
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Deportivo Moron vs. All Boys||futbol||1X2||1xbet_es,betway,interwetten": {
     "margin": 0.032467532467532534,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T15:22:45.734886+00:00",
     "notified_margin": 0.032467532467532534
   },
   "Alexander Zverev vs. Novak Djokovic||tenis||AH_-2.5||888sport,betway": {
     "margin": 0.0444444444444444,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T15:22:45.734886+00:00",
     "notified_margin": 0.0444444444444444
@@ -250,14 +234,14 @@
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.03966131907308368,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.03966131907308368
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||ML_HT||betfair,interwetten": {
     "margin": 0.0357142857142857,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.0357142857142857
@@ -267,20 +251,51 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
-    "notified_margin": 0.03907496012759171
+    "notified_margin": 0.03907496012759171,
+    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||botemania,daznbet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T15:36:36.686780+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||botemania,daznbet": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T15:36:36.686780+00:00"
+  },
+  "BK Iskra Svit vs. Inter Basquet||baloncesto||ML||888sport,betway": {
+    "margin": 0.045454545454545414,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.045454545454545414
+  },
+  "Landstede Hammers vs. Heroes Den Bosch||baloncesto||ML||betway,bwin": {
+    "margin": 0.030458033015577812,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.030458033015577812
+  },
+  "Alexander Zverev vs. Novak Djokovic||tenis||ML||888sport,bet365": {
+    "margin": 0.0357142857142857,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.0357142857142857
+  },
+  "Ludogorets vs. Cherno More Varna||futbol||1X2||betfair,jokerbet": {
+    "margin": 0.030994152046783574,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:36:36.686780+00:00",
+    "notified_margin": 0.030994152046783574
   }
 }
