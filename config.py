@@ -169,6 +169,12 @@ BETFAIR_DOMAIN = os.getenv("BETFAIR_DOMAIN", "es")
 # providers/detail_cache.py). Vacío = cada ciclo lo relee todo, como antes del 2026-10-02.
 DETAIL_CACHE_DIR = os.getenv("DETAIL_CACHE_DIR", "cache")
 
+# Fuentes de navegador que el ciclo rápido lee solo cada THROTTLE_EVERY_MINUTES (en los demás
+# ciclos sirve su última lectura, guardada en DETAIL_CACHE_DIR; ver engine/throttle.py). 19 min =
+# una de cada 3 vueltas del timer de 7 min. Vacío = todas en cada ciclo, como antes del 2026-10-03.
+THROTTLED_SOURCES = [s for s in os.getenv("THROTTLED_SOURCES", "sportium,marcaapuestas,zebet,versus").split(",") if s]
+THROTTLE_EVERY_MINUTES = int(os.getenv("THROTTLE_EVERY_MINUTES", "19"))
+
 # Histórico de surebets para el backtest (engine/backtest.py, scripts/backtest_report.py): cada
 # surebet detectada se guarda como un episodio (cuándo apareció, con qué cuotas, cuándo y por qué
 # dejó de aparecer). Va en su propio .db en cache/ (fuera de git, propio de cada máquina) porque
