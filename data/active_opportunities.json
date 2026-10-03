@@ -1,14 +1,14 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 177,
+    "cycles": 178,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 161,
+    "cycles": 162,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -153,17 +153,15 @@
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:36:36.686780+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T15:43:36.004203+00:00"
+    "since": "2026-10-03T15:57:54.484883+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,speedybet": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T15:36:36.686780+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T15:43:36.004203+00:00"
+    "since": "2026-10-03T15:57:54.484883+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Deportivo Moron vs. All Boys||futbol||1X2||1xbet_es,betway,interwetten": {
     "margin": 0.032467532467532534,
@@ -215,14 +213,14 @@
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.03966131907308368,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.03966131907308368
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||ML_HT||betfair,interwetten": {
     "margin": 0.0357142857142857,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.0357142857142857
@@ -240,14 +238,16 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:50:38.584772+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T15:57:54.484883+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||botemania,daznbet": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:50:38.584772+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T15:57:54.484883+00:00"
   },
   "BK Iskra Svit vs. Inter Basquet||baloncesto||ML||888sport,betway": {
     "margin": 0.045454545454545414,
@@ -286,6 +286,28 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T15:50:38.584772+00:00",
-    "notified_margin": 0.024276377217553602
+    "notified_margin": 0.024276377217553602,
+    "gone_at": "2026-10-03T15:57:54.484883+00:00"
+  },
+  "AEK Larnaca vs. Apollon Limassol||futbol||OU_2.5||bet777,cgmapuestas": {
+    "margin": 0.031425891181988685,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:57:54.484883+00:00",
+    "notified_margin": 0.031425891181988685
+  },
+  "AEK Larnaca vs. Apollon Limassol||futbol||OU_3.5||888sport,retabet": {
+    "margin": 0.02762224710712946,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:57:54.484883+00:00",
+    "notified_margin": 0.02762224710712946
+  },
+  "AEK Larnaca vs. Apollon||futbol||OU_3||bet777,winamax": {
+    "margin": 0.04938271604938271,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T15:57:54.484883+00:00",
+    "notified_margin": 0.04938271604938271
   }
 }
