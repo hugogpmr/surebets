@@ -90,7 +90,7 @@ def direct_providers(details_dir: str = "") -> tuple[list[OddsProvider], list[Od
         # Marca Apuestas: mismo framework "ta-" que Sportium (mismo vendor de
         # frontend), verificado en vivo el 2026-09-23 tras confirmar con Playwright
         # headless real que su antiguo bloqueo de Cloudflare ya no aplica (ver
-        # estudio_tecnicas_otros_bots.md) - 1X2, over/under, BTTS y 1X2_HT.
+        # estudios/estudio_tecnicas_otros_bots.md) - 1X2, over/under, BTTS y 1X2_HT.
         # Zebet: plataforma propia del grupo Zeturf, verificada en vivo el
         # 2026-09-24 con Playwright headless real (antes "sin confirmar" en
         # checklist.md por el mismo motivo que Interwetten/Retabet: el navegador

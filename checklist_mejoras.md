@@ -144,5 +144,8 @@ escaneo. El código (`providers/betfair_exchange.py`) se conserva por si se reco
 ## F. Mantenimiento
 - [ ] 27. Tests de regresión con fixtures reales para los proveedores DOM.
 - [ ] 28. Panel de salud en la web: última lectura por casa, mercados por ciclo, estado parked/activo.
-- [ ] 29. Limpiar el repo: `surebets.tar.gz`, `.md` de estudio sueltos en la raíz y `__pycache__` a `docs/` o `.gitignore`.
+- [x] 29. (2026-10-03) Limpiar el repo: `surebets.tar.gz`, `.md` de estudio sueltos en la raíz y `__pycache__` a `docs/` o `.gitignore`.
+      Los 7 estudios, a `estudios/` (no a `docs/`: es la web publicada). `__pycache__` y el tar ya estaban en
+      `.gitignore`; el tar local se borró porque llevaba `data/relay.session` (acceso a la cuenta de Telegram) y
+      `deploy/package.sh` ahora excluye `*.session`.
 - [ ] 30. Runbook único de la VM (deploy, timers, swap, claves) en un solo sitio.

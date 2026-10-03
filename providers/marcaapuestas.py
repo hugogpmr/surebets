@@ -102,7 +102,7 @@ _EXTRACT_OU_EVENTS_JS = """(group) => {
 class MarcaApuestasProvider(OddsProvider):
     """Scraper por DOM (Playwright) para Marca Apuestas.
 
-    Descubrimiento 2026-09-23 (`estudio_tecnicas_otros_bots.md`, auditoría de
+    Descubrimiento 2026-09-23 (`estudios/estudio_tecnicas_otros_bots.md`, auditoría de
     plataforma): el diagnóstico antiguo de `checklist.md` (2026-09-16, "Cloudflare
     / API propia, challenge Just a moment...") ya no aplica — la casa cambió de
     frontend (`no_brand_candy-theme`). Confirmado con un `chromium.launch(headless=True)`

@@ -1,7 +1,7 @@
 """Betfair Exchange API oficial (API-NG), aparte del scraper DOM de la web de
 apuestas fijas (`providers/betfair.py`) que ya usa este proyecto.
 
-Hallazgo 2026-09-23 (`estudio_tecnicas_otros_bots.md`, sección 2): Betfair
+Hallazgo 2026-09-23 (`estudios/estudio_tecnicas_otros_bots.md`, sección 2): Betfair
 ofrece una **Delayed Application Key gratuita** (REST/JSON-RPC, sin coste de
 activación; solo el "Live App Key" para apostar de verdad cuesta una activación
 de pago) con un delay de 1-180s — de sobra para arbitraje pre-partido, que es
