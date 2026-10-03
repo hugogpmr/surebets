@@ -215,6 +215,14 @@ def test_short_generic_name_merges_when_the_rival_anchors_the_match():
     assert len(group_by_event([_timed(c, "paf"), _timed(d, "bet365")])) == 2
 
 
+def test_hyphen_separates_words():
+    # Real 2026-10-03: Kambi/888sport "Atletico GO vs. America MG", comparador
+    # "Atletico Goianiense vs. América-MG" (el guion pegaba "americamg").
+    assert canonical_team("América-MG") == canonical_team("America MG") != canonical_team("América")
+    assert canonical_team("Atlético-MG") == canonical_team("Atletico Mineiro")
+    assert _events_match("Atletico GO vs. America MG", "Atletico Goianiense vs. América-MG")
+
+
 def test_known_club_is_not_merged_by_text_similarity_without_kickoff():
     # "América" (Club América, en la tabla) y "América-MG" (no está) se parecen un 0,875.
     a, b = "América vs. Santos", "América-MG vs. Santos"

@@ -30,13 +30,15 @@ from functools import lru_cache
 @lru_cache(maxsize=None)
 def normalize(name: str) -> str:
     name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
-    name = re.sub(r"[^a-z0-9 ]", "", name.lower())
+    # El guion separa palabras: "América-MG" y "America MG" son el mismo nombre
+    # (antes salía "americamg" y no cruzaba con el comparador, 2026-10-03).
+    name = re.sub(r"[^a-z0-9 ]", "", name.lower().replace("-", " "))
     return re.sub(r"\s+", " ", name).strip()
 
 
 # Cada línea es un club: variantes separadas por "|"; la primera es el id canónico.
 _CLUBS = """
-atletico madrid|atletico de madrid|at madrid|atl madrid|atletico
+atletico madrid|atletico de madrid|at madrid|atl madrid
 real madrid|r madrid
 barcelona|fc barcelona
 barcelona sc|barcelona guayaquil|barcelona de guayaquil|barcelona sporting club
@@ -188,6 +190,8 @@ fluminense|fluminense fc|fluminense rj
 botafogo|botafogo rj|botafogo fr
 vasco da gama|vasco|cr vasco da gama
 atletico mineiro|atletico mg|clube atletico mineiro|atl mineiro
+america mineiro|america mg
+atletico goianiense|atletico go|atl goianiense
 cruzeiro|cruzeiro mg|cruzeiro ec
 gremio|gremio porto alegre|gremio fbpa
 internacional|sc internacional|internacional rs|internacional porto alegre
