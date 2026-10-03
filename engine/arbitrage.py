@@ -113,6 +113,12 @@ def compare_market(
     # infravalora el beneficio cuanto más grande es el margen).
     profit = round(total_stake * m / total_prob, 2) if surebet else None
     rounded = round_stakes(market, total_stake, round_step) if surebet else None
+    # El mínimo también tiene que cumplirse con los importes redondeados, que
+    # son los que se apuestan: redondear puede bajar la rentabilidad del 2,1 %
+    # exacto a un 1,4 % real, y entonces el aviso promete más de lo que paga.
+    if rounded and rounded[1] / sum(rounded[0].values()) <= min_margin:
+        surebet = False
+        stakes = profit = rounded = None
     return MarketComparison(
         market=market,
         margin=m,

@@ -36,7 +36,7 @@ Edita `.env`:
 - `TELEGRAM_BOT_TOKEN`: crea un bot con [@BotFather](https://t.me/BotFather) en Telegram (`/newbot`) y pega el token aquí. **No lo compartas ni lo subas a git.**
 - `TELEGRAM_CHAT_ID`: tu chat id (envía un mensaje a tu bot y consulta `https://api.telegram.org/bot<TOKEN>/getUpdates` para obtenerlo), para recibir avisos automáticos de nuevas surebets.
 - `BANKROLL`: banca a repartir en cada oportunidad (por defecto 250€).
-- `MIN_MARGIN`: margen mínimo para considerar una oportunidad relevante (por defecto 0.01 = 1%).
+- `MIN_MARGIN`: margen mínimo para considerar una oportunidad relevante (por defecto 0.02 = 2%; se exige también con los importes redondeados de `ROUND_STEP`).
 
 Arrancar:
 

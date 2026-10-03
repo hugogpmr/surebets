@@ -24,7 +24,7 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       BANKROLL: ${{ vars.BANKROLL || '250' }}
-      MIN_MARGIN: ${{ vars.MIN_MARGIN || '0.01' }}
+      MIN_MARGIN: ${{ vars.MIN_MARGIN || '0.02' }}
       DB_PATH: data/surebets.db
       PYTHONPATH: ${{ github.workspace }}
     steps:

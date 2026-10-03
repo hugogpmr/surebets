@@ -78,3 +78,15 @@ def test_compare_market_only_rounds_when_asked():
     assert compare_market(market, 250.0).rounded_stakes is None
     rounded = compare_market(market, 250.0, round_step=5.0)
     assert rounded.rounded_stakes is not None and rounded.rounded_profit > 0
+
+
+def test_min_margin_also_applies_to_rounded_stakes():
+    # 2,88 % exacto, pero con 100 € en pasos de 5 € el mejor reparto rinde 1 %:
+    # el aviso prometería un margen que no se cobra apostando importes redondos.
+    market = make_market([2.10, 2.02])
+    assert compare_market(market, 100.0, min_margin=0.02).is_surebet
+    rounded = compare_market(market, 100.0, min_margin=0.02, round_step=5.0)
+    assert not rounded.is_surebet
+    assert rounded.stakes is None and rounded.rounded_stakes is None
+    # con 250 € el redondeo apenas cuesta y sigue siendo surebet
+    assert compare_market(market, 250.0, min_margin=0.02, round_step=5.0).is_surebet

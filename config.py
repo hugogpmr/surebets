@@ -19,7 +19,7 @@ TELEGRAM_TOPIC_CACHE_PATH = os.getenv("TELEGRAM_TOPIC_CACHE_PATH", "data/notify_
 # al siguiente ciclo (ver bot/telegram_bot.py notify_opportunity).
 NOTIFY_MIN_INTERVAL_SECONDS = float(os.getenv("NOTIFY_MIN_INTERVAL_SECONDS", "3"))
 BANKROLL = float(os.getenv("BANKROLL", "250"))
-MIN_MARGIN = float(os.getenv("MIN_MARGIN", "0.01"))
+MIN_MARGIN = float(os.getenv("MIN_MARGIN", "0.02"))
 FETCH_INTERVAL_SECONDS = int(os.getenv("FETCH_INTERVAL_SECONDS", "60"))
 DB_PATH = os.getenv("DB_PATH", "surebets.db")
 # Proxy SOCKS que sale por la conexión de casa: túnel inverso que abre la Raspberry hacia

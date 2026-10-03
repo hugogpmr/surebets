@@ -41,7 +41,7 @@ en el repo.
    - `TELEGRAM_CHAT_ID` → tu chat id (`2094318125`).
    (Esto lo tienes que pegar tú mismo — un token no debo introducirlo yo en ningún formulario.)
 5. Opcional: en **Settings → Secrets and variables → Actions → Variables**, añade `BANKROLL` y
-   `MIN_MARGIN` si quieres otros valores que los por defecto (250€ y 1%).
+   `MIN_MARGIN` si quieres otros valores que los por defecto (250€ y 2%).
 6. Avísame cuando estén los secrets puestos y te hago el `git init` + push del código, y disparo el
    workflow manualmente (botón "Run workflow" en la pestaña Actions, o te digo cómo) para comprobar que
    todo funciona antes de dejarlo en automático.
