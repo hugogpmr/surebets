@@ -9,7 +9,7 @@
   },
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 167,
+    "cycles": 168,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
@@ -32,7 +32,7 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 151,
+    "cycles": 152,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -47,7 +47,7 @@
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||1X2||bet365,luckia": {
     "margin": 0.06637494080712769,
-    "cycles": 50,
+    "cycles": 51,
     "notified": true,
     "since": "2026-10-03T08:32:33.217663+00:00",
     "notified_margin": 0.06637494080712769
@@ -110,7 +110,7 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_51.5||interwetten,leovegas": {
     "margin": 0.03078024337866858,
-    "cycles": 16,
+    "cycles": 17,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.03078024337866858
@@ -139,14 +139,6 @@
     "notified_margin": 0.015766841853798397,
     "gone_at": "2026-10-03T13:57:53.681626+00:00"
   },
-  "Venlo vs. Roda JC||futbol||CORNERS_OU_10.5||888sport,leovegas": {
-    "margin": 0.011323511506148742,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.011323511506148742,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
-  },
   "Minnesota Vikings vs. Miami Dolphins||americano||ML_HT||betfair,interwetten": {
     "margin": 0.0357142857142857,
     "cycles": 8,
@@ -170,46 +162,6 @@
     "since": "2026-10-03T13:43:38.522408+00:00",
     "notified_margin": 0.011323511506148742,
     "gone_at": "2026-10-03T13:52:35.440412+00:00"
-  },
-  "Osnabruck vs. Djurgarden||futbol||1X2||1xbet_es,888sport": {
-    "margin": 0.03910873122439584,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.03910873122439584,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
-  },
-  "Stocksund vs. Jarfalla||futbol||OU_3.5||888sport,paston": {
-    "margin": 0.01501501501501512,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.01501501501501512,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
-  },
-  "Stocksund vs. Jarfalla||futbol||OU_4.5||888sport,betway": {
-    "margin": 0.01863517636471379,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.01863517636471379,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
-  },
-  "Toyama Grouses vs. Utsunomiya Brex||baloncesto||ML||888sport,betinia": {
-    "margin": 0.011148272017837302,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.011148272017837302,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
-  },
-  "VfL Osnabrück vs. Djurgårdens||futbol||AH_0.5||bet777,jokerbet": {
-    "margin": 0.011028966185916866,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.011028966185916866,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
   },
   "Alianza FC vs. Firpo||futbol||1X2||1xbet_es,daznbet": {
     "margin": 0.022785187594881795,
@@ -242,14 +194,6 @@
     "since": "2026-10-03T13:35:35.293894+00:00",
     "notified_margin": 0.010025062656641603,
     "gone_at": "2026-10-03T13:57:53.681626+00:00"
-  },
-  "Sandviken vs. Arendal||futbol||DNB||leovegas,speedybet": {
-    "margin": 0.015378844711177786,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T13:35:35.293894+00:00",
-    "notified_margin": 0.015378844711177786,
-    "gone_at": "2026-10-03T13:43:38.522408+00:00"
   },
   "Stocksund vs. Jarfalla||futbol||OU_4.5||bet777,betway": {
     "margin": 0.010011123470522798,
@@ -301,7 +245,7 @@
   },
   "Tampa Bay Buccaneers vs. Green Bay Packers||americano||ML_HT||interwetten,yosports": {
     "margin": 0.04287138584247252,
-    "cycles": 9,
+    "cycles": 10,
     "notified": true,
     "since": "2026-10-03T13:43:38.522408+00:00",
     "notified_margin": 0.054459691252144005
@@ -407,7 +351,8 @@
     "cycles": 3,
     "notified": true,
     "since": "2026-10-03T14:26:34.713821+00:00",
-    "notified_margin": 0.02980845517397701
+    "notified_margin": 0.02980845517397701,
+    "gone_at": "2026-10-03T14:47:48.055929+00:00"
   },
   "Swiecie vs. Polonia Sroda Wielkopolska||futbol||DNB||betway,paf": {
     "margin": 0.02412280701754388,
@@ -520,5 +465,12 @@
     "since": "2026-10-03T14:32:30.741260+00:00",
     "notified_margin": 0.03219391475351874,
     "gone_at": "2026-10-03T14:39:46.056852+00:00"
+  },
+  "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,bet365": {
+    "margin": 0.030458033015577812,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T14:47:48.055929+00:00",
+    "notified_margin": 0.030458033015577812
   }
 }
