@@ -1,49 +1,49 @@
 {
   "FMP vs. Estrella Roja||baloncesto||ML||1xbet_es,bwin": {
     "margin": 0.01730371900826444,
-    "cycles": 160,
+    "cycles": 161,
     "notified": true,
     "since": "2026-10-02T16:43:04.044795+00:00",
     "notified_margin": 0.01730371900826444
   },
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 156,
+    "cycles": 157,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||OU_HT_19.5||marcaapuestas,williamhill": {
     "margin": 0.012260004626416854,
-    "cycles": 156,
+    "cycles": 157,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.012260004626416854
   },
   "Manresa vs. Breogán||baloncesto||OU_182.5||betway,paston": {
     "margin": 0.0280199976746891,
-    "cycles": 6,
+    "cycles": 7,
     "notified": true,
     "since": "2026-10-03T12:41:59.575337+00:00",
     "notified_margin": 0.0280199976746891
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 140,
+    "cycles": 141,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
   },
   "Tranent Juniors vs. Turriff United||futbol||AH_-1||bet365,jokerbet": {
     "margin": 0.016227180527383256,
-    "cycles": 86,
+    "cycles": 87,
     "notified": true,
     "since": "2026-10-03T02:49:31.668280+00:00",
     "notified_margin": 0.04367816091954024
   },
   "Tranent Juniors vs. Turriff||futbol||BTTS||jokerbet,paf": {
     "margin": 0.016195310611554325,
-    "cycles": 37,
+    "cycles": 38,
     "notified": true,
     "since": "2026-10-03T08:48:41.879950+00:00",
     "notified_margin": 0.01988976755331895
@@ -66,25 +66,17 @@
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||1X2||bet365,luckia": {
     "margin": 0.06637494080712769,
-    "cycles": 39,
+    "cycles": 40,
     "notified": true,
     "since": "2026-10-03T08:32:33.217663+00:00",
     "notified_margin": 0.06637494080712769
   },
   "Hamburg Towers vs. Rostock Seawolves||baloncesto||OU_HT_86.5||betfair,jokerbet": {
     "margin": 0.01891252955082745,
-    "cycles": 36,
+    "cycles": 37,
     "notified": true,
     "since": "2026-10-03T08:55:43.831377+00:00",
     "notified_margin": 0.0444444444444444
-  },
-  "Deportivo Paraguayo vs. Club Mercedes||futbol||OU_2.5||888sport,paf": {
-    "margin": 0.015231237884242632,
-    "cycles": 7,
-    "notified": true,
-    "since": "2026-10-03T11:33:37.683437+00:00",
-    "notified_margin": 0.015231237884242632,
-    "gone_at": "2026-10-03T12:26:05.067390+00:00"
   },
   "New York Giants vs. Arizona Cardinals||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.033302497687326515,
@@ -93,14 +85,6 @@
     "since": "2026-10-03T09:45:52.500996+00:00",
     "notified_margin": 0.033302497687326515,
     "gone_at": "2026-10-03T13:13:14.515662+00:00"
-  },
-  "Manresa vs. Breogán||baloncesto||OU_182.5||betinia,paston": {
-    "margin": 0.0280199976746891,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T12:15:07.592203+00:00",
-    "notified_margin": 0.0280199976746891,
-    "gone_at": "2026-10-03T12:26:05.067390+00:00"
   },
   "Thame United vs. Eastbourne Borough||futbol||OU_3.25||bet365,jokerbet": {
     "margin": 0.019230769230769273,
@@ -144,18 +128,10 @@
   },
   "Ovarense vs. SC Braga||baloncesto||OU_163.5||betway,daznbet": {
     "margin": 0.011323511506148742,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true,
     "since": "2026-10-03T12:33:50.571340+00:00",
     "notified_margin": 0.058693244739756345
-  },
-  "UE Sant Andreu vs. Antequera CF||futbol||1X2||1xbet_es,kirolbet,luckia": {
-    "margin": 0.018847072524390662,
-    "cycles": 3,
-    "notified": true,
-    "since": "2026-10-03T12:02:28.144969+00:00",
-    "notified_margin": 0.018847072524390662,
-    "gone_at": "2026-10-03T12:26:05.067390+00:00"
   },
   "India vs. Brasil||futbol||BTTS||betfair,jokerbet": {
     "margin": 0.022261021388040203,
@@ -217,9 +193,8 @@
     "margin": 0.011323511506148742,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T13:13:14.515662+00:00",
-    "notified_margin": 0.011323511506148742,
-    "gone_at": "2026-10-03T13:20:23.776123+00:00"
+    "since": "2026-10-03T13:26:13.241873+00:00",
+    "notified_margin": 0.011323511506148742
   },
   "Venlo vs. Roda JC||futbol||CORNERS_OU_12.5||888sport,paf": {
     "margin": 0.018952062430323213,
@@ -231,7 +206,7 @@
   },
   "Portimonense SC vs. UD Oliveirense||baloncesto||OU_163.5||daznbet,paf": {
     "margin": 0.013539651837524147,
-    "cycles": 10,
+    "cycles": 11,
     "notified": true,
     "since": "2026-10-03T12:09:16.209754+00:00",
     "notified_margin": 0.013539651837524147
@@ -259,14 +234,6 @@
     "since": "2026-10-03T12:15:07.592203+00:00",
     "notified_margin": 0.030303030303030276,
     "gone_at": "2026-10-03T12:48:16.152345+00:00"
-  },
-  "KK Cedevita Olimpija Ljubljana vs. Cibona||baloncesto||AH_-6.5||1xbet_es,betway": {
-    "margin": 0.04009163802978233,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T12:15:07.592203+00:00",
-    "notified_margin": 0.04009163802978233,
-    "gone_at": "2026-10-03T12:26:05.067390+00:00"
   },
   "Unicaja vs. La Laguna Tenerife||baloncesto||ML||bwin,marcaapuestas": {
     "margin": 0.025816861637757205,
@@ -366,7 +333,7 @@
   },
   "Ovarense Basquetebol vs. SC Braga||baloncesto||OU_164.5||betway,paf": {
     "margin": 0.016195310611554325,
-    "cycles": 7,
+    "cycles": 8,
     "notified": true,
     "since": "2026-10-03T12:33:50.571340+00:00",
     "notified_margin": 0.016195310611554325
@@ -429,21 +396,21 @@
   },
   "KK Cedevita Olimpija Ljubljana vs. Cibona||baloncesto||ML||betway,luckia": {
     "margin": 0.015873015873015928,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.015873015873015928
   },
   "Washington Commanders vs. Indianapolis Colts||americano||ML_HT||marcaapuestas,yosports": {
     "margin": 0.023569023569023573,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.023569023569023573
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_51.5||interwetten,leovegas": {
     "margin": 0.03078024337866858,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.03078024337866858
@@ -458,21 +425,21 @@
   },
   "Olimpija vs. Cibona||baloncesto||AH_-6.5||betway,interwetten": {
     "margin": 0.01501501501501512,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.01501501501501512
   },
   "UE Sant Andreu vs. Antequera CF||futbol||1X2||1xbet_es,codere,interwetten": {
     "margin": 0.01716934325629982,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T12:57:35.428080+00:00",
     "notified_margin": 0.01716934325629982
   },
   "Sant Andreu vs. Antequera||futbol||DNB||bet365,codere": {
     "margin": 0.02383911422438134,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T12:57:35.428080+00:00",
     "notified_margin": 0.02383911422438134
@@ -495,7 +462,7 @@
   },
   "Gales vs. Dinamarca||futbol||CORNERS_OU_8.5||888sport,betfair": {
     "margin": 0.015766841853798397,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T12:57:35.428080+00:00",
     "notified_margin": 0.015766841853798397
@@ -606,7 +573,7 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||ML_HT||betfair,interwetten": {
     "margin": 0.0357142857142857,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T13:13:14.515662+00:00",
     "notified_margin": 0.0357142857142857
@@ -621,35 +588,35 @@
   },
   "Gimnasia y Esgrima de Chivilcoy vs. Olimpo||futbol||1X2||betinia,betway": {
     "margin": 0.051144412137478557,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T13:13:14.515662+00:00",
     "notified_margin": 0.051144412137478557
   },
   "Gimnasia y Esgrima de Chivilcoy vs. Olimpo||futbol||DNB||betinia,betway": {
     "margin": 0.1087243263614095,
-    "cycles": 2,
+    "cycles": 3,
     "notified": true,
     "since": "2026-10-03T13:13:14.515662+00:00",
     "notified_margin": 0.1087243263614095
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||betfair,retabet": {
     "margin": 0.031105506515342607,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T13:20:23.776123+00:00",
     "notified_margin": 0.031105506515342607
   },
   "Tranent Juniors vs. Turriff||futbol||OU_AWAY_0.5||jokerbet,paf": {
     "margin": 0.013605442176870763,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T13:20:23.776123+00:00",
     "notified_margin": 0.013605442176870763
   },
   "Dunfermline vs. Aberdeen||futbol||1X2||1xbet_es,betfair": {
     "margin": 0.01188596606257708,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T13:20:23.776123+00:00",
     "notified_margin": 0.01188596606257708
@@ -659,6 +626,28 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T13:20:23.776123+00:00",
-    "notified_margin": 0.011323511506148742
+    "notified_margin": 0.011323511506148742,
+    "gone_at": "2026-10-03T13:26:13.241873+00:00"
+  },
+  "Stocksund vs. Jarfalla||futbol||OU_3.5||888sport,daznbet": {
+    "margin": 0.032499280989358725,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T13:26:13.241873+00:00",
+    "notified_margin": 0.032499280989358725
+  },
+  "Stocksund vs. Jarfalla||futbol||OU_4.5||888sport,daznbet": {
+    "margin": 0.030172413793103425,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T13:26:13.241873+00:00",
+    "notified_margin": 0.030172413793103425
+  },
+  "Gimnasia y Esgrima de Chivilcoy vs. Olimpo||futbol||OU_2.5||betway,daznbet": {
+    "margin": 0.010044527285906546,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T13:26:13.241873+00:00",
+    "notified_margin": 0.010044527285906546
   }
 }
