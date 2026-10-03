@@ -45,6 +45,7 @@ from engine.alerts import SourceAlerts
 from engine.backtest import SurebetLog
 from engine.cache import CachedProvider, ComparatorCache, refresh_cache
 from engine.health import SourceHealth
+from engine.throttle import ThrottledProvider
 from engine.peers import PeerEvents
 from engine.scan import normalize_state, run_scan_cycle
 from providers.altenar import AltenarProvider
@@ -284,6 +285,13 @@ async def run_scan(mode: str) -> None:
         cache = ComparatorCache(config.COMPARATOR_CACHE_PATH)
         max_age = timedelta(hours=config.COMPARATOR_MAX_AGE_HOURS)
         middle: list[OddsProvider] = [CachedProvider(p.name, cache, max_age) for p in comparator_providers()]
+        every = timedelta(minutes=config.THROTTLE_EVERY_MINUTES)
+        before = [
+            ThrottledProvider(p, every, str(pathlib.Path(config.DETAIL_CACHE_DIR) / f"throttled_{p.name}.pkl"))
+            if p.name in config.THROTTLED_SOURCES and config.DETAIL_CACHE_DIR
+            else p
+            for p in before
+        ]
     else:
         middle = comparator_providers()
     providers = before + middle + after
