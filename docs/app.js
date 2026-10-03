@@ -42,6 +42,11 @@ const DGOJ_LICENSED_BOOKMAKERS = new Set([
   // (providers/zebet.py); registro de la DGOJ comprobado el 2026-09-16 (ver
   // checklist.md), scraping directo añadido el 2026-09-24.
   "zebet",
+  // Solo llegan por el comparador (providers/casasdeapuestas.py). Interwetten y CGM
+  // Apuestas (Casino Gran Madrid): licencia confirmada por el usuario el 2026-10-03.
+  // "1xbet_es": la misma 1xBet de arriba (verificada el 2026-09-16) con la clave
+  // que usa el comparador; sin ella se pintaba como no verificada.
+  "interwetten", "cgmapuestas", "1xbet_es",
 ]);
 
 function isLicensed(bookmaker) {

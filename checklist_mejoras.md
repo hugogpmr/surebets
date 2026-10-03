@@ -26,7 +26,8 @@ pata de comparador SE AVISAN igual (comprobó a mano que sus cuotas coinciden co
       (`providers/casasdeapuestas.py`) y se despliega.
 - [x] Betfair Exchange del comparador excluido (cuota bruta sin comisión) y DAZN Bet unificado
       (`daznbet_es` = `daznbet`), 2026-10-01.
-- [ ] Con la lista cerrada: verificar a mano las licencias DGOJ de las que se queden con ⚠️ y añadirlas
+- [x] (2026-10-03: Interwetten y CGM Apuestas confirmadas por el usuario; 1xBet ya estaba verificada
+      pero con la clave `1xbet` en vez de `1xbet_es`) Con la lista cerrada: verificar a mano las licencias DGOJ de las que se queden con ⚠️ y añadirlas
       al panel (`docs/app.js`).
 
 ### Fase 1 — Betfair Exchange: DESCARTADA (2026-10-01)
