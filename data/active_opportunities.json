@@ -9,7 +9,7 @@
   },
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 165,
+    "cycles": 166,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
@@ -32,7 +32,7 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 149,
+    "cycles": 150,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
@@ -55,7 +55,7 @@
   },
   "Bahamas vs. Islas Vírgenes de los Estados Unidos||futbol||1X2||bet365,luckia": {
     "margin": 0.06637494080712769,
-    "cycles": 48,
+    "cycles": 49,
     "notified": true,
     "since": "2026-10-03T08:32:33.217663+00:00",
     "notified_margin": 0.06637494080712769
@@ -118,7 +118,7 @@
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_51.5||interwetten,leovegas": {
     "margin": 0.03078024337866858,
-    "cycles": 14,
+    "cycles": 15,
     "notified": true,
     "since": "2026-10-03T12:48:16.152345+00:00",
     "notified_margin": 0.03078024337866858
@@ -372,8 +372,8 @@
     "gone_at": "2026-10-03T13:57:53.681626+00:00"
   },
   "Tampa Bay Buccaneers vs. Green Bay Packers||americano||ML_HT||interwetten,yosports": {
-    "margin": 0.054459691252144005,
-    "cycles": 7,
+    "margin": 0.04287138584247252,
+    "cycles": 8,
     "notified": true,
     "since": "2026-10-03T13:43:38.522408+00:00",
     "notified_margin": 0.054459691252144005
@@ -476,7 +476,7 @@
   },
   "Argentina vs. Burkina Faso||futbol||AH_-3||bet365,interwetten": {
     "margin": 0.02980845517397701,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T14:26:34.713821+00:00",
     "notified_margin": 0.02980845517397701
@@ -565,22 +565,30 @@
     "margin": 0.033882783882783984,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T14:18:32.025719+00:00",
-    "notified_margin": 0.033882783882783984,
-    "gone_at": "2026-10-03T14:26:34.713821+00:00"
+    "since": "2026-10-03T14:32:30.741260+00:00",
+    "notified_margin": 0.033882783882783984
   },
   "Ferrol vs. Pontevedra||futbol||DNB||bet365,cgmapuestas": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T14:26:34.713821+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T14:32:30.741260+00:00"
   },
   "Cipolletti vs. Sol de America||futbol||OU_2.5||betway,botemania": {
     "margin": 0.033882783882783984,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T14:26:34.713821+00:00",
-    "notified_margin": 0.033882783882783984
+    "notified_margin": 0.033882783882783984,
+    "gone_at": "2026-10-03T14:32:30.741260+00:00"
+  },
+  "Racing Ferrol vs. Pontevedra||futbol||DNB||bet365,cgmapuestas": {
+    "margin": 0.03219391475351874,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T14:32:30.741260+00:00",
+    "notified_margin": 0.03219391475351874
   }
 }
