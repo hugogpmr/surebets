@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 
+from engine.market_filter import keep_markets
 from engine.models import Market, Outcome
 from providers.base import OddsProvider
 from providers.detail_cache import DetailStore, collect, plan
@@ -811,9 +812,9 @@ class AltenarProvider(OddsProvider):
             except Exception:
                 logger.warning("Altenar: fallo en detalle %s/%s", integration, event_id, exc_info=True)
                 return None
-            parsed = parse_event_markets(
+            parsed = keep_markets(parse_event_markets(
                 details, canonical[event_id], sport, self.integrations[integration], competitors[event_id]
-            )
+            ))
             for market in parsed:
                 market.start_time = starts[event_id]
             return parsed

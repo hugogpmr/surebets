@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 
+from engine.market_filter import keep_markets
 from engine.models import Market, Outcome
 from providers.altenar import DEFAULT_HORIZON_HOURS, _fmt_line
 from providers.base import OddsProvider
@@ -458,9 +459,9 @@ class KambiProvider(OddsProvider):
                 logger.warning("Kambi: fallo en detalle %s/%s", operator, event_id, exc_info=True)
                 return None
             name = f"{event['homeName'].strip()} vs. {event['awayName'].strip()}"
-            parsed = parse_event_offers(
+            parsed = keep_markets(parse_event_offers(
                 details, name, sport, self.operators[operator], event["homeName"], event["awayName"]
-            )
+            ))
             start = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
             for market in parsed:
                 market.start_time = start

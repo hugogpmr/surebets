@@ -21,6 +21,7 @@ from .backtest import SurebetLog
 from .health import SourceHealth
 from .handicap import ASIAN, check_whole_handicaps
 from .labels import kickoff_line, market_title, outcome_label, push_note, sport_name
+from .market_filter import keep_markets
 from .matching import best_odds_per_outcome, event_key, group_by_event
 from .peers import PeerEvents
 from .quality import (
@@ -263,7 +264,7 @@ async def _fetch(
     executor: ThreadPoolExecutor | None = None,
 ) -> list | None:
     try:
-        fetched = await _call(provider, provider.fetch_markets, (sports,), sem, executor, timings)
+        fetched = keep_markets(await _call(provider, provider.fetch_markets, (sports,), sem, executor, timings))
     except Exception:
         logger.exception("Fallo obteniendo datos de %s", provider.name)
         return None
@@ -283,7 +284,7 @@ async def _refine(
     """Segunda pasada de un proveedor con `refines` (ver providers/base.py). Un fallo se
     registra y deja la primera pasada tal cual. Su tiempo se SUMA al de esa fuente."""
     try:
-        extra = await _call(provider, provider.refine, (sports, peer_markets), sem, executor, timings)
+        extra = keep_markets(await _call(provider, provider.refine, (sports, peer_markets), sem, executor, timings))
     except Exception:
         logger.exception("Fallo en la segunda pasada de %s", provider.name)
         return []
