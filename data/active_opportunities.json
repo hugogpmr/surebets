@@ -1,21 +1,21 @@
 {
   "Houston Texans vs. Dallas Cowboys||americano||OU_HT_25.5||interwetten,versus": {
     "margin": 0.07308377896613194,
-    "cycles": 191,
+    "cycles": 192,
     "notified": true,
     "since": "2026-10-02T17:31:20.637152+00:00",
     "notified_margin": 0.07308377896613194
   },
   "Minnesota Vikings vs. Miami Dolphins||americano||OU_52.5||interwetten,leovegas": {
     "margin": 0.04895104895104896,
-    "cycles": 175,
+    "cycles": 176,
     "notified": true,
     "since": "2026-10-02T20:26:47.218823+00:00",
     "notified_margin": 0.04895104895104896
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,bet365": {
     "margin": 0.04112554112554112,
-    "cycles": 5,
+    "cycles": 6,
     "notified": true,
     "since": "2026-10-03T17:01:06.865130+00:00",
     "notified_margin": 0.04112554112554112
@@ -54,7 +54,7 @@
   },
   "Philadelphia Eagles vs. Los Angeles Rams||americano||ML_HT||interwetten,leovegas": {
     "margin": 0.03966131907308368,
-    "cycles": 18,
+    "cycles": 19,
     "notified": true,
     "since": "2026-10-03T15:29:39.301623+00:00",
     "notified_margin": 0.03966131907308368
@@ -75,22 +75,6 @@
     "notified_margin": 0.0444444444444444,
     "gone_at": "2026-10-03T17:01:06.865130+00:00"
   },
-  "AEK Larnaca vs. Apollon||futbol||OU_3.5||888sport,retabet": {
-    "margin": 0.02762224710712946,
-    "cycles": 4,
-    "notified": true,
-    "since": "2026-10-03T16:04:46.301006+00:00",
-    "notified_margin": 0.02762224710712946,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "AEK Larnaca vs. Apollon||futbol||OU_2.5||888sport,retabet": {
-    "margin": 0.02876001885902879,
-    "cycles": 3,
-    "notified": true,
-    "since": "2026-10-03T16:11:38.259607+00:00",
-    "notified_margin": 0.02876001885902879,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
   "Landstede Hammers vs. Heroes Den Bosch||baloncesto||AH_-2.5||888sport,betway": {
     "margin": 0.03392754456584246,
     "cycles": 1,
@@ -99,75 +83,21 @@
     "notified_margin": 0.03392754456584246,
     "gone_at": "2026-10-03T17:01:06.865130+00:00"
   },
-  "España vs. República Checa||futbol||CORNERS_OU_9.5||paf,pokerstars": {
-    "margin": 0.045698924731182755,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.045698924731182755,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "España vs. República Checa||futbol||CORNERS_OU_10.5||paf,pokerstars": {
-    "margin": 0.04761904761904767,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.04761904761904767,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "Fuenlabrada vs. CB Gran Canaria||baloncesto||AH_5.5||daznbet,interwetten": {
-    "margin": 0.08666320705760244,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.08666320705760244,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "Fuenlabrada vs. Gran Canaria||baloncesto||AH_1.5||betway,cgmapuestas": {
-    "margin": 0.042957042957042946,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.042957042957042946,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "Fuenlabrada vs. Gran Canaria||baloncesto||AH_3.5||betway,cgmapuestas": {
-    "margin": 0.04483430799220278,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.04483430799220278,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "Fuenlabrada vs. Gran Canaria||baloncesto||AH_6.5||cgmapuestas,daznbet": {
-    "margin": 0.05764966740576494,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.05764966740576494,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
-  "Fuenlabrada vs. Gran Canaria||baloncesto||AH_7.5||cgmapuestas,daznbet": {
-    "margin": 0.05555555555555558,
-    "cycles": 1,
-    "notified": true,
-    "since": "2026-10-03T16:25:45.476248+00:00",
-    "notified_margin": 0.05555555555555558,
-    "gone_at": "2026-10-03T16:32:33.762487+00:00"
-  },
   "Angby IF vs. Helges IF||futbol||OU_4.5||betway,yosports": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T17:28:54.805637+00:00",
-    "notified_margin": 0.0444444444444444
+    "notified_margin": 0.0444444444444444,
+    "gone_at": "2026-10-03T17:36:08.322191+00:00"
   },
   "Angby IF vs. Helges IF||futbol||OU_3.5||betway,yosports": {
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T17:28:54.805637+00:00",
-    "notified_margin": 0.03219391475351874
+    "notified_margin": 0.03219391475351874,
+    "gone_at": "2026-10-03T17:36:08.322191+00:00"
   },
   "Argentina vs. Burkina Faso||futbol||AH_-2.5||1xbet_es,interwetten": {
     "margin": 0.03313049357674103,
@@ -221,17 +151,15 @@
     "margin": 0.03219391475351874,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T17:15:06.064134+00:00",
-    "notified_margin": 0.03219391475351874,
-    "gone_at": "2026-10-03T17:22:14.132629+00:00"
+    "since": "2026-10-03T17:36:08.322191+00:00",
+    "notified_margin": 0.03219391475351874
   },
   "Angby IF vs. Helges IF||futbol||OU_4.5||daznbet,paf": {
     "margin": 0.0444444444444444,
     "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T17:15:06.064134+00:00",
-    "notified_margin": 0.0444444444444444,
-    "gone_at": "2026-10-03T17:22:14.132629+00:00"
+    "since": "2026-10-03T17:36:08.322191+00:00",
+    "notified_margin": 0.0444444444444444
   },
   "Sloboda Uzice vs. KK Sloga Kraljevo||baloncesto||ML||betway,jokerbet": {
     "margin": 0.038712921065862216,
@@ -282,12 +210,11 @@
     "gone_at": "2026-10-03T17:01:06.865130+00:00"
   },
   "Argentina vs. Burkina Faso||futbol||BTTS||bet365,luckia": {
-    "margin": 0.042957042957042946,
-    "cycles": 3,
+    "margin": 0.06493506493506496,
+    "cycles": 1,
     "notified": true,
-    "since": "2026-10-03T17:01:06.865130+00:00",
-    "notified_margin": 0.042957042957042946,
-    "gone_at": "2026-10-03T17:22:14.132629+00:00"
+    "since": "2026-10-03T17:36:08.322191+00:00",
+    "notified_margin": 0.06493506493506496
   },
   "Landstede Hammers vs. Heroes Den Bosch||baloncesto||ML||betinia,betway": {
     "margin": 0.03488372093023262,
@@ -331,14 +258,14 @@
   },
   "Canadá vs. Perú||futbol||OU_5.5||888sport,retabet": {
     "margin": 0.04831932773109249,
-    "cycles": 4,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T17:08:12.353629+00:00",
     "notified_margin": 0.040476190476190554
   },
   "Canadá vs. Perú||futbol||OU_5||retabet,winamax": {
-    "margin": 0.045883940620782715,
-    "cycles": 4,
+    "margin": 0.05384150030248025,
+    "cycles": 5,
     "notified": true,
     "since": "2026-10-03T17:08:12.353629+00:00",
     "notified_margin": 0.045883940620782715
@@ -348,18 +275,19 @@
     "cycles": 2,
     "notified": true,
     "since": "2026-10-03T17:22:14.132629+00:00",
-    "notified_margin": 0.05653170359052706
+    "notified_margin": 0.05653170359052706,
+    "gone_at": "2026-10-03T17:36:08.322191+00:00"
   },
   "Canadá vs. Perú||futbol||OU_4.5||888sport,retabet": {
     "margin": 0.0758928571428572,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T17:28:54.805637+00:00",
     "notified_margin": 0.0758928571428572
   },
   "Alexander Zverev vs. Novak Djokovic||tenis||AH_-2.5||888sport,betinia": {
     "margin": 0.031818181818181746,
-    "cycles": 1,
+    "cycles": 2,
     "notified": true,
     "since": "2026-10-03T17:28:54.805637+00:00",
     "notified_margin": 0.031818181818181746
@@ -369,6 +297,14 @@
     "cycles": 1,
     "notified": true,
     "since": "2026-10-03T17:28:54.805637+00:00",
-    "notified_margin": 0.09521435692921243
+    "notified_margin": 0.09521435692921243,
+    "gone_at": "2026-10-03T17:36:08.322191+00:00"
+  },
+  "Vancouver Canucks vs. Vegas Golden Knights||hockey||OU_6.5||betfair,betinia": {
+    "margin": 0.023809523809523836,
+    "cycles": 1,
+    "notified": true,
+    "since": "2026-10-03T17:36:08.322191+00:00",
+    "notified_margin": 0.023809523809523836
   }
 }
